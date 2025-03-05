@@ -128,7 +128,7 @@ const ArtistProfile = () => {
             {/* Contenido de la pestaña activa */}
             <div className="artist-content">
                 {activeTab === "bio" && <ArtistBio artistData={artistData} />}
-                {activeTab === "images" && <ArtistImages artistData={artistData} />}
+                {activeTab === "images" && <ArtistImages artistId={artistData.id} />}
                 {activeTab === "videos" && <ArtistVideos artistData={artistData} />}
                 {activeTab === "music" && <ArtistMusic artistData={artistData} />}
             </div>

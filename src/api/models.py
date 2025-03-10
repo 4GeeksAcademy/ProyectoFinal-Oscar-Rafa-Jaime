@@ -61,7 +61,6 @@ class ArtistProfile(db.Model):
 
     artist_photos = db.relationship("Photo", backref="artist_profile")
     artist_videos = db.relationship("Video", backref="artist_profile")
-    artist_music = db.relationship("Music", backref="artist_profile")
     artist_songs = db.relationship("Song", backref="artist_profile")
 
     def __repr__(self):

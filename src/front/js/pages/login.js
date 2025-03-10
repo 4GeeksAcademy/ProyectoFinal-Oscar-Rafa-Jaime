@@ -61,7 +61,7 @@ export const Login = () => {
     console.log("Datos del formulario de registro:", dataToSend); // Verifica que los datos sean correctos antes de enviarlos
 
     try {
-      const response = await fetch("https://ideal-space-bassoon-jjqqvvv4q5g4hqpjr-3001.app.github.dev/api/register", {
+      const response = await fetch("https://laughing-goggles-96r9pg79p9c799r-3001.app.github.dev/api/register", {
         method: "POST",
         headers: { "Content-type": "application/json" },
         body: JSON.stringify(dataToSend),
@@ -85,7 +85,7 @@ export const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("https://ideal-space-bassoon-jjqqvvv4q5g4hqpjr-3001.app.github.dev/api/login", {
+      const response = await fetch("https://laughing-goggles-96r9pg79p9c799r-3001.app.github.dev/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),

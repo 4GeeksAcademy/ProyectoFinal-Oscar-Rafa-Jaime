@@ -1,7 +1,7 @@
   
 import os
 from flask_admin import Admin
-from .models import db, User, Genre, ArtistProfile,Photo,Video,Music,SavedMusic,FollowArtist
+from .models import db, User, Genre, ArtistProfile,Photo,Video,Song,SavedSong,FollowArtist
 from flask_admin.contrib.sqla import ModelView
 
 def setup_admin(app):
@@ -15,8 +15,8 @@ def setup_admin(app):
     admin.add_view(ModelView(Genre, db.session))
     admin.add_view(ModelView(Photo, db.session))
     admin.add_view(ModelView(Video, db.session))
-    admin.add_view(ModelView(Music, db.session))
-    admin.add_view(ModelView(SavedMusic, db.session))
+    admin.add_view(ModelView(Song, db.session))
+    admin.add_view(ModelView(SavedSong, db.session))
     admin.add_view(ModelView(FollowArtist, db.session))
     admin.add_view(ModelView(ArtistProfile, db.session))
 

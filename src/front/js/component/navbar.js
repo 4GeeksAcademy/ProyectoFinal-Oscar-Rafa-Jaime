@@ -1,28 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "../../styles/navbar.css";
+import { Context } from "../store/appContext";
 
 export const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [profileImage, setProfileImage] = useState("");
+    const {store, actions} = useContext(Context);
 
     useEffect(() => {
-        const fetchProfileImage = async () => {
-            try {
-                const userId = localStorage.getItem("userId"); // Asegúrate de tener el ID del usuario
-                const response = await fetch(`https://tuapi.com/usuarios/${userId}`);
-                const data = await response.json();
-
-                if (data.profileImageUrl) { // Ajusta el nombre según tu API
-                    setProfileImage(data.profileImageUrl);
-                }
-            } catch (error) {
-                console.error("Error al obtener la imagen de perfil:", error);
-            }
-        };
-
-        fetchProfileImage();
-    }, []);
+        console.log(store.user)
+        setProfileImage(store.user.profilePhoto)
+    }, [store.user]);
 
     const toggleMenu = () => {
         setMenuOpen(!menuOpen);
@@ -36,7 +25,7 @@ export const Navbar = () => {
                 {/* Icono de usuario (imagen por defecto) */}
                 <div className="user-menu">
                     <div className="user-icon" onClick={toggleMenu}>
-                        <img src="https://cdn-icons-png.flaticon.com/512/3106/3106921.png" alt="Perfil de Usuario" />
+                        <img src={profileImage} alt="Perfil de Usuario" />
                     </div>
 
                     {/* Menú desplegable */}

@@ -34,7 +34,7 @@ class User(db.Model):
             "email": self.email,
             "address":self.address,
             "is_artist":self.is_artist,
-            "profile_photo": self.profilePhoto,
+            "profilePhoto": self.profilePhoto,
         }
 
     def set_password(self, password):

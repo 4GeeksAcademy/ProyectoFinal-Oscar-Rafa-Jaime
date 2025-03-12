@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import "../../styles/login.css";
 import microphone from "../../img/microphone.jpg";
+import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
   // Estados para controlar qué formulario se muestra
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [showForgoten, setShowForgoten] = useState(false);
+  const navigate = useNavigate()
 
   //Estado para almacenar datos del formulario de registro
 
@@ -100,18 +102,21 @@ export const Login = () => {
       console.log("Respuesta del servidor:", data);
 
       // Redirigir a la URL proporcionada en la respuesta del servidor
-      if (data.redirect_url) {
-        window.location.href = data.redirect_url;
-      }
+
 
       // Guardar token y datos del usuario
       localStorage.setItem("Token", data.access_token);
       localStorage.setItem("user", JSON.stringify(data.user));
+      if (data.redirect_url) {
+        navigate(data.redirect_url)
 
+        //    window.location.href = data.redirect_url;
+      }
     } catch (error) {
       console.error("Error al hacer fetch:", error);
       alert(error.message || "Error en el servidor");
     }
+
   };
 
 

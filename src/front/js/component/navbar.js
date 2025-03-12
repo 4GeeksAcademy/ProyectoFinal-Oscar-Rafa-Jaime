@@ -12,7 +12,7 @@ export const Navbar = () => {
     return (
         <nav className="navbar">
             <div className="container">
-                <Link to="/" className="navbar-brand">SoundCript</Link>
+                <Link to="/homeuser" className="navbar-brand">SoundCript</Link>
 
                 {/* Icono de usuario (imagen por defecto) */}
                 <div className="user-menu">
@@ -23,6 +23,7 @@ export const Navbar = () => {
                     {/* Menú desplegable */}
                     <div className={`dropdown-menu ${menuOpen ? "show" : ""}`}>
                         <Link to="/userProfile" className="dropdown-item" onClick={() => setMenuOpen(false)}>Perfil</Link>
+                        <Link to="/artist/2" className="dropdown-item" onClick={() => setMenuOpen(false)}>PerfilArtista</Link>
                         <Link to="/userdata" className="dropdown-item" onClick={() => setMenuOpen(false)}>Datos</Link>
                         <Link to="/" className="dropdown-item" onClick={() => setMenuOpen(false)}>Logout</Link>
                     </div>

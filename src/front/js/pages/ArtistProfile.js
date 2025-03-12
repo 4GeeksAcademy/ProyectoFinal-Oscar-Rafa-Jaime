@@ -63,7 +63,7 @@ const ArtistProfile = () => {
             <div className="artist-header">
                 <div className="artist-img-container">
                     <img
-                        src={artistData.profilePicture || "https://via.placeholder.com/150"}
+                        src={artistData.profilePicture || "https://placehold.co/150"}
                         alt="Artist Profile"
                         className="artist-profile-picture"
                     />

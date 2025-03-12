@@ -1,6 +1,7 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
+			user:null,
 			message: null,
 			demo: [
 				{
@@ -49,6 +50,20 @@ const getState = ({ getStore, getActions, setStore }) => {
 				//reset the global store
 				setStore({ demo: demo });
 			},
+			/////////////////////////////////////////////////////////////////////////////
+			setUser: (user) =>{
+				setStore({user:user})
+			},
+			getUser:() =>{
+				const store = getStore();
+				return store.user;
+			},
+
+
+
+
+
+			/////////////////////////////////////////////////////////////////////////////
 
 			// Load all genres & artists for User Home view
 			loadGenres: async () => {

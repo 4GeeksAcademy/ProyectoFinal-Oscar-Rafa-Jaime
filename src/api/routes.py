@@ -98,6 +98,7 @@ def register():
 def generate_token():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
+    
 
     # Buscar al usuario por el nombre de usuario
     user = User.query.filter_by(username=username).one_or_none()
@@ -109,6 +110,7 @@ def generate_token():
     # Crear el token de acceso
     access_token = create_access_token(identity=user)
 
+
     # Redirigir dependiendo de si es artista o no
     if user.is_artist:
         return jsonify({
@@ -119,7 +121,8 @@ def generate_token():
     else:
         return jsonify({
             "access_token": access_token,
-            "redirect_url": "/homeuser"
+            "user": user.serialize(),
+            "redirect_url": f"/homeuser/{user.id}"
         })
 
 @api.route('/profile', methods=['GET'])
@@ -127,6 +130,16 @@ def generate_token():
 def get_current_user():
     return jsonify(current_user.serialize()), 200
 
+
+# @api.route('/profile/favourites', methods=['GET'])
+# @jwt_required()
+# def handle_user_favourites():
+#     user = current_user
+     
+#     return jsonify({
+#         "saved_songs": [fav.serialize() for fav in user.saved_song] if user.saved_song else "No hay canciones guardadas",
+#         "followed_artists": [fav.serialize() for fav in user.followed_artist] if user.followed_artist else "No tienes artistas guardados"
+#     }), 200
 
 # ROUTE TO LOAD GENRES
 @api.route('/getGenresapi', methods=["GET"])

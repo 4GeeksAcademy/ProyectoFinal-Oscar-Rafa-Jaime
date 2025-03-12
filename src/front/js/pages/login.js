@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import "../../styles/login.css";
 import microphone from "../../img/microphone.jpg";
+import { Context } from "../store/appContext";
+import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
   // Estados para controlar qué formulario se muestra
@@ -8,7 +10,8 @@ export const Login = () => {
   const [showRegister, setShowRegister] = useState(false);
   const [showForgoten, setShowForgoten] = useState(false);
   const [file, setFile] = useState(null);
-  
+  const {store, actions} = useContext(Context);
+  const navigate = useNavigate();
   //Estado para almacenar datos del formulario de registro
 
   const [formulario, setFormulario] = useState({
@@ -154,15 +157,22 @@ export const Login = () => {
 
       const data = await response.json();
       console.log("Respuesta del servidor:", data);
-
+      console.log(data.user);
+      actions.setUser(data.user);
       // Redirigir a la URL proporcionada en la respuesta del servidor
-      if (data.redirect_url) {
-        window.location.href = data.redirect_url;
-      }
+      if (data.user) {
+        actions.setUser(data.user); // Guardar usuario en el estado global
+        localStorage.setItem("user", JSON.stringify(data.user)); // Persistencia
+    }
+
+    if (data.redirect_url) {
+        navigate(data.redirect_url); // Redirige sin perder el estado
+    }
 
       // Guardar token y datos del usuario
-      localStorage.setItem("Token", data.access_token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      // localStorage.setItem("Token", data.access_token);
+      // localStorage.setItem("user", JSON.stringify(data.user));
+     
 
     } catch (error) {
       console.error("Error al hacer fetch:", error);

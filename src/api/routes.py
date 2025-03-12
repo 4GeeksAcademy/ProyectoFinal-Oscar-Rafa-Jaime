@@ -48,7 +48,15 @@ def upload_image():
     return jsonify({"img": img_url["url"]}),200
 
 
-
+@api.route('/infoartist', methods=["POST"])
+def save_artist():
+    artist_id = request.json.get('id', None)
+    if artist_id:
+        artist= ArtistProfile(artist_id=artist_id)
+        db.session.add(artist)
+        db.session.commit()
+        return jsonify({"msg": "Correct info saved"})
+    return jsonify({"msg": "Id usuario obligatorio"}), 400
 
 
 # Creacion de usuario 
@@ -99,7 +107,8 @@ def generate_token():
     if user.is_artist:
         return jsonify({
             "access_token": access_token,
-            "redirect_url": f"/user/{user.id}"
+            "user": user.serialize(),
+            "redirect_url": f"/artist/{user.id}"
         })
     else:
         return jsonify({
@@ -254,7 +263,7 @@ def delete_artist_song(artist_id, song_id):
 
 
 # GET USER FAVOURITE SONGS AND ARTISTS
-@api.route('/user/profile/<int:id>', methods=['GET'])
+@api.route('/profile/<int:id>', methods=['GET'])
 def handle_user_favourites(id):
     # Find the user by id
     user = User.query.get(id)
@@ -264,13 +273,13 @@ def handle_user_favourites(id):
      
     return jsonify({
         "saved_songs": [fav.serialize() for fav in user.saved_songs] if user.saved_songs else "No hay canciones guardadas",
-        "followed_artists": [fav.serialize() for fav in user.followed_artists] if user.followed_artists else "No tienes artistas guardados"
+        "followed_artist": [fav.serialize() for fav in user.followed_artist] if user.followed_artist else "No tienes artistas guardados"
     }), 200
 
 
 
 # POST & DELETE FOR USER FAVOURITE SONGS
-@api.route('/user/profile/<int:id>/favorite/songs/<int:song_id>', methods=['POST', 'DELETE'])
+@api.route('/profile/<int:id>/favourite/songs/<int:song_id>', methods=['POST', 'DELETE'])
 def handle_favourite_songs(song_id, id):
     # Find the user by id
     user = User.query.get(id)
@@ -303,7 +312,7 @@ def handle_favourite_songs(song_id, id):
 
 
 # POST & DELETE FOR USER FOLLOWED ARTISTS
-@api.route('/user/profile/<int:id>/favorite/aritsts/<int:artist_id>', methods=['POST', 'DELETE'])
+@api.route('/profile/<int:id>/followed/artist/<int:artist_id>', methods=['POST', 'DELETE'])
 def handle_followed_artists(artist_id, id):
     # Find the user by id
     user = User.query.get(id)
@@ -311,15 +320,20 @@ def handle_followed_artists(artist_id, id):
     if not user:
         return jsonify({"ERROR": "Usuario no encontrado"}), 404
 
+    # Find the artist profile 
+    artist_profile = ArtistProfile.query.filter_by(artist_id=artist_id).first()
+    if not artist_profile:
+        return jsonify({"error": "Perfil de artista no encontrado"}), 404
+
     # Check if the artist is already followed by the user
-    existing_followed_artist = FollowArtist.query.filter_by(user_id=id, artist_id=artist_id).first()
+    existing_followed_artist = FollowArtist.query.filter_by(user_id=id, artist_profile_id=artist_profile.id).first()
 
     # POST
     if request.method == 'POST':
         if existing_followed_artist:
             return jsonify({"msg": "Ya sigues a este artista"}), 400
         
-        new_followed_artist = FollowArtist(user_id=id, artist_id=artist_id)
+        new_followed_artist = FollowArtist(user_id=id, artist_profile_id=artist_profile.id)
         db.session.add(new_followed_artist)
         db.session.commit()
         return jsonify({"msg": "Artista seguido con éxito", "new_followed_artist": new_followed_artist.serialize()}), 200
@@ -332,3 +346,25 @@ def handle_followed_artists(artist_id, id):
         db.session.delete(existing_followed_artist)
         db.session.commit()
         return jsonify({"msg": "Artista dejado de seguir con éxito"}), 200
+
+
+@api.route('/artist/<int:artist_id>/profile', methods=['GET'])
+def get_artist_profile(artist_id):
+    # Buscar el perfil de artista mediante el id vinculado en el registro.
+    user = User.query.filter_by(id=artist_id).first()
+    if not user:
+        return jsonify({"msg": "Artista no encontrado"}), 404
+
+    # Buscar el usuario para obtener datos adicionales (nombre, foto, etc.)
+    artist_profile = ArtistProfile.query.filter_by(artist_id=artist_id).first()
+    response = {
+        "id": artist_id,
+        "name": user.fullName,
+        "profilePicture": user.profile_photo,
+        "bio": "" if not artist_profile else artist_profile.bio
+    #     "images": [photo.media_url for photo in artist_profile.artist_photos],
+    #     "videos": [video.media_url for video in artist_profile.artist_videos],
+    #     "music": [song.serialize() for song in artist_profile.artist_songs]
+    #
+     }
+    return jsonify(response), 200

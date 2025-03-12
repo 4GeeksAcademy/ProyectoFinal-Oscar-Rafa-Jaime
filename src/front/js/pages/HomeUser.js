@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useContext } from 'react';
 import { Context } from "../store/appContext";
-import "../../styles/genre.css"
+import "../../styles/homeUser.css"
 
 export const HomeUser = () => {
 
     const { store, actions } = useContext(Context);
 
-    // const newArtistFollowed = (item) => {
-    //     actions.followArtist(item)
-    // } ----- This would be with store/actions 
+    const newArtistFollowed = (id, artistId) => {
+        actions.followArtist(id, artistId)
+    }
 
+    const newLikedSong = (userId, songId) => {
+        actions.saveSong(userId, songId)
+    }
 
     useEffect(() => {
         actions.loadGenres(); // Fetch genres when component mounts
@@ -18,14 +21,14 @@ export const HomeUser = () => {
 
 
     const artist = [
-        { name: 'Artista 1', genre: 'Rock', image: 'https://placehold.co/50' },
-        { name: 'Artista 2', genre: 'Rock', image: 'https://placehold.co/50' },
+        { id: 1, song: 'Song 1', name: 'Artista 1', genre: 'Rock', image: 'https://placehold.co/50' },
+        { id: 2, song: 'Song 2', name: 'Artista 2', genre: 'Rock', image: 'https://placehold.co/50' },
 
-        { name: 'Artista 3', genre: 'Pop', image: 'https://placehold.co/50' },
-        { name: 'Artista 4', genre: 'Pop', image: 'https://placehold.co/50' },
+        { id: 3, song: 'Song 3', name: 'Artista 3', genre: 'Pop', image: 'https://placehold.co/50' },
+        { id: 4, song: 'Song 4', name: 'Artista 4', genre: 'Pop', image: 'https://placehold.co/50' },
 
-        { name: 'Artista 5', genre: 'Jazz', image: 'https://placehold.co/50' },
-        { name: 'Artista 6', genre: 'Jazz', image: 'https://placehold.co/50' },
+        { id: 5, song: 'Song 5', name: 'Artista 5', genre: 'Jazz', image: 'https://placehold.co/50' },
+        { id: 6, song: 'Song 6', name: 'Artista 6', genre: 'Jazz', image: 'https://placehold.co/50' },
         // More artists...
     ]
 
@@ -46,12 +49,17 @@ export const HomeUser = () => {
                                         <div className="card">
                                             <img src={artist.image} className="card-img-top" alt={artist.name} />
                                             <div className="card-body">
-                                                <h5 className="card-title">{artist.name}</h5>
+                                                <h4>{artist.song}</h4>
+                                                <p>{artist.name}</p>
                                             </div>
-                                            <div className="d-flex justify-content-center mb-3">
-                                                <button type="button" className="followbtn btn-outline-purple">
-                                                    {/* onClick={() => newArtistFollowed(artist.name)} */}
+                                            <div className="d-flex justify-content-between mb-3 mx-2">
+                                                <button type="button" className="followbtn btn-outline-purple"
+                                                    onClick={() => newArtistFollowed(artist.name)}>
                                                     Seguir artista
+                                                </button>
+                                                <button type="button" className="followbtn btn-outline-purple"
+                                                    onClick={() => newLikedSong(artist.song)}>
+                                                    <i className="fa-regular fa-star"></i>
                                                 </button>
                                             </div>
                                         </div>

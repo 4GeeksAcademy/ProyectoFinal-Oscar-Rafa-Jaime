@@ -67,13 +67,17 @@ class ArtistProfile(db.Model):
         return f'<ArtistProfile {self.id}>'
 
     def serialize(self):
+        artist_user = User.query.get(self.artist_id) 
+
         return {
             "id": self.id,
             "artist_id": self.artist_id,
+            "artist_name": artist_user.fullName if artist_user else None,
+            "profile_photo": artist_user.profile_photo if artist_user else None,
             "bio": self.bio,
             "artist_photos": [photo.serialize() for photo in self.artist_photos],
             "artist_videos": [video.serialize() for video in self.artist_videos],
-            "artist_music": [music.serialize() for music in self.artist_music]
+            "artist_songs": [song.serialize() for song in self.artist_songs]
         }
 
 # ARTIST PHOTO MODEL
@@ -122,7 +126,6 @@ class Video(db.Model):
         }
 
 
-      
 class Song(db.Model):
     __tablename__ = "song"
 
@@ -160,10 +163,15 @@ class SavedSong(db.Model):
         return f'<Saved_Song {self.song_id}>'
 
     def serialize(self):
+        artist_profile = self.song.artist_profile if self.song and self.song.artist_profile else None
+
         return {
             "id": self.id,
             "user_id": self.user_id,
-            "song_id": self.song_id
+            "song_id": self.song_id,
+            "title": self.song.title if self.song else "Titulo desconocido",
+            "artist": self.song.artist_name if self.song else "Artista desconocido",
+            "cover_image": artist_profile.profile_photo if artist_profile else None,
         }
 
 
@@ -171,15 +179,20 @@ class FollowArtist(db.Model):
     __tablename__ = "follow_artist"
 
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
-    artist_id = db.Column(db.Integer, db.ForeignKey("artist_profile.id"), primary_key=True)
-
+    artist_profile_id = db.Column(db.Integer, db.ForeignKey("artist_profile.id"), primary_key=True)
+ 
     def __repr__(self):
-        return f'<FollowArtist user_id={self.user_id}, artist_id={self.artist_id}, is_active={self.is_active}>'
+        return f'<FollowArtist user_id={self.user_id}, artist_profile_id={self.artist_profile_id}, is_active={self.is_active}>'
 
     def serialize(self):
+        artist_profile = ArtistProfile.query.get(self.artist_profile_id)
+        artist_user = User.query.get(artist_profile.artist_id) if artist_profile else None
+
         return {
             "user_id": self.user_id,
             "artist_profile_id": self.artist_profile_id,
+            "artist_name": artist_user.fullName if artist_user else "Artista desconocido",
+            "artist_image": artist_user.profile_photo if artist_user else "Imagen no existe",
         }
     
 class Genre(db.Model):

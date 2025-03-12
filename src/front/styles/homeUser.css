@@ -12,11 +12,26 @@
     gap: 16px;
     padding: 10px;
     scrollbar-width: thin;
+    scrollbar-color: var(--color-mauveine) #f0f0f0;
+}
+
+.artists::-webkit-scrollbar {
+    height: 8px;
+}
+
+.artists::-webkit-scrollbar-thumb {
+    background-color: var(--color-mauveine);
+    border-radius: 4px;
 }
 
 .artistcard {
     width: 20%;
     background-color: rgba(97, 235, 97, 0.641);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .followbtn {

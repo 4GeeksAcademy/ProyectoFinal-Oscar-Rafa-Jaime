@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import useNavigate from "react";
 import "../../styles/login.css";
 import microphone from "../../img/microphone.jpg";
 
@@ -7,6 +8,7 @@ export const Login = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [showForgoten, setShowForgoten] = useState(false);
+  const navigate = useNavigate();
 
   //Estado para almacenar datos del formulario de registro
 
@@ -61,7 +63,7 @@ export const Login = () => {
     console.log("Datos del formulario de registro:", dataToSend); // Verifica que los datos sean correctos antes de enviarlos
 
     try {
-      const response = await fetch("https://ideal-space-bassoon-jjqqvvv4q5g4hqpjr-3001.app.github.dev/api/register", {
+      const response = await fetch("https://organic-space-bassoon-69449xwqxp9v35gqq-3001.app.github.dev/api/login", {
         method: "POST",
         headers: { "Content-type": "application/json" },
         body: JSON.stringify(dataToSend),
@@ -85,7 +87,7 @@ export const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("https://ideal-space-bassoon-jjqqvvv4q5g4hqpjr-3001.app.github.dev/api/login", {
+      const response = await fetch("https://organic-space-bassoon-69449xwqxp9v35gqq-3001.app.github.dev/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
@@ -107,6 +109,9 @@ export const Login = () => {
       // Guardar token y datos del usuario
       localStorage.setItem("Token", data.access_token);
       localStorage.setItem("user", JSON.stringify(data.user));
+      if (data.redirect_url) {
+        navigate(data.redirect_url)
+      }
 
     } catch (error) {
       console.error("Error al hacer fetch:", error);

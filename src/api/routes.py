@@ -133,10 +133,7 @@ def getGenres():
     return jsonify({"genres": [genre.serialize() for genre in genres]}), 200
 
 
-
-
-
- # GET: Obtener videos
+# GET: Obtener videos
 @api.route('/artist/<int:artist_id>/videos', methods=['GET'])
 def get_artist_videos(artist_id):
     # Verifica si el artista existe (descomenta o ajusta según tu modelo real)
@@ -191,8 +188,6 @@ def delete_artist_video(artist_id, video_id):
     db.session.delete(video)
     db.session.commit()
     return jsonify({"msg": "Video eliminado con éxito"}), 200
-
-
 
 
  # GET: Obtener musica
@@ -254,39 +249,33 @@ def delete_artist_song(artist_id, song_id):
 
 
 # GET USER FAVOURITE SONGS AND ARTISTS
-@api.route('/user/profile/<int:id>', methods=['GET'])
-def handle_user_favourites(id):
+@api.route('/profile/favourites', methods=['GET'])
+@jwt_required()
+def handle_user_favourites():
     # Find the user by id
-    user = User.query.get(id)
-
-    if not user:
-        return jsonify({"ERROR": "Usuario no encontrado"}), 404
+    user = current_user
      
     return jsonify({
-        "saved_songs": [fav.serialize() for fav in user.saved_songs] if user.saved_songs else "No hay canciones guardadas",
-        "followed_artists": [fav.serialize() for fav in user.followed_artists] if user.followed_artists else "No tienes artistas guardados"
+        "saved_songs": [fav.serialize() for fav in user.saved_song] if user.saved_song else "No hay canciones guardadas",
+        "followed_artists": [fav.serialize() for fav in user.followed_artist] if user.followed_artist else "No tienes artistas guardados"
     }), 200
 
 
-
 # POST & DELETE FOR USER FAVOURITE SONGS
-@api.route('/user/profile/<int:id>/favorite/songs/<int:song_id>', methods=['POST', 'DELETE'])
-def handle_favourite_songs(song_id, id):
-    # Find the user by id
-    user = User.query.get(id)
+@api.route('/profile/favorite/songs', methods=['POST', 'DELETE'])
+@jwt_required
+def handle_favourite_songs():
+    song_id = int(request.json.get('songId', None))
 
-    if not user:
-        return jsonify({"ERROR": "Usuario no encontrado"}), 404
-    
     # Check if the song is already liked/favourited by the user
-    existing_favourite_song = SavedSong.query.filter_by(user_id=id, song_id=song_id).first()
+    existing_favourite_song = SavedSong.query.filter_by(user_id=current_user.id, song_id=song_id).first()
 
     # POST
     if request.method == 'POST':
         if existing_favourite_song:
             return jsonify({"msg": "La canción ya está en favoritos"}), 400
         
-        new_favourite_song = SavedSong(user_id=id, song_id=song_id)
+        new_favourite_song = SavedSong(user_id=current_user.id, song_id=song_id)
         db.session.add(new_favourite_song)
         db.session.commit()
         return jsonify({"msg": "Canción añadida a favoritos con éxito", "new_favourite_song": new_favourite_song.serialize()}), 200
@@ -300,7 +289,12 @@ def handle_favourite_songs(song_id, id):
         db.session.commit()
         return jsonify({"msg": "Canción eliminada de favoritos con éxito"}), 200
 
-
+@api.rout('/profile/favorite/songs/<int:song_id>', methods=['DELETE'])
+@jwt_required
+def delete_favorite_song(song_id):
+    existing_favourite_song = SavedSong.query.filter_by(user_id=current_user.id, song_id=song_id).first()
+    # HAcer delete a existing_favourite_song
+    pass
 
 # POST & DELETE FOR USER FOLLOWED ARTISTS
 @api.route('/user/profile/<int:id>/favorite/aritsts/<int:artist_id>', methods=['POST', 'DELETE'])

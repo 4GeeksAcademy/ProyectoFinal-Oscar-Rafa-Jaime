@@ -48,8 +48,15 @@ def upload_image():
     return jsonify({"img": img_url["url"]}),200
 
 
-
-
+@api.route('/infoartist', methods=["POST"])
+def save_artist():
+    artist_id = request.json.get('id', None)
+    if artist_id:
+        artist= ArtistProfile(artist_id=artist_id)
+        db.session.add(artist)
+        db.session.commit()
+        return jsonify({"msg": "Correct info saved"})
+    return jsonify({"msg": "Id usuario obligatorio"}), 400
 
 # Creacion de usuario 
 @api.route('/register', methods=['POST'])
@@ -59,10 +66,17 @@ def register():
     address = request.json.get('address', None)
     email = request.json.get('email', None)
     password = request.json.get('password', None)
-    is_artist = request.json.get(True,None)
+    is_artist = request.json.get('isArtist',None)
+    profilePhoto = request.json.get('profilePhoto',None)
 
     if not fullName or not username or not email or not password:
         return jsonify({"msg": "Missing required fields"}), 400
+    
+    if is_artist is None:
+        is_artist = False 
+    
+    if not profilePhoto:  # Verificar si llegó la imagen
+        return jsonify({"msg": "Error: No se recibió la imagen"}), 400
 
     existing_user = User.query.filter_by(email=email).first()
     if existing_user:
@@ -72,7 +86,7 @@ def register():
     if existing_user:
         return jsonify({"msg": "Username already exists"}), 400
 
-    user = User(fullName=fullName, username=username, address=address, email=email, is_artist=is_artist, is_active=True)
+    user = User(fullName=fullName, username=username, address=address, email=email, is_artist=is_artist, profilePhoto=profilePhoto, is_active=True,)
     user.set_password(password)
 
     db.session.add(user)
@@ -99,7 +113,8 @@ def generate_token():
     if user.is_artist:
         return jsonify({
             "access_token": access_token,
-            "redirect_url": f"/user/{user.id}"
+            "user": user.serialize(),
+            "redirect_url": f"/artist/{user.id}"
         })
     else:
         return jsonify({
@@ -332,3 +347,24 @@ def handle_followed_artists(artist_id, id):
         db.session.delete(existing_followed_artist)
         db.session.commit()
         return jsonify({"msg": "Artista dejado de seguir con éxito"}), 200
+
+@api.route('/artist/<int:artist_id>/profile', methods=['GET'])
+def get_artist_profile(artist_id):
+    # Buscar el perfil de artista mediante el id vinculado en el registro.
+    user = User.query.filter_by(id=artist_id).first()
+    if not user:
+        return jsonify({"msg": "Artista no encontrado"}), 404
+
+    # Buscar el usuario para obtener datos adicionales (nombre, foto, etc.)
+    artist_profile = ArtistProfile.query.filter_by(artist_id=artist_id).first()
+    response = {
+        "id": artist_id,
+        "name": user.fullName,
+        "profilePicture": user.profile_photo,
+        "bio": "" if not artist_profile else artist_profile.bio
+    #     "images": [photo.media_url for photo in artist_profile.artist_photos],
+    #     "videos": [video.media_url for video in artist_profile.artist_videos],
+    #     "music": [song.serialize() for song in artist_profile.artist_songs]
+    #
+     }
+    return jsonify(response), 200

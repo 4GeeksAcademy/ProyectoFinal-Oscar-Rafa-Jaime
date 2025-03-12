@@ -16,7 +16,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(512), unique=False, nullable=False)
     is_artist = db.Column(db.Boolean, default=False)  # Check if account is artist
     is_active = db.Column(db.Boolean(), default=True)
-    profile_photo = db.Column(db.String(255), nullable=True)  # Profile photo URL
+    profilePhoto = db.Column(db.String(512), nullable=True)  # Profile photo URL
 
     #  Relationships
     followed_artist = db.relationship('FollowArtist', backref='follow_artist')
@@ -25,11 +25,6 @@ class User(db.Model):
     def __repr__(self):
         return f'<User {self.username}>'
 
-    def artist(self):
-        if self.is_artist:
-            return "Si"
-        else:
-            return "No"
 
     def serialize(self):
         return {
@@ -38,8 +33,8 @@ class User(db.Model):
             "username": self.username,
             "email": self.email,
             "address":self.address,
-            "artist":self.artist(),
-            "profile_photo": self.profile_photo,
+            "is_artist":self.is_artist,
+            "profile_photo": self.profilePhoto,
         }
 
     def set_password(self, password):
@@ -73,7 +68,7 @@ class ArtistProfile(db.Model):
             "bio": self.bio,
             "artist_photos": [photo.serialize() for photo in self.artist_photos],
             "artist_videos": [video.serialize() for video in self.artist_videos],
-            "artist_music": [music.serialize() for music in self.artist_music]
+            "artist_song": [song.serialize() for song in self.artist_music]
         }
 
 # ARTIST PHOTO MODEL

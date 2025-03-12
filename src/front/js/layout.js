@@ -51,11 +51,11 @@ const LayoutContent = () => {
                 <Route element={<Demo />} path="/demo" />
                 <Route element={<Single />} path="/single/:theid" />
                 <Route element={<HomeUser />} path="/homeuser" />
-                <Route element={<UserProfile />} path="/userProfile" />  {/* ✅ nueva */}
+                <Route element={<UserProfile />} path="/userProfile/" />  {/* ✅ nueva */}
                 <Route element={<SavedSongs />} path="/savedSongs" />  {/* ✅ nueva */}
-                <Route element={<SavedArtists />} path="/savedArtists" />  {/* ✅ nueva */}
+                <Route element={<SavedArtists />} path="/savedArtists/" />  {/* ✅ nueva */}
                 <Route element={<ArtistProfile />} path="/artist/:artistId" /> {/* ultima */}
-                <Route element={<UserData />} path="/userData" />
+                <Route element={<UserData />} path="/userData"/>
                 <Route element={<ArtistData />} path="/artistData" />
                 <Route element={<h1>Not found!</h1>} />
             </Routes>

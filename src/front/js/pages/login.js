@@ -7,7 +7,8 @@ export const Login = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [showForgoten, setShowForgoten] = useState(false);
-
+  const [file, setFile] = useState(null);
+  
   //Estado para almacenar datos del formulario de registro
 
   const [formulario, setFormulario] = useState({
@@ -17,6 +18,7 @@ export const Login = () => {
     address: "",
     password: "",
     confirmPassword: "",
+    profilePhoto: "",
     isArtist: false,
   });
 
@@ -38,6 +40,52 @@ export const Login = () => {
     }
   };
 
+  const handleImgChange = (e) => {
+    if (e.target.files && e.target.files.length) {
+      console.log("Imagen seleccionada:", e.target.files[0]); // 🛠️ Depuración
+      setFile(e.target.files[0]);
+
+      //Validar el tipo de archivo (por ejemplo imagen JPG o PNG)
+      if (selectedFile.type !== "image/jpeg" && selectedFile.type !== "image/jpg") {
+        alert("solo se permite archivos JPG y PNG");
+        return;
+      }
+      setFile(selectedFile);
+    }
+  };
+  const sendFile = async () => {
+    if (!file) {
+      alert("El campo de imagen es obligatorio");
+      return;
+    }
+    try {
+      const form = new FormData();
+      form.append("img", file);
+  
+      const response = await fetch(`${process.env.BACKEND_URL}/api/img`, {
+        method: "POST",
+        body: form,
+      });
+  
+      if (!response.ok) {
+        throw new Error("Error al subir la imagen");
+      }
+  
+      const data = await response.json();
+      console.log("URL de la imagen recibida:", data.img);
+  
+      // ✅ Guardar la URL en el estado del formulario
+      setFormulario((prevForm) => ({
+        ...prevForm,
+        profilePhoto: data.img, // Asegúrate de que el campo coincida con el backend
+      }));
+  
+    } catch (error) {
+      console.error("Error al subir la imagen:", error);
+    }
+  };
+  
+
   // Manejar cambios en  los inpusts del login
   const handleLoginChange = (e) => {
     console.log("cambiar campos: ", e.target.name, "Nuevo valor:", e.target.value);
@@ -52,34 +100,42 @@ export const Login = () => {
       return;
     }
 
-    // Aseguramos que isArtist sea false si no está marcado
-    const dataToSend = {
-      ...formulario,
-      isArtist: formulario.isArtist || false,  // Si no está marcado, será false
-    };
+    console.log("Formulario antes de enviar:", formulario);  // 🛠️ Depuración
 
-    console.log("Datos del formulario de registro:", dataToSend); // Verifica que los datos sean correctos antes de enviarlos
+    if (!formulario.profilePhoto) {
+      alert("Por favor, sube una imagen antes de registrarte.");
+      return;
+    }
 
     try {
-      const response = await fetch("https://ideal-space-bassoon-jjqqvvv4q5g4hqpjr-3001.app.github.dev/api/register", {
+      const dataToSend = {
+        ...formulario,
+        isArtist: formulario.isArtist || false,
+      };
+
+      const registerResponse = await fetch("https://ideal-space-bassoon-jjqqvvv4q5g4hqpjr-3001.app.github.dev/api/register", {
         method: "POST",
-        headers: { "Content-type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dataToSend),
       });
 
-      const data = await response.json();
+      const registerData = await registerResponse.json();
 
-      if (response.ok) {
+      if (registerResponse.ok) {
         alert("Usuario registrado con éxito");
-        setShowRegister(false);
         setShowLogin(true);
+        setShowRegister(false);
+        setShowForgoten(false);
       } else {
-        alert(data.message || "Error al registrar usuario");
+        alert(registerData.msg || "Error al registrar usuario");
       }
     } catch (error) {
-      alert("Error en el servidor");
+      console.error("Error en el registro:", error);
+      alert(error.message || "Error en el servidor");
     }
   };
+
+
 
   // Enviar formulario de inicio de sesión
   const handleLogin = async (e) => {
@@ -132,7 +188,7 @@ export const Login = () => {
         style={{ maxWidth: "400px", background: "rgba(255, 255, 255, 0.8)" }}
       >
         {/* Pantalla inicial con los botones */}
-        {!showLogin && !showRegister && (
+        {!showLogin && !showRegister && !showForgoten && (
           <div>
             <h2 className="text-center mb-4">Bienvenido</h2>
             <button
@@ -140,6 +196,7 @@ export const Login = () => {
               onClick={() => {
                 setShowLogin(true);
                 setShowRegister(false);
+                setShowForgoten(false);
               }}
             >
               Iniciar sesión
@@ -150,6 +207,7 @@ export const Login = () => {
               onClick={() => {
                 setShowLogin(false);
                 setShowRegister(true);
+                setShowForgoten(false);
               }}
             >
               Registrarse
@@ -187,22 +245,22 @@ export const Login = () => {
               Ingresar
             </button>
             <div className="text-center mt-2">
-              <a href="#" className="text-decoration-none" onClick={() =>
-                setShowForgoten(true)
-              }>¿He olvidado mi contraseña?</a>
+              <a href="#" className="text-decoration-none" onClick={() => setShowForgoten(true)}>
+                ¿He olvidado mi contraseña?
+              </a>
               <button
                 type="button"
                 className="btn btn-link w-100 mt-2"
                 onClick={() => {
                   setShowForgoten(false);
                   setShowLogin(false);
-                  setShowRegister(false)
+                  setShowRegister(false);
                 }}
               >
                 Volver
               </button>
             </div>
-          </form >
+          </form>
         )}
 
         {/* Formulario de registro */}
@@ -281,13 +339,18 @@ export const Login = () => {
                 type="checkbox"
                 className="form-check-input"
                 name="isArtist"
-                checked={formulario.isArtist} // Se gestiona el estado de este checkbox
+                checked={formulario.isArtist}
                 onChange={handleChange}
               />
             </div>
             <div className="mb-3">
-              <label className="form-label">Subir foto de perfil</label>
-              <input type="file" className="form-control form-control-lg" />
+              <input
+                type="file"
+                className="form-control mb-2"
+                accept="image/jpeg"
+                onChange={handleImgChange}
+              />
+              <button type="button" onClick={sendFile}>Subir Imagen</button>
             </div>
             <button type="submit" className="btn btn-success w-100 py-2">
               Registrarse
@@ -301,15 +364,16 @@ export const Login = () => {
             </button>
           </form>
         )}
-        {/* Formulario de recuperar contraseña*/}
+
+        {/* Formulario de recuperar contraseña */}
         {showForgoten && (
-          <form onSubmit={handleRegister}>
+          <form onSubmit={handlePasswordReset}>
             <h2 className="text-center mb-4">¿He olvidado mi contraseña?</h2>
             <div className="mb-3">
               <input
                 type="text"
                 className="form-control form-control-lg"
-                placeholder="Nomber de usuario"
+                placeholder="Nombre de usuario"
                 required
               />
             </div>
@@ -327,16 +391,14 @@ export const Login = () => {
               onClick={() => {
                 setShowLogin(true);
                 setShowRegister(false);
-                setShowForgoten(false)
+                setShowForgoten(false);
               }}
             >
               Volver
             </button>
           </form>
         )}
-
-
       </div>
-    </div >
+    </div>
   );
-};
+}

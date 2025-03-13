@@ -1,8 +1,19 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "../../styles/userProfile.css";
+import { Context } from "../store/appContext";
 
 export const SavedSongs = () => {
+
+    const { store, actions } = useContext(Context);
+    const [username, setusername] = useState("");
+    
+    useEffect(() => {
+            console.log(store.user)
+            setusername(store.user.username)
+        }, [store.user]);
+
+
     const [songs, setSongs] = useState([
         { id: 1, title: "Song 1", artist: "Artist A" },
         { id: 2, title: "Song 2", artist: "Artist B" }

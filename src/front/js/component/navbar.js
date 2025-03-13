@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "../../styles/navbar.css";
 import { Context } from "../store/appContext";
+import { useNavigate } from "react-router-dom"
 
 export const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -31,8 +32,8 @@ export const Navbar = () => {
                     {/* Menú desplegable */}
                     <div className={`dropdown-menu ${menuOpen ? "show" : ""}`}>
                         <Link to="/userProfile" className="dropdown-item" onClick={() => setMenuOpen(false)}>Perfil</Link>
-                        <Link to="/artist/2" className="dropdown-item" onClick={() => setMenuOpen(false)}>PerfilArtista</Link>
-                        <Link to="/userdata" className="dropdown-item" onClick={() => setMenuOpen(false)}>Datos</Link>
+                        <Link to={`/artist/${store.user.id}`} className="dropdown-item" onClick={() => setMenuOpen(false)}>PerfilArtista</Link>
+                        <Link to={`/userData/${store.user.id}`} className="dropdown-item" onClick={() => setMenuOpen(false)}>Datos</Link>
                         <Link to="/" className="dropdown-item" onClick={() => setMenuOpen(false)}>Logout</Link>
                     </div>
                 </div>

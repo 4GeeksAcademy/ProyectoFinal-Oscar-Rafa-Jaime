@@ -35,20 +35,10 @@ const ArtistImages = ({ artistData }) => {
 
   return (
     <div>
-      <h2>Imágenes</h2>
-      {artistData.images && artistData.images.length > 0 ? (
-        <div className="images-container">
-          {artistData.images.map((imgUrl, index) => (
-            <img key={index} src={imgUrl} alt={`Imagen ${index}`} />
-          ))}
-        </div>
-      ) : (
-        <p>No hay imágenes disponibles.</p>
-      )}
       {/* Cuadro para subir imágenes */}
-      <div className="row m-5 bg-secondary bg-opacity-10 p-2">
+      <div className="row m-5 ">
         <div className="col-12 mb-3">
-          <h4 className="m-2">Subir Imagen (Cloudinary)</h4>
+          <h2 className="m-2">Imágenes </h2>
           <input
             type="file"
             className="form-control mb-2"

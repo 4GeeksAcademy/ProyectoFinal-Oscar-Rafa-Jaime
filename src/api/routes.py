@@ -362,3 +362,36 @@ def get_artist_profile(artist_id):
     #
      }
     return jsonify(response), 200
+
+@api.route('/artist/<int:artist_id>/images', methods=["POST"])
+def create_artist_image(artist_id):
+    # Busca el perfil del artista
+    artist = ArtistProfile.query.get(artist_id)
+    if not artist:
+        return jsonify({"msg": "Artista no encontrado"}), 404
+
+    # Verifica que se haya enviado un archivo con la llave "img"
+    if "img" not in request.files:
+        return jsonify({"msg": "No se proporcionó un archivo de imagen"}), 400
+
+    img = request.files["img"]
+
+    # Opción: se puede obtener un título opcional del formulario
+    title = request.form.get("title", "Sin título")
+
+    try:
+        # Sube la imagen a Cloudinary
+        upload_result = cloudinary.uploader.upload(img)
+    except Exception as e:
+        return jsonify({"msg": "Error al subir la imagen", "error": str(e)}), 500
+
+    media_url = upload_result.get("url")
+    if not media_url:
+        return jsonify({"msg": "Error al obtener la URL de Cloudinary"}), 500
+
+    # Crea un nuevo registro en la tabla Photo
+    new_photo = Photo(title=title, media_url=media_url, artist_profile_id=artist_id)
+    db.session.add(new_photo)
+    db.session.commit()
+
+    return jsonify(new_photo.serialize()), 201

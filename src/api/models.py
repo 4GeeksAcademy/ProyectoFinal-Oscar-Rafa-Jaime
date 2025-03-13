@@ -58,7 +58,7 @@ class ArtistProfile(db.Model):
 
     # Relationships
     artist_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, nullable=False)
-
+    
     artist_photos = db.relationship("Photo", backref="artist_profile")
     artist_videos = db.relationship("Video", backref="artist_profile")
     artist_songs = db.relationship("Song", backref="artist_profile")

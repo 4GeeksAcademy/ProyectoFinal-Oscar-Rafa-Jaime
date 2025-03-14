@@ -38,7 +38,7 @@ class User(db.Model):
             "username": self.username,
             "email": self.email,
             "address":self.address,
-            "artist":self.artist(),
+            "artist":self.is_artist,
             "profile_photo": self.profile_photo,
         }
 
@@ -124,9 +124,9 @@ class Video(db.Model):
 
       
 class Song(db.Model):
-    __tablename__ = "song"
+    tablename = "song"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
     title = db.Column(db.String(200), nullable=False)
     media_url = db.Column(db.Text, nullable=False)  # Cloudinary URL
     duration = db.Column(db.Integer, nullable=False)
@@ -134,7 +134,7 @@ class Song(db.Model):
     # Relationships
     artist_profile_id = db.Column(db.Integer, db.ForeignKey("artist_profile.id"), nullable=False)
 
-    def __repr__(self):
+    def repr(self):
         return f'<Song {self.title}>'
 
     def serialize(self):
@@ -143,12 +143,13 @@ class Song(db.Model):
             "title": self.title,
             "media_url": self.media_url,
             "duration": self.duration,
+            "artist_profile": self.artist_profile_id if self.artist_profile_id else None,
         }
 
 
             # USER SAVED MUSIC & FOLLOW ARTIST MODEL
 class SavedSong(db.Model):
-    __tablename__ = "saved_song"
+    tablename = "saved_song"
 
     id = db.Column(db.Integer, primary_key=True)
 
@@ -156,15 +157,18 @@ class SavedSong(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     song_id = db.Column(db.Integer, db.ForeignKey("song.id"))
 
-    def __repr__(self):
+    song = db.relationship("Song", backref="saved_song")
+
+    def repr(self):
         return f'<Saved_Song {self.song_id}>'
 
     def serialize(self):
         return {
             "id": self.id,
             "user_id": self.user_id,
-            "song_id": self.song_id
-        }
+            "song_id": self.song_id,
+            "title": self.song.title if self.song else "Titulo desconocido",
+             }
 
 
 class FollowArtist(db.Model):

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import "../../styles/navbar.css";
+import { Context } from "../store/appContext";
 
 export const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -8,7 +9,8 @@ export const Navbar = () => {
     const toggleMenu = () => {
         setMenuOpen(!menuOpen);
     };
-
+    const { store } = useContext(Context)
+    console.log(store)
     return (
         <nav className="navbar">
             <div className="container">
@@ -23,7 +25,9 @@ export const Navbar = () => {
                     {/* Menú desplegable */}
                     <div className={`dropdown-menu ${menuOpen ? "show" : ""}`}>
                         <Link to="/userProfile" className="dropdown-item" onClick={() => setMenuOpen(false)}>Perfil</Link>
-                        <Link to="/artist/2" className="dropdown-item" onClick={() => setMenuOpen(false)}>PerfilArtista</Link>
+                        {store.user.artist && (
+                            <Link to={`/artist/${store.user.id}`} className="dropdown-item" onClick={() => setMenuOpen(false)}>PerfilArtista</Link>
+                        )}
                         <Link to="/userdata" className="dropdown-item" onClick={() => setMenuOpen(false)}>Datos</Link>
                         <Link to="/" className="dropdown-item" onClick={() => setMenuOpen(false)}>Logout</Link>
                     </div>

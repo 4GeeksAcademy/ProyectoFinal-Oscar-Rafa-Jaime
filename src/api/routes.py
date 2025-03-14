@@ -113,6 +113,7 @@ def generate_token():
     else:
         return jsonify({
             "access_token": access_token,
+            "user": user.serialize(),
             "redirect_url": "/homeuser"
         })
 
@@ -261,7 +262,6 @@ def delete_artist_song(artist_id, song_id):
     return jsonify({"msg": "Cancion eliminada con éxito"}), 200
 
 
-
 # GET USER FAVOURITE SONGS AND ARTISTS
 @api.route('/user/profile/<int:id>', methods=['GET'])
 def handle_user_favourites(id):
@@ -395,3 +395,44 @@ def create_artist_image(artist_id):
     db.session.commit()
 
     return jsonify(new_photo.serialize()), 201
+
+
+# @api.route('/vid', methods=["POST"])
+# @jwt_required()
+# def upload_video():
+#     # Verifica que se ha enviado el archivo con la clave "vid"
+#     if "vid" not in request.files:
+#         return jsonify({"msg": "No video provided"}), 400
+
+#     vid_file = request.files["vid"]
+
+#     # Subir video
+#     video_upload = cloudinary.uploader.upload(vid_file, resource_type="video")
+    
+#     # Obtener el usuario logueado
+#     user = current_user
+#     if not user.is_artist:
+#         return jsonify({"msg": "User is not an artist"}), 403
+
+#     # Obtener o crear el perfil de artista
+#     artist_profile = ArtistProfile.query.filter_by(artist_id=user.id).first()
+#     if not artist_profile:
+#         artist_profile = ArtistProfile(artist_id=user.id, bio="")
+#         db.session.add(artist_profile)
+#         db.session.commit()
+
+#     # Extraer el título 
+#     title = request.form.get("title", vid_file.filename)
+
+#     # Crea un nuevo registro en la tabla Video
+#     new_video = Video(
+#         title=title,
+#         media_url=video_upload["url"],
+#         # Aquí se podrías agregar la duración 
+#         duration=video_upload.get("duration", 0),
+#         artist_profile_id=artist_profile.id
+#     )
+#     db.session.add(new_video)
+#     db.session.commit()
+
+#     return jsonify({"vid": video_upload["url"], "video_id": new_video.id}), 200

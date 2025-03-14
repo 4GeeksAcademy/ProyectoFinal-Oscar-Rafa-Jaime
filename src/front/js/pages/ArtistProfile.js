@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 // Importa los componentes para cada pestaña
@@ -6,12 +6,17 @@ import ArtistBio from "./ArtistBio";
 import ArtistImages from "./ArtistImages";
 import ArtistVideos from "./ArtistVideos";
 import ArtistMusic from "./ArtistMusic";
+import { Context } from "../store/appContext";
+
 
 const ArtistProfile = () => {
     // Extraemos el id del artista de la URL
     const { artistId } = useParams();
     const navigate = useNavigate();
 
+    const {store}=useContext(Context)
+    
+    
     const [artistData, setArtistData] = useState(null);
     const [activeTab, setActiveTab] = useState("bio"); // Pestaña activa: biografía por defecto
     const [loading, setLoading] = useState(true);

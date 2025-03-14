@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import "../../styles/login.css";
 import microphone from "../../img/microphone.jpg";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { Context } from "../store/appContext";
 
 export const Login = () => {
   // Estados para controlar qué formulario se muestra
@@ -9,6 +11,8 @@ export const Login = () => {
   const [showRegister, setShowRegister] = useState(false);
   const [showForgoten, setShowForgoten] = useState(false);
   const navigate = useNavigate()
+  const {actions}=useContext(Context)
+
 
   //Estado para almacenar datos del formulario de registro
 
@@ -103,10 +107,11 @@ export const Login = () => {
 
       // Redirigir a la URL proporcionada en la respuesta del servidor
 
-
+      console.log(data)
       // Guardar token y datos del usuario
       localStorage.setItem("Token", data.access_token);
       localStorage.setItem("user", JSON.stringify(data.user));
+      actions.setUser(data.user)
       if (data.redirect_url) {
         navigate(data.redirect_url)
 

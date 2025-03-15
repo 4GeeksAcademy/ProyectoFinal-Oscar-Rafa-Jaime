@@ -49,6 +49,20 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.error("Error guardando canción:", error);
 				}
 			},
+			/////////////////////////////////////////////////////////////////////////////
+			setUser: (user) =>{
+				setStore({user:user})
+			},
+			getUser:() =>{
+				const store = getStore();
+				return store.user;
+			},
+
+
+
+
+
+			/////////////////////////////////////////////////////////////////////////////
 
 			// DELETE USER SAVED SONGS
 			removeSavedSong: async (songId) => {

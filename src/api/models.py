@@ -25,16 +25,11 @@ class User(db.Model):
     def __repr__(self):
         return f'<User {self.username}>'
 
-    def artist(self):
-        if self.is_artist:
-            return "Si"
-        else:
-            return "No"
 
     def serialize(self):
         return {
             "id": self.id,
-            "full_name": self.fullName,
+            "fullName": self.fullName,
             "username": self.username,
             "email": self.email,
             "address":self.address,

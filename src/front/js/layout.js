@@ -50,12 +50,12 @@ const LayoutContent = () => {
                 <Route element={<Login />} path="/" />
                 <Route element={<Demo />} path="/demo" />
                 <Route element={<Single />} path="/single/:theid" />
-                <Route element={<HomeUser />} path="/homeuser" />
-                <Route element={<UserProfile />} path="/userProfile" />  {/* ✅ nueva */}
-                <Route element={<SavedSongs />} path="/savedSongs" />  {/* ✅ nueva */}
-                <Route element={<SavedArtists />} path="/savedArtists" />  {/* ✅ nueva */}
-                <Route element={<ArtistProfile />} path="/artist/:artistId" /> {/* ultima */}
-                <Route element={<UserData />} path="/userData" />
+                <Route element={<HomeUser />} path="/homeuser/:id" />
+                <Route element={<UserProfile />} path="/userProfile/:id" />  {/* ✅ nueva */}
+                <Route element={<SavedSongs />} path="/savedSongs/:id" />  {/* ✅ nueva */}
+                <Route element={<SavedArtists />} path="/savedArtists/:id" />  {/* ✅ nueva */}
+                <Route element={<ArtistProfile />} path="/artist/:id" /> {/* ultima */}
+                <Route element={<UserData />} path="/userData/:id"/>
                 <Route element={<ArtistData />} path="/artistData" />
                 <Route element={<h1>Not found!</h1>} />
             </Routes>

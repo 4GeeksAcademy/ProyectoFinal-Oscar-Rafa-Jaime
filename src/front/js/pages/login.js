@@ -144,7 +144,7 @@ export const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("https://ideal-space-bassoon-jjqqvvv4q5g4hqpjr-3001.app.github.dev/api/login", {
+      const response = await fetch("", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),

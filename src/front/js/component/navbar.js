@@ -21,7 +21,11 @@ export const Navbar = () => {
     return (
         <nav className="navbar">
             <div className="container">
+<<<<<<< HEAD
+                <Link to="/homeuser"  className="navbar-brand">SoundCript</Link>
+=======
                 <Link to="/" className="navbar-brand">SoundCript</Link>
+>>>>>>> origin/main
 
                 {/* Icono de usuario (imagen por defecto) */}
                 <div className="user-menu">

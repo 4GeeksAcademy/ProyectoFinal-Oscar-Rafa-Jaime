@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+<<<<<<< HEAD
+=======
 
 // Importa los componentes para cada pestaña
+>>>>>>> origin/main
 import ArtistBio from "./ArtistBio";
 import ArtistImages from "./ArtistImages";
 import ArtistVideos from "./ArtistVideos";
@@ -16,6 +19,11 @@ const ArtistProfile = () => {
     const [activeTab, setActiveTab] = useState("bio"); // Pestaña activa: biografía por defecto
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
+
+    // Obtenemos los datos del usuario logeado desde localStorage (suponiendo que lo guardaste al hacer login)
+    const loggedUser = JSON.parse(localStorage.getItem("user") || "null");
+    const isOwnProfile = loggedUser && Number(loggedUser.id) === Number(artistId);
 
     // Obtenemos los datos del usuario logeado desde localStorage (suponiendo que lo guardaste al hacer login)
     const loggedUser = JSON.parse(localStorage.getItem("user") || "null");
@@ -63,7 +71,11 @@ const ArtistProfile = () => {
             <div className="artist-header">
                 <div className="artist-img-container">
                     <img
+<<<<<<< HEAD
+                        src={artistData.profilePicture || "https://placehold.co/150"}
+=======
                         src={artistData.profilePicture || "https://via.placeholder.com/150"}
+>>>>>>> origin/main
                         alt="Artist Profile"
                         className="artist-profile-picture"
                     />
@@ -112,7 +124,11 @@ const ArtistProfile = () => {
                 </button>
             </div>
 
+<<<<<<< HEAD
+            {/* Contenido segun la pestaña activa */}
+=======
             {/* Contenido según la pestaña activa */}
+>>>>>>> origin/main
             <div className="artist-content">
                 {activeTab === "bio" && <ArtistBio artistData={artistData} />}
                 {activeTab === "images" && <ArtistImages artistData={artistData} />}

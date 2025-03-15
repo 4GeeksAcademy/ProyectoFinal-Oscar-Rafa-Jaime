@@ -23,6 +23,7 @@ flask-extended = "*"
 requests = "*"
 flask-jwt-extended = "*"
 pyjwt = "==2.9.0"
+cors = "*"
 
 [requires]
 python_version = "3.10"

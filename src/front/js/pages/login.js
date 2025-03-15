@@ -21,7 +21,7 @@ export const Login = () => {
     address: "",
     password: "",
     confirmPassword: "",
-    profilePhoto: "",
+    profile_photo: "",
     isArtist: false,
   });
 
@@ -80,7 +80,7 @@ export const Login = () => {
       // ✅ Guardar la URL en el estado del formulario
       setFormulario((prevForm) => ({
         ...prevForm,
-        profilePhoto: data.img, // Asegúrate de que el campo coincida con el backend
+        profile_photo: data.img, // Asegúrate de que el campo coincida con el backend
       }));
   
     } catch (error) {
@@ -105,7 +105,7 @@ export const Login = () => {
 
     console.log("Formulario antes de enviar:", formulario);  // 🛠️ Depuración
 
-    if (!formulario.profilePhoto) {
+    if (!formulario.profile_photo) {
       alert("Por favor, sube una imagen antes de registrarte.");
       return;
     }
@@ -116,7 +116,7 @@ export const Login = () => {
         isArtist: formulario.isArtist || false,
       };
 
-      const registerResponse = await fetch("https://ideal-space-bassoon-jjqqvvv4q5g4hqpjr-3001.app.github.dev/api/register", {
+      const registerResponse = await fetch(`${process.env.BACKEND_URL}/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dataToSend),
@@ -144,7 +144,7 @@ export const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("", {
+      const response = await fetch(`${process.env.BACKEND_URL}api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),

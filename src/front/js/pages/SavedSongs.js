@@ -1,26 +1,16 @@
-import React, { useContext } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Context } from "../store/appContext";
 import "../../styles/userProfile.css";
-import { Context } from "../store/appContext";
 
 export const SavedSongs = () => {
- 
-    const { store, actions } = useContext(Context);
+    const [songs, setSongs] = useState([
+        { id: 1, title: "Song 1", artist: "Artist A" },
+        { id: 2, title: "Song 2", artist: "Artist B" }
+    ]);
 
-    const removeSong = (userId, songId) => {
-        actions.removeSavedSong(userId, songId);
+    const removeSong = (id) => {
+        setSongs(songs.filter(song => song.id !== id));
     };
-
-    // const [songs, setSongs] = useState([
-    //     { id: 1, title: "Song 1", artist: "Artist A" },
-    //     { id: 2, title: "Song 2", artist: "Artist B" }
-    // ]);
-
-    // const removeSong = (id) => {
-    //     setSongs(songs.filter(song => song.id !== id));
-    // };
-
 
     return (
         <div className="profile-container">
@@ -29,12 +19,12 @@ export const SavedSongs = () => {
                 <Link to="/savedSongs" className="option-button active">🎵 Canciones Guardadas</Link>
                 <Link to="/savedArtists" className="option-button">🎤 Artistas Seguidos</Link>
             </div>
-            {store?.savedSongs?.length === 0 ? <p>No tienes canciones guardadas.</p> : (
+            {songs.length === 0 ? <p>No tienes canciones guardadas.</p> : (
                 <ul>
-                    {store?.savedSongs?.map(song => (
+                    {songs.map(song => (
                         <li key={song.id}>
-                            {song.title} - {artist.artist_name}
-                            <button onClick={() => removeSong(userId, song.id)}>❌</button>
+                            {song.title} - {song.artist}
+                            <button onClick={() => removeSong(song.id)}>❌</button>
                         </li>
                     ))}
                 </ul>

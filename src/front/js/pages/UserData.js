@@ -26,7 +26,7 @@ export const UserData = () => {
         setEmail(store.user.email);
         setPassword(store.user.password);
         setIsArtist(store.user.is_artist);
-        setProfilePhoto(store.user.profilePhoto);
+        setProfilePhoto(store.user.profile_photo);
     }, [store.user]);
 
     const clickEditData = () => {

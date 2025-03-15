@@ -410,7 +410,7 @@ def unfollow_artist(artist_profile_id):
 def get_artist_profile(artist_profile_id):
     current_user = get_jwt_identity()
 
-    artist_profile = ArtistProfile.query.filter(ArtistProfile.artist_id == current_user, ArtistProfile.id == artist_profile_id).first()
+    artist_profile = ArtistProfile.query.filter_by(ArtistProfile.artist_id == current_user, ArtistProfile.id == artist_profile_id).first()
 
     if not artist_profile:
         return jsonify({"msg": "Perfil de artista no encontrado"}), 404

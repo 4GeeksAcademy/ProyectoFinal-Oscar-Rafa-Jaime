@@ -1,15 +1,9 @@
-/*
-    home.css: This website contains selectors only used in home.css
-
-    All pages share the styles on index.css but you should create 
-    one more css for each page that will contain the selected used 
-    on that page only (the ones not reused in other pages).
-*/
-
+/* src/front/styles/home.css */
 body {
-    background: url(../img/microphone.jpg);
+    background: url("../img/microphone.jpg") no-repeat center center;
     background-size: cover;
-    background-repeat: no-repeat;
     margin: 0;
     height: 100vh;
-  }
+    font-family: Arial, sans-serif;
+    color: var(--color-white);
+}

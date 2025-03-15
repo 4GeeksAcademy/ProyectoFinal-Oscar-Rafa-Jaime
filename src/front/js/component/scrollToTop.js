@@ -1,20 +1,18 @@
+// src/front/js/component/scrollToTop.js
 import React from "react";
 import PropTypes from "prop-types";
+import { useLocation } from "react-router-dom";
 
-class ScrollToTop extends React.Component {
-	componentDidUpdate(prevProps) {
-		if (this.props.location !== prevProps.location) {
-			window.scrollTo(0, 0);
-		}
-	}
+const ScrollToTop = ({ children }) => {
+  const location = useLocation();
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+  return children;
+};
 
-	render() {
-		return this.props.children;
-	}
-}
+ScrollToTop.propTypes = {
+  children: PropTypes.any
+};
 
 export default ScrollToTop;
-ScrollToTop.propTypes = {
-	location: PropTypes.object,
-	children: PropTypes.any
-};

@@ -1,25 +1,49 @@
+/* src/front/styles/data.css */
 body {
-    background-color: #0C121C; /* Color oscuro de fondo */
-    color: #0C121C;; /* Texto en blanco para mejor visibilidad */
-    font-family: Arial, sans-serif; /* Fuente legible */
+    background-color: var(--color-black);
+    color: var(--color-white);
+    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
 }
 
-.card{
-    background-color:rgba(163, 40, 163, 0.5); /* 50% de opacidad */
-    
+.card {
+    background-color: rgba(163, 40, 163, 0.5);
+    /* Mauveine translúcido */
+    border-radius: 10px;
+    margin-bottom: 20px;
 }
 
-/*.boton{
-    background: linear-gradient(135deg, #b80000, #ff4e2a, #ff6733, #ff7e3c, #ff914d);
+.boton {
+    background: linear-gradient(135deg,
+            var(--color-red),
+            var(--color-giants-orange),
+            var(--color-atomic-tangerine));
+    color: var(--color-white);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
 }
 
-.boton:hover{
-    background: linear-gradient(135deg, 
-    rgba(184, 0, 0, 0.75), 
-    rgba(255, 78, 42, 0.75), 
-    rgba(255, 103, 51, 0.75), 
-    rgba(255, 126, 60, 0.75), 
-    rgba(255, 145, 77, 0.75));
-}*/
+.boton:hover {
+    background: linear-gradient(135deg,
+            rgba(184, 0, 0, 0.75),
+            rgba(255, 78, 42, 0.75),
+            rgba(255, 103, 51, 0.75));
+}
+
+.form-control-lg {
+    background-color: var(--color-white);
+    color: var(--color-black);
+}
+
+.btn-danger {
+    background-color: var(--color-red);
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: var(--color-giants-orange);
+}

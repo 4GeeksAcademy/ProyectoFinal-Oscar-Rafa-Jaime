@@ -1,39 +1,83 @@
-// navbar
 import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
-import "../../styles/navbar.css";
+import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
+import "../../styles/navbar.css";
 
 export const Navbar = () => {
-    const [menuOpen, setMenuOpen] = useState(false);
+  const { store, actions } = useContext(Context);
+  const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
-    const toggleMenu = () => {
-        setMenuOpen(!menuOpen);
-    };
-    const { store } = useContext(Context)
-    console.log(store)
-    return (
-        <nav className="navbar">
-            <div className="container">
-                <Link to="/homeuser" className="navbar-brand">SoundCript</Link>
+  const toggleMenu = () => setMenuOpen(!menuOpen);
 
-                {/* Icono de usuario (imagen por defecto) */}
-                <div className="user-menu">
-                    <div className="user-icon" onClick={toggleMenu}>
-                        <img src="https://cdn-icons-png.flaticon.com/512/3106/3106921.png" alt="Perfil de Usuario" />
-                    </div>
+  const handleLogout = () => {
+    localStorage.removeItem("Token");
+    localStorage.removeItem("user");
+    actions.setUser(null);
+    navigate("/");
+  };
 
-                    {/* Menú desplegable */}
-                    <div className={`dropdown-menu ${menuOpen ? "show" : ""}`}>
-                        <Link to="/userProfile" className="dropdown-item" onClick={() => setMenuOpen(false)}>Perfil</Link>
-                        {store.user.artist && (
-                            <Link to={`/artist/${store.user.id}`} className="dropdown-item" onClick={() => setMenuOpen(false)}>PerfilArtista</Link>
-                        )}
-                        <Link to="/userdata" className="dropdown-item" onClick={() => setMenuOpen(false)}>Datos</Link>
-                        <Link to="/" className="dropdown-item" onClick={() => setMenuOpen(false)}>Logout</Link>
-                    </div>
-                </div>
-            </div>
-        </nav>
-    );
+  return (
+    <nav className="navbar">
+      <div className="container">
+        <Link to="/homeuser/123" className="navbar-brand">
+          SoundCript
+        </Link>
+        <div className="user-menu">
+          <div className="user-icon" onClick={toggleMenu}>
+            <img
+              src={
+                store.user && store.user.profile_photo
+                  ? store.user.profile_photo
+                  : "https://cdn-icons-png.flaticon.com/512/3106/3106921.png"
+              }
+              alt="Perfil de Usuario"
+            />
+          </div>
+          <div className={`dropdown-menu ${menuOpen ? "show" : ""}`}>
+            {store.user && store.user.is_artist ? (
+              <>
+                {/* Link para ir al perfil artista */}
+                <Link
+                  to={`/artist/${store.user.id}`}
+                  className="dropdown-item"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Perfil Artista
+                </Link>
+              </>
+            ) : (
+              <>
+                {/* Link para ir al perfil usuario */}
+                <Link
+                  to={`/userProfile/${store.user?.id}`}
+                  className="dropdown-item"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Perfil
+                </Link>
+              </>
+            )}
+            {/* Opción DATOS (para ambos) */}
+            <Link
+              to="/userdata"
+              className="dropdown-item"
+              onClick={() => setMenuOpen(false)}
+            >
+              Datos
+            </Link>
+            <button
+              className="dropdown-item"
+              onClick={() => {
+                setMenuOpen(false);
+                handleLogout();
+              }}
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
 };

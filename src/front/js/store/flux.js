@@ -1,89 +1,72 @@
+// src/front/js/store/flux.js
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-			user:null,
+			user: null,
 			message: null,
 			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
+				{ title: "FIRST", background: "white", initial: "white" },
+				{ title: "SECOND", background: "white", initial: "white" }
+			],
+			genres: [] // Se cargarán desde el endpoint /api/getGenres
 		},
-		genres: [],
-
 		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
+			setUser: (user) => {
+				setStore({ user: user });
 			},
 
-			getMessage: async () => {
-				try {
-					// fetching data from the backend
-					const resp = await fetch(process.env.BACKEND_URL + "api/hello")
-					const data = await resp.json()
-					setStore({ message: data.message })
-					// don't forget to return something, that is how the async resolves
-					return data;
-				} catch (error) {
-					console.log("Error loading message from backend", error)
-				}
-			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
-
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
-
-				//reset the global store
-				setStore({ demo: demo });
-			},
-			/////////////////////////////////////////////////////////////////////////////
-			setUser: (user) =>{
-				setStore({user:user})
-			},
-			getUser:() =>{
-				const store = getStore();
-				return store.user;
-			},
-
-
-
-
-
-			/////////////////////////////////////////////////////////////////////////////
-
-			// Load all genres & artists for User Home view
 			loadGenres: async () => {
 				try {
-					const options = {
-						method: 'GET', headers: {
-							"Content-Type": "application/json",
-						},
-					};
-					const response = await fetch(`${process.env.BACKEND_URL}/api/getGenres`, options)
-					if (!response.ok) {
-						console.error("Fetch error loadGenres")
-					}
-					const data = await response.json()
-					setStore({ genres: data["genres"] })
-				}
-				catch (error) {
-					console.error("Failed to get loadGenres")
+					const resp = await fetch(
+						`${process.env.BACKEND_URL}/api/getGenres`
+					);
+					if (!resp.ok) throw new Error("Error en loadGenres");
+					const data = await resp.json();
+					setStore({ genres: data.genres });
+				} catch (error) {
+					console.error("Failed to load genres", error);
 				}
 			},
+			followArtist: async (artistId) => {
+				try {
+					const token = localStorage.getItem("Token");
+					const resp = await fetch(
+						`${process.env.BACKEND_URL}/api/profile/followed/artist/${artistId}`,
+						{
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json",
+								Authorization: `Bearer ${token}`
+							}
+						}
+					);
+					if (!resp.ok) throw new Error("Error al seguir artista");
+					// Actualiza el store si es necesario
+				} catch (error) {
+					console.error("Error following artist", error);
+				}
+			},
+			saveSong: async (songId) => {
+				try {
+					const token = localStorage.getItem("Token");
+					const resp = await fetch(
+						`${process.env.BACKEND_URL}/api/profile/favourite/songs`,
+						{
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json",
+								Authorization: `Bearer ${token}`
+							},
+							body: JSON.stringify({ songId })
+						}
+					);
+					if (!resp.ok) throw new Error("Error al guardar canción");
+					// Actualiza el store si es necesario
+				} catch (error) {
+					console.error("Error saving song", error);
+				}
+			}
+			// Puedes agregar más acciones según sea necesario
 		}
 	};
 };

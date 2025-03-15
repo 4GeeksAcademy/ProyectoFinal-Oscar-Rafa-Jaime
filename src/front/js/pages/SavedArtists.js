@@ -1,35 +1,96 @@
-import React, { useState } from "react";
+// src/front/js/pages/Users/SavedArtists.js
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import "../../styles/userProfile.css";
+import { Context } from "../../store/appContext";
 
 export const SavedArtists = () => {
-    const [artists, setArtists] = useState([
-        { id: 1, name: "Artist A", image: "https://via.placeholder.com/50" },
-        { id: 2, name: "Artist B", image: "https://via.placeholder.com/50" }
-    ]);
+  const { store } = useContext(Context);
+  const [followedArtists, setFollowedArtists] = useState([]);
 
-    const removeArtist = (id) => {
-        setArtists(artists.filter(artist => artist.id !== id));
+  useEffect(() => {
+    const fetchFollowedArtists = async () => {
+      try {
+        const token = localStorage.getItem("Token");
+        const response = await fetch(
+          `${process.env.BACKEND_URL}/api/profile/followed/artist`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+        if (!response.ok)
+          throw new Error("Error al obtener artistas seguidos");
+        const data = await response.json();
+        setFollowedArtists(data.followed_artists || []);
+      } catch (error) {
+        console.error(error);
+      }
     };
 
-    return (
-        <div className="profile-container">
-            <h2>🎤 Artistas Seguidos</h2>
-            <div className="options">
-                <Link to="/savedSongs" className="option-button">🎵 Canciones Guardadas</Link>
-                <Link to="/savedArtists" className="option-button active">🎤 Artistas Seguidos</Link>
-            </div>
-            {artists.length === 0 ? <p>No sigues a ningún artista.</p> : (
-                <ul>
-                    {artists.map(artist => (
-                        <li key={artist.id}>
-                            <img src={artist.image} alt={artist.name} />
-                            {artist.name}
-                            <button onClick={() => removeArtist(artist.id)}>❌</button>
-                        </li>
-                    ))}
-                </ul>
-            )}
-        </div>
-    );
+    fetchFollowedArtists();
+  }, []);
+
+  const removeArtist = async (artist_profile_id) => {
+    try {
+      const token = localStorage.getItem("Token");
+      const response = await fetch(
+        `${process.env.BACKEND_URL}/api/profile/followed/artist/${artist_profile_id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      if (!response.ok)
+        throw new Error("Error al dejar de seguir al artista");
+      setFollowedArtists(
+        followedArtists.filter(
+          (artist) => artist.artist_profile_id !== artist_profile_id
+        )
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <div className="profile-container">
+      <h2>🎤 Artistas Seguidos</h2>
+      <div className="options">
+        <Link to="/savedSongs/0" className="option-button">
+          🎵 Canciones Guardadas
+        </Link>
+        <Link to="/savedArtists/0" className="option-button active">
+          🎤 Artistas Seguidos
+        </Link>
+      </div>
+      {followedArtists.length === 0 ? (
+        <p>No sigues a ningún artista.</p>
+      ) : (
+        <ul>
+          {followedArtists.map((artist) => (
+            <li key={artist.artist_profile_id}>
+              <img
+                src={
+                  artist.artist_image ||
+                  "https://via.placeholder.com/50"
+                }
+                alt={artist.artist_name}
+              />
+              {artist.artist_name}
+              <button onClick={() => removeArtist(artist.artist_profile_id)}>
+                ❌
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 };
+
+export default SavedArtists;

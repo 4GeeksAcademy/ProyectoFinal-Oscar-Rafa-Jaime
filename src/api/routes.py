@@ -31,15 +31,6 @@ cloudinary.config(
     secure= True
 )
 
-@api.route('/hello', methods=['POST', 'GET'])
-def handle_hello():
-
-    response_body = {
-        "message": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
-    }
-
-    return jsonify(response_body), 200
-
 @api.route('/img', methods=["POST"])
 def upload_image():
     img = request.files["img"]
@@ -67,6 +58,7 @@ def register():
     email = request.json.get('email', None)
     password = request.json.get('password', None)
     is_artist = request.json.get(True,None)
+    profile_photo = request.json.get('profile_photo',None)
 
     if not fullName or not username or not email or not password:
         return jsonify({"msg": "Missing required fields"}), 400
@@ -80,7 +72,7 @@ def register():
         return jsonify({"msg": "Username already exists"}), 400
     
 
-    user = User(fullName=fullName, username=username, address=address, email=email, is_artist=is_artist, is_active=True)
+    user = User(fullName=fullName, username=username, address=address, email=email, is_artist=is_artist, is_active=True, profile_photo=profile_photo)
     user.set_password(password)
 
     db.session.add(user)
@@ -102,6 +94,7 @@ def generate_token():
     
     # Crear el token de acceso
     access_token = create_access_token(identity=user)
+
 
     # Redirigir dependiendo de si es artista o no
     if user.is_artist:
@@ -141,9 +134,6 @@ def getGenresApi():
 def getGenres():
     genres = Genre.query.filter(Genre.id != 0).all()
     return jsonify({"genres": [genre.serialize() for genre in genres]}), 200
-
-
-
 
 
  # GET: Obtener videos
@@ -365,22 +355,22 @@ def get_artist_profile(artist_id):
 
 @api.route('/artist/<int:artist_id>/images', methods=["POST"])
 def create_artist_image(artist_id):
-    # Busca el perfil del artista
+    # Buscar el perfil del artista
     artist = ArtistProfile.query.get(artist_id)
     if not artist:
         return jsonify({"msg": "Artista no encontrado"}), 404
 
-    # Verifica que se haya enviado un archivo con la llave "img"
+    # Verificar que se haya enviado un archivo con la llave "img"
     if "img" not in request.files:
         return jsonify({"msg": "No se proporcionó un archivo de imagen"}), 400
 
     img = request.files["img"]
 
-    # Opción: se puede obtener un título opcional del formulario
+    # Opción: obtener un título opcional del formulario
     title = request.form.get("title", "Sin título")
 
     try:
-        # Sube la imagen a Cloudinary
+        # Subir la imagen a Cloudinary
         upload_result = cloudinary.uploader.upload(img)
     except Exception as e:
         return jsonify({"msg": "Error al subir la imagen", "error": str(e)}), 500
@@ -389,13 +379,21 @@ def create_artist_image(artist_id):
     if not media_url:
         return jsonify({"msg": "Error al obtener la URL de Cloudinary"}), 500
 
-    # Crea un nuevo registro en la tabla Photo
+    # Crear un nuevo registro en la tabla Photo
     new_photo = Photo(title=title, media_url=media_url, artist_profile_id=artist_id)
     db.session.add(new_photo)
     db.session.commit()
 
     return jsonify(new_photo.serialize()), 201
 
+@api.route('/artist/<int:artist_id>/images', methods=["GET"])
+def get_artist_images(artist_id):
+    artist = ArtistProfile.query.get(artist_id)
+    if not artist:
+        return jsonify({"msg": "Artista no encontrado"}), 404
+
+    photos = Photo.query.filter_by(artist_profile_id=artist_id).all()
+    return jsonify([photo.serialize() for photo in photos]), 200
 
 # @api.route('/vid', methods=["POST"])
 # @jwt_required()

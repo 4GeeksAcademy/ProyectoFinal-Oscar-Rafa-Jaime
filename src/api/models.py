@@ -16,7 +16,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(512), unique=False, nullable=False)
     is_artist = db.Column(db.Boolean, default=False)  # Check if account is artist
     is_active = db.Column(db.Boolean(), default=True)
-    profile_photo = db.Column(db.String(255), nullable=True)  # Profile photo URL
+    profile_photo = db.Column(db.String(512), nullable=True)  # Profile photo URL
 
     #  Relationships
     followed_artist = db.relationship('FollowArtist', backref='follow_artist')

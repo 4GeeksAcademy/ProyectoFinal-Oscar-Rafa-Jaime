@@ -8,7 +8,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 		actions: {
 			// GET, POST, DELETE SAVED SONGS
-			getSavedSongs: async (id) => {
+			getSavedSongs: async () => {
 				const store = getStore()
 				try {
 					const options = {
@@ -16,7 +16,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 							"Content-Type": "application/json",
 						},
 					};
-					const response = await fetch(`${process.env.BACKEND_URL}/api/profile/${id}`, options);
+					const response = await fetch(`${process.env.BACKEND_URL}/api/profile/favourites`, options);
 					if (!response.ok) throw new Error("Error al obtener canciones");
 
 					const data = await response.json();
@@ -28,14 +28,17 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 			// SAVE NEW SONG
-			saveSong: async (id, songId) => {
+			saveSong: async (songId) => {
 				const store = getStore()
-
+				const token = localStorage.getItem("token");
 				try {
-					const response = await fetch(`${process.env.BACKEND_URL}/api/profile/${id}/favourite/songs/${songId}`, {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/profile/favourite/songs`, {
 						method: "POST",
-						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify({}),
+						headers: {
+							"Content-Type": "application/json",
+							"Authorization": `Bearer ${token}`
+						},
+						body: JSON.stringify({ }),
 					});
 
 					if (!response.ok) throw new Error("Error al guardar canción");
@@ -48,10 +51,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 
 			// DELETE USER SAVED SONGS
-			removeSavedSong: async (id, songId) => {
+			removeSavedSong: async (songId) => {
 				const store = getStore()
 				try {
-					const response = await fetch(`${process.env.BACKEND_URL}/api/profile/${id}/favourite/songs/${songId}`, {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/profile/favourite/songs/${songId}`, {
 						method: "DELETE",
 					});
 

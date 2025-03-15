@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import useNavigate from "react";
+import {useNavigate} from "react-router-dom";
 import "../../styles/login.css";
 import microphone from "../../img/microphone.jpg";
 
@@ -63,7 +63,7 @@ export const Login = () => {
     console.log("Datos del formulario de registro:", dataToSend); // Verifica que los datos sean correctos antes de enviarlos
 
     try {
-      const response = await fetch("https://organic-space-bassoon-69449xwqxp9v35gqq-3001.app.github.dev/api/login", {
+      const response = await fetch("", {
         method: "POST",
         headers: { "Content-type": "application/json" },
         body: JSON.stringify(dataToSend),
@@ -87,7 +87,7 @@ export const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("https://organic-space-bassoon-69449xwqxp9v35gqq-3001.app.github.dev/api/login", {
+      const response = await fetch("", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),

@@ -1,3 +1,4 @@
+// src/front/js/pages/login.js
 import React, { useContext, useState } from "react";
 import "../../styles/login.css";
 import microphone from "../../img/microphone.jpg";
@@ -5,38 +6,37 @@ import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
-  // Estados para controlar qué formulario se muestra
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [showForgoten, setShowForgoten] = useState(false);
   const [file, setFile] = useState(null);
-  const {store, actions} = useContext(Context);
+  const { store, actions } = useContext(Context);
   const navigate = useNavigate();
-  //Estado para almacenar datos del formulario de registro
 
+  // Estado para registro
   const [formulario, setFormulario] = useState({
     fullName: "",
     username: "",
-    email: "",
     address: "",
+    email: "",
     password: "",
     confirmPassword: "",
-    profilePhoto: "",
+    profile_photo: "",
     isArtist: false,
+    bio: ""
   });
 
-  // Estados para manejar el login
+  // Estado para login
   const [loginData, setLoginData] = useState({
     username: "",
-    password: "",
+    password: ""
   });
 
-  // Manejar los cambios en los inputs del registro
   const handleChange = (e) => {
     if (e.target.type === "checkbox") {
       setFormulario({
         ...formulario,
-        [e.target.name]: e.target.checked, // Para checkbox, usamos checked
+        [e.target.name]: e.target.checked
       });
     } else {
       setFormulario({ ...formulario, [e.target.name]: e.target.value });
@@ -45,85 +45,61 @@ export const Login = () => {
 
   const handleImgChange = (e) => {
     if (e.target.files && e.target.files.length) {
-      console.log("Imagen seleccionada:", e.target.files[0]); // 🛠️ Depuración
       setFile(e.target.files[0]);
-
-      //Validar el tipo de archivo (por ejemplo imagen JPG o PNG)
-      if (selectedFile.type !== "image/jpeg" && selectedFile.type !== "image/jpg") {
-        alert("solo se permite archivos JPG y PNG");
-        return;
-      }
-      setFile(selectedFile);
     }
   };
+
   const sendFile = async () => {
     if (!file) {
-      alert("El campo de imagen es obligatorio");
+      alert("Selecciona una imagen.");
       return;
     }
     try {
-      const form = new FormData();
-      form.append("img", file);
-  
-      const response = await fetch(`${process.env.BACKEND_URL}/api/img`, {
-        method: "POST",
-        body: form,
-      });
-  
-      if (!response.ok) {
-        throw new Error("Error al subir la imagen");
-      }
-  
+      const formData = new FormData();
+      formData.append("img", file);
+      const response = await fetch(
+        `${process.env.BACKEND_URL}/api/img`,
+        {
+          method: "POST",
+          body: formData
+        }
+      );
+      if (!response.ok) throw new Error("Error al subir la imagen");
       const data = await response.json();
-      console.log("URL de la imagen recibida:", data.img);
-  
-      // ✅ Guardar la URL en el estado del formulario
       setFormulario((prevForm) => ({
         ...prevForm,
-        profilePhoto: data.img, // Asegúrate de que el campo coincida con el backend
+        profile_photo: data.img
       }));
-  
     } catch (error) {
       console.error("Error al subir la imagen:", error);
     }
   };
-  
-
-  // Manejar cambios en  los inpusts del login
-  const handleLoginChange = (e) => {
-    console.log("cambiar campos: ", e.target.name, "Nuevo valor:", e.target.value);
-    setLoginData({ ...loginData, [e.target.name]: e.target.value });
-  };
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
     if (formulario.password !== formulario.confirmPassword) {
       alert("Las contraseñas no coinciden");
       return;
     }
-
-    console.log("Formulario antes de enviar:", formulario);  // 🛠️ Depuración
-
-    if (!formulario.profilePhoto) {
-      alert("Por favor, sube una imagen antes de registrarte.");
+    if (!formulario.profile_photo) {
+      alert("Sube una imagen para tu perfil.");
       return;
     }
-
     try {
       const dataToSend = {
         ...formulario,
-        isArtist: formulario.isArtist || false,
+        is_artist: formulario.isArtist || false
       };
 
-      const registerResponse = await fetch("https://ideal-space-bassoon-jjqqvvv4q5g4hqpjr-3001.app.github.dev/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dataToSend),
-      });
-
+      const registerResponse = await fetch(
+        `${process.env.BACKEND_URL}/api/register`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(dataToSend)
+        }
+      );
       const registerData = await registerResponse.json();
-
       if (registerResponse.ok) {
         alert("Usuario registrado con éxito");
         setShowLogin(true);
@@ -138,48 +114,36 @@ export const Login = () => {
     }
   };
 
-
-
-  // Enviar formulario de inicio de sesión
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(loginData),
-      });
-
+      const response = await fetch(`${process.env.BACKEND_URL}/api/login`,{
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(loginData)
+        }
+      );
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Error en el inicio de sesión");
       }
-
       const data = await response.json();
-      console.log("Respuesta del servidor:", data);
-      console.log(data.user);
+      localStorage.setItem("Token", data.access_token);
+      localStorage.setItem("user", JSON.stringify(data.user));
       actions.setUser(data.user);
-      // Redirigir a la URL proporcionada en la respuesta del servidor
-      if (data.user) {
-        actions.setUser(data.user); // Guardar usuario en el estado global
-        localStorage.setItem("user", JSON.stringify(data.user)); // Persistencia
-    }
-
-    if (data.redirect_url) {
-        navigate(data.redirect_url); // Redirige sin perder el estado
-    }
-
-      // Guardar token y datos del usuario
-      // localStorage.setItem("Token", data.access_token);
-      // localStorage.setItem("user", JSON.stringify(data.user));
-     
-
+      if (data.redirect_url) {
+        navigate(data.redirect_url);
+      }
     } catch (error) {
       console.error("Error al hacer fetch:", error);
       alert(error.message || "Error en el servidor");
     }
   };
 
+  const handlePasswordReset = (e) => {
+    e.preventDefault();
+    alert("Funcionalidad de recuperación no implementada");
+  };
 
   return (
     <div
@@ -197,7 +161,6 @@ export const Login = () => {
         className="login-container p-4 shadow-lg rounded-3 w-100"
         style={{ maxWidth: "400px", background: "rgba(255, 255, 255, 0.8)" }}
       >
-        {/* Pantalla inicial con los botones */}
         {!showLogin && !showRegister && !showForgoten && (
           <div>
             <h2 className="text-center mb-4">Bienvenido</h2>
@@ -211,7 +174,6 @@ export const Login = () => {
             >
               Iniciar sesión
             </button>
-
             <button
               className="btn btn-secondary w-100"
               onClick={() => {
@@ -225,7 +187,6 @@ export const Login = () => {
           </div>
         )}
 
-        {/* Formulario de inicio de sesión */}
         {showLogin && !showForgoten && (
           <form onSubmit={handleLogin}>
             <h2 className="text-center mb-4">Iniciar sesión</h2>
@@ -236,7 +197,9 @@ export const Login = () => {
                 placeholder="Nombre de usuario"
                 name="username"
                 value={loginData.username}
-                onChange={handleLoginChange}
+                onChange={(e) =>
+                  setLoginData({ ...loginData, username: e.target.value })
+                }
                 required
               />
             </div>
@@ -247,7 +210,9 @@ export const Login = () => {
                 placeholder="Contraseña"
                 name="password"
                 value={loginData.password}
-                onChange={handleLoginChange}
+                onChange={(e) =>
+                  setLoginData({ ...loginData, password: e.target.value })
+                }
                 required
               />
             </div>
@@ -255,7 +220,11 @@ export const Login = () => {
               Ingresar
             </button>
             <div className="text-center mt-2">
-              <a href="#" className="text-decoration-none" onClick={() => setShowForgoten(true)}>
+              <a
+                href="#"
+                className="text-decoration-none"
+                onClick={() => setShowForgoten(true)}
+              >
                 ¿He olvidado mi contraseña?
               </a>
               <button
@@ -273,7 +242,6 @@ export const Login = () => {
           </form>
         )}
 
-        {/* Formulario de registro */}
         {showRegister && (
           <form onSubmit={handleRegister}>
             <h2 className="text-center mb-4">Registro</h2>
@@ -357,10 +325,12 @@ export const Login = () => {
               <input
                 type="file"
                 className="form-control mb-2"
-                accept="image/jpeg"
+                accept="image/jpeg, image/png"
                 onChange={handleImgChange}
               />
-              <button type="button" onClick={sendFile}>Subir Imagen</button>
+              <button type="button" onClick={sendFile}>
+                Subir Imagen
+              </button>
             </div>
             <button type="submit" className="btn btn-success w-100 py-2">
               Registrarse
@@ -375,7 +345,6 @@ export const Login = () => {
           </form>
         )}
 
-        {/* Formulario de recuperar contraseña */}
         {showForgoten && (
           <form onSubmit={handlePasswordReset}>
             <h2 className="text-center mb-4">¿He olvidado mi contraseña?</h2>
@@ -411,4 +380,4 @@ export const Login = () => {
       </div>
     </div>
   );
-}
+};

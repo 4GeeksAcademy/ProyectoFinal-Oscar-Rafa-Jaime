@@ -1,7 +1,9 @@
+/* src/front/styles/homeUser.css */
 .genretitle {
     display: flex;
     justify-content: start;
     color: var(--color-mauveine);
+    margin-top: 20px;
 }
 
 .artists {
@@ -12,7 +14,7 @@
     gap: 16px;
     padding: 10px;
     scrollbar-width: thin;
-    scrollbar-color: var(--color-mauveine) #f0f0f0;
+    scrollbar-color: var(--color-mauveine) var(--color-white);
 }
 
 .artists::-webkit-scrollbar {
@@ -25,8 +27,9 @@
 }
 
 .artistcard {
-    width: 20%;
-    background-color: rgba(97, 235, 97, 0.641);
+    width: 200px;
+    background-color: rgba(97, 235, 97, 0.1);
+    /* Un verde translúcido */
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 16px;
@@ -34,12 +37,25 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.followbtn {
+.artistcard:hover {
+    transform: scale(1.02);
+}
+
+.artistcard .card {
     background-color: transparent;
+    border: none;
+}
+
+.artistcard .card-img-top {
+    border-radius: 50%;
+}
+
+.btn-outline-purple {
     color: var(--color-mauveine);
+    background-color: transparent;
     border: 2px solid var(--color-mauveine);
-    padding: 10px 20px;
-    font-size: 16px;
+    padding: 8px 16px;
+    font-size: 14px;
     border-radius: 5px;
     transition: all 0.3s ease-in-out;
     cursor: pointer;
@@ -47,6 +63,5 @@
 
 .btn-outline-purple:hover {
     background-color: var(--color-mauveine);
-    color: white;
+    color: var(--color-white);
 }
-

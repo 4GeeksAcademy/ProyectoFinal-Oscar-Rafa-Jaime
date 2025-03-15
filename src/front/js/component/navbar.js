@@ -1,47 +1,83 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import "../../styles/navbar.css";
+import React, { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
-import { useNavigate } from "react-router-dom"
+import "../../styles/navbar.css";
 
 export const Navbar = () => {
-    const [menuOpen, setMenuOpen] = useState(false);
-    const [profileImage, setProfileImage] = useState("");
-    const {store, actions} = useContext(Context);
+  const { store, actions } = useContext(Context);
+  const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
-    useEffect(() => {
-        console.log(store.user)
-        setProfileImage(store.user.profilePhoto)
-    }, [store.user]);
+  const toggleMenu = () => setMenuOpen(!menuOpen);
 
-    const toggleMenu = () => {
-        setMenuOpen(!menuOpen);
-    };
+  const handleLogout = () => {
+    localStorage.removeItem("Token");
+    localStorage.removeItem("user");
+    actions.setUser(null);
+    navigate("/");
+  };
 
-    return (
-        <nav className="navbar">
-            <div className="container">
-<<<<<<< HEAD
-                <Link to="/homeuser"  className="navbar-brand">SoundCript</Link>
-=======
-                <Link to="/" className="navbar-brand">SoundCript</Link>
->>>>>>> origin/main
-
-                {/* Icono de usuario (imagen por defecto) */}
-                <div className="user-menu">
-                    <div className="user-icon" onClick={toggleMenu}>
-                        <img src={profileImage} alt="Perfil de Usuario" />
-                    </div>
-
-                    {/* Menú desplegable */}
-                    <div className={`dropdown-menu ${menuOpen ? "show" : ""}`}>
-                        <Link to="/userProfile" className="dropdown-item" onClick={() => setMenuOpen(false)}>Perfil</Link>
-                        <Link to={`/artist/${store.user.id}`} className="dropdown-item" onClick={() => setMenuOpen(false)}>PerfilArtista</Link>
-                        <Link to={`/userData/${store.user.id}`} className="dropdown-item" onClick={() => setMenuOpen(false)}>Datos</Link>
-                        <Link to="/" className="dropdown-item" onClick={() => setMenuOpen(false)}>Logout</Link>
-                    </div>
-                </div>
-            </div>
-        </nav>
-    );
+  return (
+    <nav className="navbar">
+      <div className="container">
+        <Link to="/homeuser/123" className="navbar-brand">
+          SoundCript
+        </Link>
+        <div className="user-menu">
+          <div className="user-icon" onClick={toggleMenu}>
+            <img
+              src={
+                store.user && store.user.profile_photo
+                  ? store.user.profile_photo
+                  : "https://cdn-icons-png.flaticon.com/512/3106/3106921.png"
+              }
+              alt="Perfil de Usuario"
+            />
+          </div>
+          <div className={`dropdown-menu ${menuOpen ? "show" : ""}`}>
+            {store.user && store.user.is_artist ? (
+              <>
+                {/* Link para ir al perfil artista */}
+                <Link
+                  to={`/artist/${store.user.id}`}
+                  className="dropdown-item"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Perfil Artista
+                </Link>
+              </>
+            ) : (
+              <>
+                {/* Link para ir al perfil usuario */}
+                <Link
+                  to={`/userProfile/${store.user?.id}`}
+                  className="dropdown-item"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Perfil
+                </Link>
+              </>
+            )}
+            {/* Opción DATOS (para ambos) */}
+            <Link
+              to="/userdata"
+              className="dropdown-item"
+              onClick={() => setMenuOpen(false)}
+            >
+              Datos
+            </Link>
+            <button
+              className="dropdown-item"
+              onClick={() => {
+                setMenuOpen(false);
+                handleLogout();
+              }}
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
 };

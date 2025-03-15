@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useContext } from 'react';
 import { Context } from "../store/appContext";
-import "../../styles/homeUser.css"
+import { Navbar } from "../component/navbar";
 
 export const HomeUser = () => {
 

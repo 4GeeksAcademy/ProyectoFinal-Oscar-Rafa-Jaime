@@ -1,3 +1,4 @@
+/* src/front/styles/userProfile.css */
 .profile-container {
     max-width: 600px;
     margin: auto;
@@ -9,7 +10,6 @@
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Botones de navegación */
 .options {
     display: flex;
     justify-content: center;
@@ -33,10 +33,8 @@
 
 .option-button.active {
     background: var(--color-black);
-    color: var(--color-white);
 }
 
-/* Lista de canciones y artistas */
 ul {
     list-style: none;
     padding: 0;
@@ -47,7 +45,6 @@ li {
     align-items: center;
     justify-content: space-between;
     padding: 10px;
-    border-bottom: 1px solid var(--color-black);
     background: var(--color-orange-crayola);
     border-radius: 5px;
     margin-bottom: 5px;

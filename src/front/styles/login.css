@@ -1,5 +1,29 @@
+/* src/front/styles/login.css */
 
+/* Contenedor principal de login/registro */
+.login-container {
+  background-color: rgba(255, 255, 255, 0.8);
+  max-width: 400px;
+  padding: 20px;
+  border-radius: 8px;
+}
 
-  /*.boton{
-    background: linear-gradient(135deg, #b80000, #ff4e2a, #ff6733, #ff7e3c, #ff914d);
-}*/
+.boton {
+  background: linear-gradient(135deg,
+      var(--color-red),
+      var(--color-giants-orange),
+      var(--color-atomic-tangerine));
+  color: var(--color-white);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.boton:hover {
+  background: linear-gradient(135deg,
+      rgba(184, 0, 0, 0.75),
+      rgba(255, 78, 42, 0.75),
+      rgba(255, 103, 51, 0.75));
+}

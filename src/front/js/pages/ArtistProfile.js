@@ -14,9 +14,9 @@ const ArtistProfile = () => {
     const { artistId } = useParams();
     const navigate = useNavigate();
 
-    const {store}=useContext(Context)
-    
-    
+    const { store } = useContext(Context)
+
+
     const [artistData, setArtistData] = useState(null);
     const [activeTab, setActiveTab] = useState("bio"); // Pestaña activa: biografía por defecto
     const [loading, setLoading] = useState(true);

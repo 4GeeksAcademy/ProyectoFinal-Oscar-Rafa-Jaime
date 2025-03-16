@@ -18,21 +18,33 @@ export const Videos = ({ data, isOwner }) => {
         }
         try {
             const formData = new FormData();
-            formData.append("video", file);
+            formData.append("file", file);
+            formData.append("upload_preset", "SoundCript")
+            const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.CLOUD_NAME}/video/upload`, {
+                method: "POST",
+                body: formData
+            })
+            if (!response.ok) throw new Error("Error al subir video")
+            const resData = await response.json()
+            console.log(resData);
+            const videoUrl = resData.secure_url
             const token = localStorage.getItem("Token");
-            const response = await fetch(
-                `${process.env.BACKEND_URL}/api/artist/${data.user.id}/videos`,
+            const backendResponse = await fetch(
+                `${process.env.BACKEND_URL}/api/artist/videos`,
                 {
                     method: "POST",
                     headers: {
-                        Authorization: `Bearer ${token}`
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json"
                     },
-                    body: formData
+                    body: JSON.stringify({
+                        video_url: videoUrl
+                    })
                 }
             );
-            if (!response.ok) throw new Error("Error al subir el video");
-            const resData = await response.json();
-            setUploadedUrl(resData.media_url);
+            if (!backendResponse.ok) throw new Error("Error al subir el video");
+            const savedVideo = await backendResponse.json();
+            // setUploadedUrl(resData.media_url);
         } catch (error) {
             console.error(error);
         }

@@ -18,25 +18,38 @@ export const Images = ({ data, isOwner }) => {
     }
     try {
       const formData = new FormData();
-      formData.append("img", file);
-      const token = localStorage.getItem("Token");
-      const response = await fetch(
-        `${process.env.BACKEND_URL}/api/artist/${data.user.id}/images`,
-        {
+      formData.append("file", file);
+      formData.append("upload_preset", "SoundCript")
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.CLOUD_NAME}/image/upload`, {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
           body: formData
-        }
+      })
+      if (!response.ok) throw new Error("Error al subir imagen")
+      const resData = await response.json()
+      console.log(resData);
+      const photoUrl = resData.secure_url
+      const token = localStorage.getItem("Token");
+      const backendResponse = await fetch(
+          `${process.env.BACKEND_URL}/api/artist/images`,
+          {
+              method: "POST",
+              headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                photo_url: photoUrl
+              })
+          }
       );
-      if (!response.ok) throw new Error("Error al subir la imagen");
-      const resData = await response.json();
-      setUploadedUrl(resData.media_url);
-    } catch (error) {
+      if (!backendResponse.ok) throw new Error("Error al subir la imagen");
+      const savedPhoto = await backendResponse.json();
+      // setUploadedUrl(resData.media_url);
+  } catch (error) {
       console.error(error);
-    }
-  };
+  }
+};
+
 
   return (
     <div>

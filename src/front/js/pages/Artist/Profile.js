@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Context } from "../../store/appContext";
+import "../../../styles/Profile.css";
 
 // Importamos los componentes de cada pestaña
 import { Bio } from "./Bio";
@@ -67,7 +68,7 @@ export const Profile = () => {
 
   // Si es el dueño, puede editar sus datos (redirige a la vista de edición)
   const handleEditProfile = () => {
-    navigate(`/artistData`);
+    navigate(`/UserData`);
   };
 
   return (

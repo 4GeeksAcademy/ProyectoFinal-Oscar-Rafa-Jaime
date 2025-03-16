@@ -15,57 +15,79 @@ import { Footer } from "../../component/footer";
 
 export const Profile = () => {
   const { id: artistId } = useParams();
-  const [file, setFile] = useState(null);
   const navigate = useNavigate();
   const { store, actions } = useContext(Context);
+
+  // Estado local para la data del artista
   const [artistData, setArtistData] = useState(null);
-  const [activeTab, setActiveTab] = useState("bio"); // Pestaña por defecto: biografía
+  const [activeTab, setActiveTab] = useState("bio"); // Pestaña por defecto
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Se obtiene el usuario logueado (del store o localStorage)
-  const loggedUser =
-    store.user || JSON.parse(localStorage.getItem("user") || "null");
+  // Usuario logueado (puede venir de store o localStorage)
+  const loggedUser = store.user || JSON.parse(localStorage.getItem("user") || "null");
   const isOwner = loggedUser && Number(loggedUser.id) === Number(artistId);
 
-
-  // Llamada al endpoint para obtener el perfil completo del artista
+  // Al montar, traemos datos del artista
   useEffect(() => {
-    const fetchArtistData = async () => {
-      try {
-        const token = localStorage.getItem("Token");
-        const response = await fetch(
-          `${process.env.BACKEND_URL}/api/artist/profile`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Error al obtener los datos del artista");
-        }
-        const data = await response.json();
-        setArtistData(data);
-        setLoading(false);
-      } catch (err) {
-        console.error(err);
-        setError(err.message || "Error al cargar el perfil del artista.");
-        setLoading(false);
-      }
-    };
     fetchArtistData();
+    // eslint-disable-next-line
   }, [artistId]);
+
+  // Función para hacer GET y actualizar artistData
+  const fetchArtistData = async () => {
+    try {
+      const token = localStorage.getItem("Token");
+      const response = await fetch(
+        `${process.env.BACKEND_URL}/api/artist/profile`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Error al obtener los datos del artista");
+      }
+      const data = await response.json();
+      setArtistData(data);
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Error al cargar el perfil del artista.");
+      setLoading(false);
+    }
+  };
+
+  // Función para re-obtener los datos luego de un PUT en la bio
+  const refreshArtistData = async () => {
+    try {
+      const token = localStorage.getItem("Token");
+      const response = await fetch(`${process.env.BACKEND_URL}/api/artist/profile`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (!response.ok) throw new Error("Error al refrescar datos del artista");
+      const data = await response.json();
+      setArtistData(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Cambio de pestaña
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
 
   if (loading) return <p>Cargando...</p>;
   if (error) return <p>{error}</p>;
   if (!artistData) return <p>No se encontraron datos del artista.</p>;
-
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-  };
 
   // Si es el dueño, puede editar su foto de perfil (redirige a la vista de edición)
   const handleImgChange = (e) => {
@@ -96,12 +118,12 @@ export const Profile = () => {
 
       const data = await response.json();
 
-       // Update profile photo in local storage
-    const updatedUser = { ...store.user, profile_photo: data.img };
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-    
-    // Update global context
-    actions.setUser(updatedUser);
+      // Update profile photo in local storage
+      const updatedUser = { ...store.user, profile_photo: data.img };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      // Update global context
+      actions.setUser(updatedUser);
 
 
       // Update profile photo URL or handle accordingly
@@ -120,13 +142,14 @@ export const Profile = () => {
   return (
     <>
       <Navbar />
+
       <div className="artist-profile-container">
+        {/* Encabezado */}
         <div className="artist-header">
           <div className="artist-img-container">
             <img
               src={
-                artistData.user.profile_photo ||
-                "https://placehold.co/150"
+                artistData.user?.profile_photo || "https://placehold.co/200"
               }
               alt="Perfil de artista"
               className="artist-profile-picture"
@@ -156,9 +179,10 @@ export const Profile = () => {
               </button>
             )}
           </div>
-          <h1>{artistData.user.fullName || "Nombre del Artista"}</h1>
+          <h1>{artistData.user?.fullName || "Nombre del Artista"}</h1>
         </div>
 
+        {/* Tabs */}
         <div className="artist-tabs">
           <button
             className={activeTab === "bio" ? "active" : ""}
@@ -186,23 +210,22 @@ export const Profile = () => {
           </button>
         </div>
 
+        {/* Contenido según la pestaña */}
         <div className="artist-content">
           {activeTab === "bio" && (
-            <Bio data={artistData} isOwner={isOwner} />
+            <Bio
+              data={artistData}
+              isOwner={isOwner}
+              refreshArtistData={refreshArtistData}
+            />
           )}
-          {activeTab === "images" && (
-            <Images data={artistData} isOwner={isOwner} />
-          )}
-          {activeTab === "videos" && (
-            <Videos data={artistData} isOwner={isOwner} />
-          )}
-          {activeTab === "music" && (
-            <Music data={artistData} isOwner={isOwner} />
-          )}
+          {activeTab === "images" && <Images data={artistData} isOwner={isOwner} />}
+          {activeTab === "videos" && <Videos data={artistData} isOwner={isOwner} />}
+          {activeTab === "music" && <Music data={artistData} isOwner={isOwner} />}
         </div>
       </div>
+
       <Footer />
     </>
   );
 };
-

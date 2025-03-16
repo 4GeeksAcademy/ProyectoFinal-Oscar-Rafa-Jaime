@@ -156,7 +156,7 @@ def get_artist_images():
 
 @api.route("/artist/images/<int:img_id>", methods=["DELETE"])
 @jwt_required()
-def delete_artist_image(artist_profile_id, img_id):
+def delete_artist_image(img_id):
     current_user = get_jwt_identity()
     artist_profile_id = ArtistProfile.query.filter_by(user_id=current_user).first()
 
@@ -351,3 +351,41 @@ def upload_image():
     print(upload_result)
     return jsonify({"img": upload_result["url"]}), 200
 
+@api.route("/artist/profile", methods=["PUT"])
+@jwt_required()
+def update_artist_profile():
+    user_id = get_jwt_identity()
+    artist_profile = ArtistProfile.query.filter_by(user_id=user_id).first()
+    if not artist_profile:
+        raise APIException("Perfil de artista no encontrado", status_code=404)
+    
+    data = request.get_json()
+    if "bio" not in data:
+        raise APIException("No se proporcionó la biografía", status_code=400)
+    
+    artist_profile.bio = data["bio"]
+    db.session.commit()
+    return jsonify(artist_profile.serialize()), 200
+
+@api.route('/user/<int:user_id>', methods=['PUT'])
+@jwt_required()
+def update_user(user_id):
+    
+    data = request.get_json()
+
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"msg": "Usuario no encontrado"}), 404
+
+    current_user_id = get_jwt_identity()
+    if current_user_id != user_id:
+        return jsonify({"msg": "No autorizado para modificar este usuario"}), 403
+
+    user.fullName = data.get("fullName", user.fullName)
+    user.username = data.get("username", user.username)
+    user.email = data.get("email", user.email)
+    user.address = data.get("address", user.address)
+    
+    db.session.commit()
+
+    return jsonify({"user": user.serialize()}), 200

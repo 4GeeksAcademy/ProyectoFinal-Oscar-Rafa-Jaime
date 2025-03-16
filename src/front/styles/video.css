@@ -1,0 +1,41 @@
+
+.videos-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.video-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+
+.video-wrapper iframe {
+    width: 100%;
+    height: 200px;
+    border: none;
+    object-fit: cover;
+}
+
+
+.delete-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: rgba(231, 76, 60, 0.8);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    padding: 6px 9px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.video-wrapper:hover .delete-button {
+    opacity: 1;
+}

@@ -15,18 +15,19 @@ import { Footer } from "../../component/footer";
 
 export const Profile = () => {
   const { id: artistId } = useParams();
+  const [file, setFile] = useState(null);
   const navigate = useNavigate();
   const { store, actions } = useContext(Context);
+  const [artistData, setArtistData] = useState(null);
+  const [activeTab, setActiveTab] = useState("bio"); // Pestaña por defecto: biografía
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Se obtiene el usuario logueado (del store o localStorage)
   const loggedUser =
     store.user || JSON.parse(localStorage.getItem("user") || "null");
   const isOwner = loggedUser && Number(loggedUser.id) === Number(artistId);
 
-  const [artistData, setArtistData] = useState(null);
-  const [activeTab, setActiveTab] = useState("bio"); // Pestaña por defecto: biografía
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   // Llamada al endpoint para obtener el perfil completo del artista
   useEffect(() => {
@@ -34,7 +35,7 @@ export const Profile = () => {
       try {
         const token = localStorage.getItem("Token");
         const response = await fetch(
-          `${process.env.BACKEND_URL}/api/artist/${artistId}/profile`,
+          `${process.env.BACKEND_URL}/api/artist/profile`,
           {
             method: "GET",
             headers: {
@@ -66,9 +67,54 @@ export const Profile = () => {
     setActiveTab(tab);
   };
 
-  // Si es el dueño, puede editar sus datos (redirige a la vista de edición)
-  const handleEditProfile = () => {
-    navigate(`/UserData`);
+  // Si es el dueño, puede editar su foto de perfil (redirige a la vista de edición)
+  const handleImgChange = (e) => {
+    if (e.target.files && e.target.files.length) {
+      const selectedFile = e.target.files[0];
+      setFile(selectedFile);
+      handleUploadFile(selectedFile);
+    }
+  };
+
+  // Send file to the server
+  const handleUploadFile = async (file) => {
+    if (!file) {
+      alert("Selecciona una imagen.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("img", file);
+
+    try {
+      const response = await fetch(`${process.env.BACKEND_URL}/api/img`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error("Error al subir la imagen");
+
+      const data = await response.json();
+
+       // Update profile photo in local storage
+    const updatedUser = { ...store.user, profile_photo: data.img };
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    
+    // Update global context
+    actions.setUser(updatedUser);
+
+
+      // Update profile photo URL or handle accordingly
+      setArtistData((prevData) => ({
+        ...prevData,
+        user: {
+          ...prevData.user,
+          profile_photo: data.img, // Assuming the server returns the image URL
+        },
+      }));
+    } catch (error) {
+      console.error("Error al subir la imagen:", error);
+    }
   };
 
   return (
@@ -86,9 +132,21 @@ export const Profile = () => {
               className="artist-profile-picture"
             />
             {isOwner ? (
-              <button className="follow-button" onClick={handleEditProfile}>
-                Editar Perfil
-              </button>
+              <div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImgChange}
+                  id="file-input"
+                  style={{ display: "none" }} // Hide the file input
+                />
+                <button
+                  className="follow-button"
+                  onClick={() => document.getElementById("file-input").click()}
+                >
+                  Editar foto
+                </button>
+              </div>
             ) : (
               <button
                 className="follow-button"

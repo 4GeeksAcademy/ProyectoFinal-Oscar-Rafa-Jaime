@@ -1,5 +1,5 @@
 // src/front/js/pages/login.js
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import "../../styles/login.css";
 import microphone from "../../img/microphone.jpg";
 import { Context } from "../store/appContext";
@@ -11,7 +11,9 @@ export const Login = () => {
   const [showForgoten, setShowForgoten] = useState(false);
   const [file, setFile] = useState(null);
   const { store, actions } = useContext(Context);
+  const [genres, setGenres] = useState([]);
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   // Estado para registro
   const [formulario, setFormulario] = useState({
@@ -23,7 +25,8 @@ export const Login = () => {
     confirmPassword: "",
     profile_photo: "",
     isArtist: false,
-    bio: ""
+    bio: "",
+    genres: []
   });
 
   // Estado para login
@@ -33,15 +36,22 @@ export const Login = () => {
   });
 
   const handleChange = (e) => {
+    console.log(e.target.selectedOptions);
+
     if (e.target.type === "checkbox") {
       setFormulario({
         ...formulario,
         [e.target.name]: e.target.checked
       });
-    } else {
+    } else if (e.target.name == "genres") {
+      const selectedOptions = Array.from(e.target.selectedOptions, (option) => parseInt(option.value))
+      setFormulario({ ...formulario, genres: selectedOptions })
+    }
+    else {
       setFormulario({ ...formulario, [e.target.name]: e.target.value });
     }
   };
+  console.log(formulario);
 
   const handleImgChange = (e) => {
     if (e.target.files && e.target.files.length) {
@@ -117,11 +127,11 @@ export const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${process.env.BACKEND_URL}/api/login`,{
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(loginData)
-        }
+      const response = await fetch(`${process.env.BACKEND_URL}/api/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(loginData)
+      }
       );
       if (!response.ok) {
         const errorData = await response.json();
@@ -144,6 +154,16 @@ export const Login = () => {
     e.preventDefault();
     alert("Funcionalidad de recuperación no implementada");
   };
+
+  useEffect(() => {
+    const getGenres = async () => {
+      const response = await fetch(`${process.env.BACKEND_URL}/api/getGenres`)
+      const data = await response.json()
+      console.log(data);
+      setGenres(data.genres)
+    }
+    getGenres();
+  }, [])
 
   return (
     <div
@@ -190,6 +210,7 @@ export const Login = () => {
         {showLogin && !showForgoten && (
           <form onSubmit={handleLogin}>
             <h2 className="text-center mb-4">Iniciar sesión</h2>
+            <div className="text-center mb-4"></div>
             <div className="mb-3">
               <input
                 type="text"
@@ -320,6 +341,17 @@ export const Login = () => {
                 checked={formulario.isArtist}
                 onChange={handleChange}
               />
+              {formulario.isArtist &&
+                <select className="form-select" onChange={handleChange} name="genres" multiple>
+                  {genres.map(genre => {
+                    return (
+                      <option value={genre.id} key={genre.id}>
+                        {genre.name}
+                      </option>
+                    )
+                  })}
+                </select>
+              }
             </div>
             <div className="mb-3">
               <input

@@ -18,21 +18,34 @@ export const Music = ({ data, isOwner }) => {
         }
         try {
             const formData = new FormData();
-            formData.append("song", file);
+            formData.append("file", file);
+            formData.append("upload_preset", "SoundCript")
+            const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.CLOUD_NAME}/song/upload`, {
+                method: "POST",
+                body: formData
+            })
+            if (!response.ok) throw new Error("Error al subir cancion")
+            const resData = await response.json()
+            console.log(resData);
+            const songUrl = resData.secure_url
             const token = localStorage.getItem("Token");
-            const response = await fetch(
-                `${process.env.BACKEND_URL}/api/artist/${data.user.id}/songs`,
+            const backendResponse = await fetch(
+                `${process.env.BACKEND_URL}/api/artist/songs`,
                 {
                     method: "POST",
                     headers: {
-                        Authorization: `Bearer ${token}`
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json"
                     },
-                    body: formData
+                    body: JSON.stringify({
+                        song_url: songUrl
+                    })
                 }
             );
-            if (!response.ok) throw new Error("Error al subir la canción");
-            const resData = await response.json();
-            setUploadedUrl(resData.media_url);
+            
+            if (!backendResponse.ok) throw new Error("Error al subir la cancion");
+            const savedSong = await backendResponse.json();
+            // setUploadedUrl(resData.media_url);
         } catch (error) {
             console.error(error);
         }

@@ -50,8 +50,9 @@ export const Music = ({ data, isOwner, refreshArtistData }) => {
                 throw new Error("Error al subir la canción al backend");
             await backendResponse.json();
             alert(
-                "Canción subida con éxito. Recarga la vista para ver los cambios."
+                "Canción subida con éxito. A continuación se recargara la página para ver los cambios."
             );
+            window.location.reload();
             if (refreshArtistData) await refreshArtistData();
             setFile(null);
         } catch (error) {
@@ -77,8 +78,9 @@ export const Music = ({ data, isOwner, refreshArtistData }) => {
             if (!response.ok)
                 throw new Error("Error al eliminar la canción");
             alert(
-                "Canción eliminada. Recarga la vista para ver los cambios."
+                "Canción eliminada. A continuación se recargara la página para ver los cambios."
             );
+            window.location.reload();
             if (refreshArtistData) await refreshArtistData();
         } catch (error) {
             console.error(error);

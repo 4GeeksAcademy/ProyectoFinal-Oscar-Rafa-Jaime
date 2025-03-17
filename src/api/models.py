@@ -81,6 +81,13 @@ class ArtistProfile(db.Model):
             "songs": [song.serialize() for song in self.artist_songs],
             "genres": [genre.serialize() for genre in self.genres]
         }
+    def serialize_without_genres(self):
+        return {
+            "id": self.id,
+            "bio": self.bio,
+            "profile_photo": self.user.profile_photo if self.user else None,
+            "name": self.user.fullName if self.user else None,
+        }
 
 
 # ------------------------------
@@ -96,9 +103,11 @@ class Genre(db.Model):
         return f'<Genre {self.name}>'
 
     def serialize(self):
+        print(self.artists)
         return {
             "id": self.id,
-            "name": self.name
+            "name": self.name,
+            "artists": [artist.serialize_without_genres() for artist in self.artists]
         }
 
 

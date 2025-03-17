@@ -58,8 +58,9 @@ export const Login = () => {
     try {
       const formData = new FormData();
       formData.append("img", file);
+
       const response = await fetch(
-        `${process.env.BACKEND_URL}/api/img`,
+        `${process.env.BACKEND_URL}/api/uploadImg`,
         {
           method: "POST",
           body: formData
@@ -67,6 +68,7 @@ export const Login = () => {
       );
       if (!response.ok) throw new Error("Error al subir la imagen");
       const data = await response.json();
+      
       setFormulario((prevForm) => ({
         ...prevForm,
         profile_photo: data.img
@@ -82,6 +84,9 @@ export const Login = () => {
       alert("Las contraseñas no coinciden");
       return;
     }
+
+    console.log(formulario);  // Log the state
+
     if (!formulario.profile_photo) {
       alert("Sube una imagen para tu perfil.");
       return;

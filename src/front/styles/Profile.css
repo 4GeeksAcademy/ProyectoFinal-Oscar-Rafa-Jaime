@@ -24,7 +24,7 @@
   height: 150px;
   object-fit: cover;
   border-radius: 50%;
-  border: 3px solid var(--color-orange-crayola);
+  border: 3px solid var(--color-black);
 }
 
 .artist-tabs {

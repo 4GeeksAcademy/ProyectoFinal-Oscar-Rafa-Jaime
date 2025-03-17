@@ -51,8 +51,9 @@ export const Videos = ({ data, isOwner, refreshArtistData }) => {
                 throw new Error("Error al subir el vídeo al backend");
             await backendResponse.json();
             alert(
-                "Vídeo subido con éxito. Recarga la vista para ver los cambios."
+                "Vídeo subido con éxito. A continuación se recargara la página para ver los cambios."
             );
+            window.location.reload();
             if (refreshArtistData) await refreshArtistData();
             setFile(null);
         } catch (error) {
@@ -77,8 +78,9 @@ export const Videos = ({ data, isOwner, refreshArtistData }) => {
             );
             if (!response.ok) throw new Error("Error al eliminar el vídeo");
             alert(
-                "Vídeo eliminado. Recarga la vista para ver los cambios."
+                "Vídeo eliminado. A continuación se recargara la página para ver los cambios."
             );
+            window.location.reload();
             if (refreshArtistData) await refreshArtistData();
         } catch (error) {
             console.error(error);

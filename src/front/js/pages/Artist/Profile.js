@@ -61,7 +61,7 @@ export const Profile = () => {
       setLoading(false);
     }
   };
-
+console.log(artistData)
   // Función para re-obtener los datos luego de un PUT en la bio
   const refreshArtistData = async () => {
     try {

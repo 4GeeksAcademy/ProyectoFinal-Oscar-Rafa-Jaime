@@ -40,7 +40,7 @@ export const Profile = () => {
     try {
       const token = localStorage.getItem("Token");
       const response = await fetch(
-        `${process.env.BACKEND_URL}/api/artist/profile`,
+        `${process.env.BACKEND_URL}/api/artist/profile/${artistId}`,  // <-- OJO
         {
           method: "GET",
           headers: {
@@ -61,7 +61,8 @@ export const Profile = () => {
       setLoading(false);
     }
   };
-console.log(artistData)
+
+  console.log(artistData)
   // Función para re-obtener los datos luego de un PUT en la bio
   const refreshArtistData = async () => {
     try {
@@ -190,7 +191,7 @@ console.log(artistData)
               </button>
             )}
           </div>
-          <h1>{artistData.user?.fullName || "Nombre del Artista"}</h1>
+          <h1 className="nombre">{artistData.user?.fullName || "Nombre del Artista"}</h1>
         </div>
 
         {/* Tabs */}

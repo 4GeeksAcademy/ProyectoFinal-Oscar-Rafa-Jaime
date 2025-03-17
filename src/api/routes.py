@@ -417,3 +417,10 @@ def upload_temp_image():
         return jsonify({"img": upload_result["url"]}), 200
     except Exception as e:
         return jsonify({"msg": f"Error al subir la imagen: {str(e)}"}), 500
+
+@api.route("/artist/profile/<int:artist_id>", methods=["GET"])
+def get_artist_profile_by_id(artist_id):
+    artist_profile = ArtistProfile.query.filter_by(id=artist_id).first()
+    if not artist_profile:
+        raise APIException("Perfil de artista no encontrado", status_code=404)
+    return jsonify(artist_profile.serialize()), 200

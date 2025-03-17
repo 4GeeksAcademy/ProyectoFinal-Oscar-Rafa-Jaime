@@ -4,6 +4,7 @@ import "../../styles/login.css";
 import microphone from "../../img/microphone.jpg";
 import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
+import logo from "../../img/logo.png"
 
 export const Login = () => {
   const [showLogin, setShowLogin] = useState(false);
@@ -117,11 +118,11 @@ export const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${process.env.BACKEND_URL}/api/login`,{
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(loginData)
-        }
+      const response = await fetch(`${process.env.BACKEND_URL}/api/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(loginData)
+      }
       );
       if (!response.ok) {
         const errorData = await response.json();
@@ -146,7 +147,7 @@ export const Login = () => {
   };
 
   return (
-    <div
+    <div className="d-flex flex-column justify-content-center align-items-center"
       style={{
         backgroundImage: `url(${microphone})`,
         backgroundSize: "cover",
@@ -158,225 +159,270 @@ export const Login = () => {
       }}
     >
       <div
-        className="login-container p-4 shadow-lg rounded-3 w-100"
-        style={{ maxWidth: "400px", background: "rgba(255, 255, 255, 0.8)" }}
+        className="d-flex flex-column justify-content-center align-items-center"
+        style={{
+          width: "100%",
+          height: "100%",
+        }}
       >
-        {!showLogin && !showRegister && !showForgoten && (
-          <div>
-            <h2 className="text-center mb-4">Bienvenido</h2>
-            <button
-              className="btn btn-danger boton w-100 mb-3"
-              onClick={() => {
-                setShowLogin(true);
-                setShowRegister(false);
-                setShowForgoten(false);
-              }}
-            >
-              Iniciar sesión
-            </button>
-            <button
-              className="btn btn-secondary w-100"
-              onClick={() => {
-                setShowLogin(false);
-                setShowRegister(true);
-                setShowForgoten(false);
-              }}
-            >
-              Registrarse
-            </button>
-          </div>
-        )}
-
-        {showLogin && !showForgoten && (
-          <form onSubmit={handleLogin}>
-            <h2 className="text-center mb-4">Iniciar sesión</h2>
-            <div className="mb-3">
-              <input
-                type="text"
-                className="form-control form-control-lg"
-                placeholder="Nombre de usuario"
-                name="username"
-                value={loginData.username}
-                onChange={(e) =>
-                  setLoginData({ ...loginData, username: e.target.value })
-                }
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <input
-                type="password"
-                className="form-control form-control-lg"
-                placeholder="Contraseña"
-                name="password"
-                value={loginData.password}
-                onChange={(e) =>
-                  setLoginData({ ...loginData, password: e.target.value })
-                }
-                required
-              />
-            </div>
-            <button type="submit" className="btn btn-danger w-100 py-2">
-              Ingresar
-            </button>
-            <div className="text-center mt-2">
-              <a
-                href="#"
-                className="text-decoration-none"
-                onClick={() => setShowForgoten(true)}
+        
+        <div
+          className="text-center mb-4"
+          style={{
+            maxWidth: "400px",
+            padding: "20px",
+            borderRadius: "10px",
+          }}
+        >
+          
+          <img
+            src={logo}
+            alt="logo"
+            className="img-fluid mb-3"
+            style={{ maxHeight: "250px", width: "auto" }}
+          />
+        </div>
+        <div
+          className="login-container p-4 shadow-lg rounded-3 w-100 mb-"
+          style={{ maxWidth: "400px", background: "rgba(255, 255, 255, 0.8)" }}
+        >
+          {!showLogin && !showRegister && !showForgoten && (
+            <div>
+              <h2 className="text-center text-dark mb-4">Bienvenido</h2>
+              <button
+                className="btn btn-danger boton w-100 mb-3"
+                onClick={() => {
+                  setShowLogin(true);
+                  setShowRegister(false);
+                  setShowForgoten(false);
+                }}
               >
-                ¿He olvidado mi contraseña?
-              </a>
+                Iniciar sesión
+              </button>
+              <button
+                className="btn btn-secondary w-100"
+                onClick={() => {
+                  setShowLogin(false);
+                  setShowRegister(true);
+                  setShowForgoten(false);
+                }}
+              >
+                Registrarse
+              </button>
+            </div>
+          )}
+
+          {showLogin && !showForgoten && (
+            <form onSubmit={handleLogin}>
+              <h2 className="text-center text-dark mb-4">Iniciar sesión</h2>
+              <div className="mb-3">
+                <input
+                  type="text"
+                  className="form-control form-control-lg"
+                  placeholder="Nombre de usuario"
+                  name="username"
+                  value={loginData.username}
+                  onChange={(e) =>
+                    setLoginData({ ...loginData, username: e.target.value })
+                  }
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <input
+                  type="password"
+                  className="form-control form-control-lg"
+                  placeholder="Contraseña"
+                  name="password"
+                  value={loginData.password}
+                  onChange={(e) =>
+                    setLoginData({ ...loginData, password: e.target.value })
+                  }
+                  required
+                />
+              </div>
+              <button type="submit" className="btn btn-danger w-100 py-2">
+                Ingresar
+              </button>
+              <div className="text-center mt-2">
+                <a
+                  href="#"
+                  className="text-decoration-none"
+                  onClick={() => setShowForgoten(true)}
+                >
+                  ¿He olvidado mi contraseña?
+                </a>
+                <button
+                  type="button"
+                  className="btn btn-link w-100 mt-2"
+                  onClick={() => {
+                    setShowForgoten(false);
+                    setShowLogin(false);
+                    setShowRegister(false);
+                  }}
+                >
+                  Volver
+                </button>
+              </div>
+            </form>
+          )}
+
+          {showRegister && (
+            <form onSubmit={handleRegister}>
+              <h2 className="text-center text-dark mb-4">Registro</h2>
+              <div className="mb-3">
+                <input
+                  type="text"
+                  className="form-control form-control-lg"
+                  placeholder="Nombre y apellidos"
+                  name="fullName"
+                  value={formulario.fullName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <input
+                  type="text"
+                  className="form-control form-control-lg"
+                  placeholder="Nombre de usuario"
+                  name="username"
+                  value={formulario.username}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <input
+                  type="email"
+                  className="form-control form-control-lg"
+                  placeholder="Correo electrónico"
+                  name="email"
+                  value={formulario.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <input
+                  type="text"
+                  className="form-control form-control-lg"
+                  placeholder="Dirección"
+                  name="address"
+                  value={formulario.address}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <input
+                  type="password"
+                  className="form-control form-control-lg"
+                  placeholder="Contraseña"
+                  name="password"
+                  value={formulario.password}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <input
+                  type="password"
+                  className="form-control form-control-lg"
+                  placeholder="Confirmar contraseña"
+                  name="confirmPassword"
+                  value={formulario.confirmPassword}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label className="form-label  text-dark me-2">¿Eres artista?</label>
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  name="isArtist"
+                  checked={formulario.isArtist}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="mb-3">
+                <input
+                  type="file"
+                  className="form-control mb-2"
+                  accept="image/jpeg, image/png"
+                  onChange={handleImgChange}
+                />
+                <button type="button" onClick={sendFile}>
+                  Subir Imagen
+                </button>
+              </div>
+              <button type="submit" className="btn btn-success w-100 py-2">
+                Registrarse
+              </button>
+              <button
+                type="button"
+                className="btn btn-link w-100 mt-2"
+                onClick={() => setShowRegister(false)}
+              >
+                Volver
+              </button>
+            </form>
+          )}
+
+          {showForgoten && (
+            <form onSubmit={handlePasswordReset}>
+              <h2 className="text-center mb-4">¿He olvidado mi contraseña?</h2>
+              <div className="mb-3">
+                <input
+                  type="text"
+                  className="form-control form-control-lg"
+                  placeholder="Nombre de usuario"
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <input
+                  type="password"
+                  className="form-control form-control-lg"
+                  placeholder="Nueva contraseña"
+                  required
+                />
+              </div>
               <button
                 type="button"
                 className="btn btn-link w-100 mt-2"
                 onClick={() => {
-                  setShowForgoten(false);
-                  setShowLogin(false);
+                  setShowLogin(true);
                   setShowRegister(false);
+                  setShowForgoten(false);
                 }}
               >
                 Volver
               </button>
-            </div>
-          </form>
-        )}
-
-        {showRegister && (
-          <form onSubmit={handleRegister}>
-            <h2 className="text-center mb-4">Registro</h2>
-            <div className="mb-3">
-              <input
-                type="text"
-                className="form-control form-control-lg"
-                placeholder="Nombre y apellidos"
-                name="fullName"
-                value={formulario.fullName}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <input
-                type="text"
-                className="form-control form-control-lg"
-                placeholder="Nombre de usuario"
-                name="username"
-                value={formulario.username}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <input
-                type="email"
-                className="form-control form-control-lg"
-                placeholder="Correo electrónico"
-                name="email"
-                value={formulario.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <input
-                type="text"
-                className="form-control form-control-lg"
-                placeholder="Dirección"
-                name="address"
-                value={formulario.address}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <input
-                type="password"
-                className="form-control form-control-lg"
-                placeholder="Contraseña"
-                name="password"
-                value={formulario.password}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <input
-                type="password"
-                className="form-control form-control-lg"
-                placeholder="Confirmar contraseña"
-                name="confirmPassword"
-                value={formulario.confirmPassword}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label me-2">¿Eres artista?</label>
-              <input
-                type="checkbox"
-                className="form-check-input"
-                name="isArtist"
-                checked={formulario.isArtist}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="mb-3">
-              <input
-                type="file"
-                className="form-control mb-2"
-                accept="image/jpeg, image/png"
-                onChange={handleImgChange}
-              />
-              <button type="button" onClick={sendFile}>
-                Subir Imagen
-              </button>
-            </div>
-            <button type="submit" className="btn btn-success w-100 py-2">
-              Registrarse
-            </button>
-            <button
-              type="button"
-              className="btn btn-link w-100 mt-2"
-              onClick={() => setShowRegister(false)}
-            >
-              Volver
-            </button>
-          </form>
-        )}
-
-        {showForgoten && (
-          <form onSubmit={handlePasswordReset}>
-            <h2 className="text-center mb-4">¿He olvidado mi contraseña?</h2>
-            <div className="mb-3">
-              <input
-                type="text"
-                className="form-control form-control-lg"
-                placeholder="Nombre de usuario"
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <input
-                type="password"
-                className="form-control form-control-lg"
-                placeholder="Nueva contraseña"
-                required
-              />
-            </div>
-            <button
-              type="button"
-              className="btn btn-link w-100 mt-2"
-              onClick={() => {
-                setShowLogin(true);
-                setShowRegister(false);
-                setShowForgoten(false);
-              }}
-            >
-              Volver
-            </button>
-          </form>
-        )}
+            </form>
+          )}
+        </div>
+        <div
+          className="d-block w-100 text-center mt-5"
+          style={{
+            maxWidth: "1200px",
+            textAlign: "center",
+          }}
+        >
+          <h1 className="text-white fs-1 fs-md-2 fs-lg-3">
+            Conéctata y comparte tu talento.
+          </h1>
+          <h1 className="text-white fs-1 fs-md-2 fs-lg-3">
+          Haz que el mundo te conozca.
+          </h1>
+          <h1 className="text-white fs-1 fs-md-2 fs-lg-3">
+            Tu arte, tu voz.
+          </h1>
+          <h1 className="text-white fs-1 fs-md-2 fs-lg-3">
+            SoundCript
+          </h1>
+        </div>
       </div>
     </div>
   );

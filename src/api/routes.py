@@ -25,15 +25,18 @@ cloudinary.config(
 def register():
     data = request.get_json()
     required_fields = ["fullName", "username", "email", "address", "password"]
+
     if not all(field in data for field in required_fields):
         raise APIException("Faltan campos obligatorios", status_code=400)
     
     if User.query.filter_by(email=data["email"]).first():
         raise APIException("Email ya registrado", status_code=400)
+    
     if User.query.filter_by(username=data["username"]).first():
         raise APIException("Nombre de usuario ya registrado", status_code=400)
     
     is_artist = data.get("is_artist", False)
+    
     profile_photo = data.get("profile_photo", None)
     
     user = User(
@@ -400,3 +403,17 @@ def update_user(user_id):
     db.session.commit()
 
     return jsonify({"user": user.serialize()}), 200
+
+# Subir foto de perfil en registro de usuario
+@api.route('/uploadImg', methods=["POST"])
+def upload_temp_image():
+    if "img" not in request.files:
+        return jsonify({"msg": "No se proporcionó un archivo de imagen"}), 400
+
+    img = request.files["img"]
+
+    try:
+        upload_result = cloudinary.uploader.upload(img)
+        return jsonify({"img": upload_result["url"]}), 200
+    except Exception as e:
+        return jsonify({"msg": f"Error al subir la imagen: {str(e)}"}), 500

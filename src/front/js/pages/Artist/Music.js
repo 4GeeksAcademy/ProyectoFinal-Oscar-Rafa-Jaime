@@ -30,9 +30,12 @@ export const Music = ({ data, isOwner, refreshArtistData }) => {
                 }
             );
             if (!response.ok) throw new Error("Error al subir la canción");
+            
             const resData = await response.json();
             const songUrl = resData.secure_url;
+
             const token = localStorage.getItem("Token");
+
             const backendResponse = await fetch(
                 `${process.env.BACKEND_URL}/api/artist/songs`,
                 {

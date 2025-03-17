@@ -1,15 +1,47 @@
-// src/front/js/pages/Users/UserProfile.js
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+// src/front/js/pages/UserProfile.js
+import React, { useState } from "react";
+import { Navbar } from "../../component/navbar";
+import { Footer } from "../../component/footer";
+import SavedSongs from "./SavedSongs";
+import SavedArtists from "./SavedArtists";
+import "../../../styles/userProfile.css"; // Asegúrate de tener estilos para organizar la vista
 
-export const UserProfile = () => {
-    const navigate = useNavigate();
+const UserProfile = () => {
+  // Estado para controlar qué vista se muestra:
+  // "songs" para Canciones guardadas o "artists" para Artistas seguidos
+  const [activeView, setActiveView] = useState("songs");
 
-    // Por ejemplo, redirige automáticamente a SavedSongs
-    useEffect(() => {
-        navigate("/savedSongs/0");
-    }, []);
+  const handleViewChange = (view) => {
+    setActiveView(view);
+  };
 
-    return null;
+  return (
+    <>
+      <Navbar />
+      <div className="container mt-4">
+        <h1 className="mb-4 text-center">Mi Perfil</h1>
+        {/* Botones o pestañas para cambiar de vista */}
+        <div className="profile-options d-flex justify-content-center mb-4">
+          <button
+            className={`btn mx-2 ${activeView === "songs" ? "btn-danger" : "btn-secondary"}`}
+            onClick={() => handleViewChange("songs")}
+          >
+            Canciones Guardadas
+          </button>
+          <button
+            className={`btn mx-2 ${activeView === "artists" ? "btn-danger" : "btn-secondary"}`}
+            onClick={() => handleViewChange("artists")}
+          >
+            Artistas Seguidos
+          </button>
+        </div>
+
+        {/* Renderizado condicional según la vista activa */}
+        {activeView === "songs" ? <SavedSongs /> : <SavedArtists />}
+      </div>
+      <Footer />
+    </>
+  );
 };
 
+export default UserProfile;

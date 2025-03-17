@@ -134,3 +134,12 @@
 .follow-button:hover {
   background: var(--color-giants-orange);
 }
+
+.nombre {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin: 100px;
+}

@@ -15,10 +15,6 @@ export const HomeUser = () => {
     }, []);
 
     // Aquí puedes tener datos reales o simulados para los artistas
-    const artistsMock = [
-        { id: 1, song: "Song 1", name: "Artista 1", genre: "Rock", profile_photo: "https://res.cloudinary.com/dkqwpsv60/image/upload/v1742209622/8f732da9-eb76-4b4c-9219-427f9fb3494a.png" },
-        // ...
-    ];
 
     console.log(store)
     return (
@@ -30,14 +26,15 @@ export const HomeUser = () => {
                         <h1 className="genretitle mt-3">{genre.name}</h1>
                         <div className="artists row row-cols-1 row-cols-md-3 g-4">
 
-                            {genre.artists.length > 0 ? genre.artists.map((artist, artistIndex) => (
-                                <CardGenres key={artist.id} {...artist} />
-                            ))
-                                : artistsMock.map(artist => (
-                                    <CardGenres key={`${artist.id}-${genre.name}`} {...artist} />
-
+                            {genre.artists.length > 0 ? (
+                                genre.artists.map((artist) => (
+                                    <CardGenres key={artist.id} {...artist} />
                                 ))
-                            }
+                            ) : (
+                                <p>No hay artistas en este género</p>
+                            )}
+
+
                         </div>
                     </div>
                 ))}

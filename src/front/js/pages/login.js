@@ -1,5 +1,5 @@
 // src/front/js/pages/login.js
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import "../../styles/login.css";
 import microphone from "../../img/microphone.jpg";
 import { Context } from "../store/appContext";
@@ -12,7 +12,9 @@ export const Login = () => {
   const [showForgoten, setShowForgoten] = useState(false);
   const [file, setFile] = useState(null);
   const { store, actions } = useContext(Context);
+  const [genres, setGenres] = useState([]);
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   // Estado para registro
   const [formulario, setFormulario] = useState({
@@ -24,7 +26,8 @@ export const Login = () => {
     confirmPassword: "",
     profile_photo: "",
     isArtist: false,
-    bio: ""
+    bio: "",
+    genres: []
   });
 
   // Estado para login
@@ -34,15 +37,22 @@ export const Login = () => {
   });
 
   const handleChange = (e) => {
+    console.log(e.target.selectedOptions);
+
     if (e.target.type === "checkbox") {
       setFormulario({
         ...formulario,
         [e.target.name]: e.target.checked
       });
-    } else {
+    } else if (e.target.name == "genres") {
+      const selectedOptions = Array.from(e.target.selectedOptions, (option) => parseInt(option.value))
+      setFormulario({ ...formulario, genres: selectedOptions })
+    }
+    else {
       setFormulario({ ...formulario, [e.target.name]: e.target.value });
     }
   };
+  console.log(formulario);
 
   const handleImgChange = (e) => {
     if (e.target.files && e.target.files.length) {
@@ -58,7 +68,6 @@ export const Login = () => {
     try {
       const formData = new FormData();
       formData.append("img", file);
-
       const response = await fetch(
         `${process.env.BACKEND_URL}/api/uploadImg`,
         {
@@ -68,7 +77,6 @@ export const Login = () => {
       );
       if (!response.ok) throw new Error("Error al subir la imagen");
       const data = await response.json();
-      
       setFormulario((prevForm) => ({
         ...prevForm,
         profile_photo: data.img
@@ -84,9 +92,6 @@ export const Login = () => {
       alert("Las contraseñas no coinciden");
       return;
     }
-
-    console.log(formulario);  // Log the state
-
     if (!formulario.profile_photo) {
       alert("Sube una imagen para tu perfil.");
       return;
@@ -151,6 +156,16 @@ export const Login = () => {
     alert("Funcionalidad de recuperación no implementada");
   };
 
+  useEffect(() => {
+    const getGenres = async () => {
+      const response = await fetch(`${process.env.BACKEND_URL}/api/getGenres`)
+      const data = await response.json()
+      console.log(data);
+      setGenres(data.genres)
+    }
+    getGenres();
+  }, [])
+
   return (
     <div className="d-flex flex-column justify-content-center align-items-center"
       style={{
@@ -170,25 +185,24 @@ export const Login = () => {
           height: "100%",
         }}
       >
-        
         <div
-          className="text-center mb-4"
+          className="text-center "
           style={{
             maxWidth: "400px",
             padding: "20px",
             borderRadius: "10px",
           }}
         >
-          
+
           <img
             src={logo}
             alt="logo"
             className="img-fluid mb-3"
-            style={{ maxHeight: "250px", width: "auto" }}
+            style={{ maxHeight: "300px", width: "auto" }}
           />
         </div>
         <div
-          className="login-container p-4 shadow-lg rounded-3 w-100 mb-"
+          className="login-container p-4 shadow-lg rounded-3 w-100"
           style={{ maxWidth: "400px", background: "rgba(255, 255, 255, 0.8)" }}
         >
           {!showLogin && !showRegister && !showForgoten && (
@@ -220,6 +234,7 @@ export const Login = () => {
           {showLogin && !showForgoten && (
             <form onSubmit={handleLogin}>
               <h2 className="text-center text-dark mb-4">Iniciar sesión</h2>
+              <div className="text-center mb-4"></div>
               <div className="mb-3">
                 <input
                   type="text"
@@ -342,7 +357,7 @@ export const Login = () => {
                 />
               </div>
               <div className="mb-3">
-                <label className="form-label  text-dark me-2">¿Eres artista?</label>
+                <label className="form-label me-2">¿Eres artista?</label>
                 <input
                   type="checkbox"
                   className="form-check-input"
@@ -350,6 +365,17 @@ export const Login = () => {
                   checked={formulario.isArtist}
                   onChange={handleChange}
                 />
+                {formulario.isArtist &&
+                  <select className="form-select" onChange={handleChange} name="genres" multiple>
+                    {genres.map(genre => {
+                      return (
+                        <option value={genre.id} key={genre.id}>
+                          {genre.name}
+                        </option>
+                      )
+                    })}
+                  </select>
+                }
               </div>
               <div className="mb-3">
                 <input
@@ -409,15 +435,15 @@ export const Login = () => {
           )}
         </div>
         <div
-          className="d-block w-100 text-center mt-5"
+          className="d-block w-100 text-center mt-3"
           style={{
             maxWidth: "1200px",
             textAlign: "center",
           }}
         >
-          <h1 className="text-white fs-1 fs-md-2 fs-lg-3">
-            Conéctate y comparte tu talento.
-          </h1>
+          <h3 className="text-white fs-1 fs-md-2 fs-lg-3">
+            Conéctata y comparte tu talento
+          </h3>
           <h1 className="text-white fs-1 fs-md-2 fs-lg-3">
             SoundCript
           </h1>

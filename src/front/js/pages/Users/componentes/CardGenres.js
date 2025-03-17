@@ -1,7 +1,8 @@
-import React from "react"
-import { Link } from "react-router-dom"
+// CardGenres.js
+import React from "react";
+import { Link } from "react-router-dom";
 
-export const CardGenres = ({profile_photo, name, id}) => {
+export const CardGenres = ({ profile_photo, name, id }) => {
     return (
         <div className="artistcard">
             <div className="card">
@@ -10,17 +11,20 @@ export const CardGenres = ({profile_photo, name, id}) => {
                     <p>{name}</p>
                 </div>
                 <div className="d-flex justify-content-between mb-3 mx-2">
-                <Link className="btn btn-outline-purple" to={`/artist/${id}`}>
+                    <Link className="btn btn-outline-purple" to={`/artist/${id}`}>
                         Ver perfil
                     </Link>
-                    {/* <button
+                </div>
+            </div>
+        </div>
+    );
+};
+
+
+
+{/* <button
                         className="btn btn-outline-purple"
                         onClick={() => actions.saveSong(id)}
                     >
                         <i className="fa-regular fa-star"></i>
                     </button> */}
-                </div>
-            </div>
-        </div>
-    )
-}

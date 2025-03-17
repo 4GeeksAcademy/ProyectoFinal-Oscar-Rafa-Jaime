@@ -1,3 +1,4 @@
+// src/front/js/pages/SavedArtists.js
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import "../../../styles/userProfile.css";
@@ -20,11 +21,9 @@ export const SavedArtists = () => {
                         }
                     }
                 );
-                if (!response.ok) {
+                if (!response.ok)
                     throw new Error("Error al obtener artistas seguidos");
-                }
                 const data = await response.json();
-                // Suponiendo que la respuesta es: { followed_artists: [...] }
                 setFollowedArtists(data.followed_artists || []);
             } catch (error) {
                 console.error(error);
@@ -46,7 +45,8 @@ export const SavedArtists = () => {
                     }
                 }
             );
-            if (!response.ok) throw new Error("Error al dejar de seguir al artista");
+            if (!response.ok)
+                throw new Error("No se pudo eliminar el artista");
             setFollowedArtists(
                 followedArtists.filter(
                     (artist) => artist.artist_profile_id !== artist_profile_id
@@ -58,35 +58,36 @@ export const SavedArtists = () => {
     };
 
     return (
-        <div className="profile-container">
+        <div className="profile-container text-dark">
             <h2>🎤 Artistas Seguidos</h2>
-            <div className="options">
-                <Link to="/savedSongs" className="option-button">
-                    🎵 Canciones Guardadas
-                </Link>
-                <Link to="/savedArtists" className="option-button active">
-                    🎤 Artistas Seguidos
-                </Link>
-            </div>
+
             {followedArtists.length === 0 ? (
                 <p>No sigues a ningún artista.</p>
             ) : (
-                <ul>
+                <div className="artist-grid">
                     {followedArtists.map((artist) => (
-                        <li key={artist.artist_profile_id}>
+                        <div key={artist.artist_profile_id} className="artist-card">
                             <img
-                                src={artist.artist_image || "https://via.placeholder.com/50"}
+                                src={
+                                    artist.artist_image ||
+                                    "https://via.placeholder.com/150"
+                                }
                                 alt={artist.artist_name}
+                                className="artist-image"
                             />
-                            {artist.artist_name}
-                            <button onClick={() => removeArtist(artist.artist_profile_id)}>
-                                ❌
+                            <h4 className="artist-name">{artist.artist_name}</h4>
+                            <button
+                                className="btn btn-danger remove-btn"
+                                onClick={() => removeArtist(artist.artist_profile_id)}
+                            >
+                                Dejar de seguir
                             </button>
-                        </li>
+                        </div>
                     ))}
-                </ul>
+                </div>
             )}
         </div>
     );
 };
 
+export default SavedArtists;

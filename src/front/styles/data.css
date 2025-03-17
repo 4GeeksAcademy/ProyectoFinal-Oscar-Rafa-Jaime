@@ -1,4 +1,3 @@
-/* src/front/styles/data.css */
 body {
     background-color: var(--color-black);
     color: var(--color-white);
@@ -7,12 +6,14 @@ body {
     padding: 0;
 }
 
+
 .card {
-    background-color: rgba(163, 40, 163, 0.5);
-    /* Mauveine translúcido */
+    background-color: rgba(163, 40, 163, 0.5); 
     border-radius: 10px;
     margin-bottom: 20px;
+    padding: 15px;
 }
+
 
 .boton {
     background: linear-gradient(135deg,
@@ -24,7 +25,9 @@ body {
     padding: 8px 16px;
     border-radius: 5px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background 0.3s, transform 0.2s;
+    margin-right: 8px; /* Separa horizontalmente los botones */
+    margin-top: 6px;   /* Un pequeño espacio vertical */
 }
 
 .boton:hover {
@@ -32,18 +35,29 @@ body {
             rgba(184, 0, 0, 0.75),
             rgba(255, 78, 42, 0.75),
             rgba(255, 103, 51, 0.75));
+    transform: scale(1.05);
 }
+
 
 .form-control-lg {
     background-color: var(--color-white);
     color: var(--color-black);
 }
 
+
 .btn-danger {
     background-color: var(--color-red);
     border: none;
+    transition: background 0.3s, transform 0.2s;
 }
 
 .btn-danger:hover {
     background-color: var(--color-giants-orange);
+    transform: scale(1.03);
+}
+
+.image-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
 }

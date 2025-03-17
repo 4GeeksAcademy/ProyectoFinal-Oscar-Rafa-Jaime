@@ -1,65 +1,97 @@
 /* src/front/styles/userProfile.css */
+
+/* Contenedor general del perfil */
 .profile-container {
-    max-width: 600px;
-    margin: auto;
-    padding: 20px;
-    text-align: center;
-    background-color: var(--color-white);
-    color: var(--color-black);
+    background: #fff;
+    padding: 2em;
     border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2em;
 }
 
+/* Botones de navegación entre vistas */
 .options {
     display: flex;
     justify-content: center;
-    gap: 15px;
-    margin-bottom: 20px;
+    margin-bottom: 1.5em;
 }
 
 .option-button {
-    text-decoration: none;
-    padding: 10px 15px;
-    background: var(--color-coquelicot);
-    color: var(--color-white);
+    padding: 0.5em 1em;
+    border: none;
+    background: #ccc;
+    color: #333;
+    cursor: pointer;
     border-radius: 5px;
-    font-weight: bold;
+    margin: 0 0.5em;
     transition: background 0.3s ease;
 }
 
 .option-button:hover {
-    background: var(--color-giants-orange);
+    background: #bbb;
 }
 
 .option-button.active {
-    background: var(--color-black);
+    background: #dc3545;
+    /* color rojo de Bootstrap */
+    color: #fff;
 }
 
-ul {
-    list-style: none;
-    padding: 0;
-}
-
-li {
+/* Grid para artistas seguidos */
+.artist-grid {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px;
-    background: var(--color-orange-crayola);
-    border-radius: 5px;
-    margin-bottom: 5px;
-    color: var(--color-black);
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
-button {
-    border: none;
-    background: var(--color-red);
-    color: var(--color-white);
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 5px;
+.artist-card {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: calc(33.33% - 1rem);
+    padding: 1em;
+    text-align: center;
 }
 
-button:hover {
-    background: var(--color-mauveine);
+.artist-image {
+    width: 100%;
+    height: auto;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 0.5em;
+}
+
+.artist-name {
+    font-size: 1.1em;
+    margin-bottom: 0.5em;
+}
+
+.remove-btn {
+    font-size: 0.8em;
+}
+
+/* Grid para canciones guardadas */
+.song-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.song-card {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: calc(50% - 1rem);
+    padding: 1em;
+    text-align: center;
+}
+
+.song-title {
+    font-size: 1.1em;
+    margin-bottom: 0.5em;
+}
+
+audio {
+    width: 100%;
+    margin-bottom: 0.5em;
 }

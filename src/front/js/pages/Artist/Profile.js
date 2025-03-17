@@ -23,7 +23,8 @@ export const Profile = () => {
   const [activeTab, setActiveTab] = useState("bio"); // Pestaña por defecto
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [file, setFile] = useState("")
+  const [uploading, setUploading] = useState("")
   // Usuario logueado (puede venir de store o localStorage)
   const loggedUser = store.user || JSON.parse(localStorage.getItem("user") || "null");
   const isOwner = loggedUser && Number(loggedUser.id) === Number(artistId);
@@ -94,7 +95,11 @@ console.log(artistData)
     if (e.target.files && e.target.files.length) {
       const selectedFile = e.target.files[0];
       setFile(selectedFile);
-      handleUploadFile(selectedFile);
+      setUploading(true);
+
+      handleUploadFile(selectedFile).finally(() => {
+        setUploading(false); // Set uploading to false after the upload is complete (either success or failure)
+      });
     }
   };
 
@@ -108,9 +113,14 @@ console.log(artistData)
     const formData = new FormData();
     formData.append("img", file);
 
+    const token = localStorage.getItem("Token");
+
     try {
       const response = await fetch(`${process.env.BACKEND_URL}/api/img`, {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         body: formData,
       });
 
@@ -161,7 +171,7 @@ console.log(artistData)
                   accept="image/*"
                   onChange={handleImgChange}
                   id="file-input"
-                  style={{ display: "none" }} // Hide the file input
+                  style={{ display: "none" }}
                 />
                 <button
                   className="follow-button"
@@ -169,6 +179,7 @@ console.log(artistData)
                 >
                   Editar foto
                 </button>
+                {uploading && <p>Subiendo...</p>}
               </div>
             ) : (
               <button

@@ -337,7 +337,11 @@ def getGenresApi():
     return jsonify(data)
 
 @api.route('/img', methods=["POST"])
+@jwt_required()
 def upload_image():
+    current_user = get_jwt_identity()
+    current_user = User.query.filter_by(id=current_user).first() 
+
     if "img" not in request.files:
         return jsonify({"msg": "No se proporcionó un archivo de imagen"}), 400
 
@@ -345,11 +349,18 @@ def upload_image():
 
     try:
         upload_result = cloudinary.uploader.upload(img)
+
+            # Update the profile photo in the database
+        current_user.profile_photo = upload_result["url"]
+        db.session.commit()  # Save the changes to the database
+
+
     except Exception as e:
         return jsonify({"msg": f"Error al subir la imagen: {str(e)}"}), 500
-
-    print(upload_result)
+    
     return jsonify({"img": upload_result["url"]}), 200
+
+
 
 @api.route("/artist/profile", methods=["PUT"])
 @jwt_required()

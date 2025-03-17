@@ -27,3 +27,10 @@
       rgba(255, 78, 42, 0.75),
       rgba(255, 103, 51, 0.75));
 }
+
+h1{
+  text-decoration: none;
+    color: var(--color-white);
+    font-size: 1.5rem;
+    font-weight: bold;
+}

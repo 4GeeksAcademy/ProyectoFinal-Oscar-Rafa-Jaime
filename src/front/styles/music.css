@@ -1,6 +1,5 @@
 /* music.css */
 
-/* Utiliza las variables definidas en index.css */
 .music-container {
     background-color: var(--background-color);
     padding: 20px;
@@ -15,22 +14,40 @@
 }
 
 .song-item {
-    padding: 10px;
-    border-bottom: 1px solid var(--secondary-color);
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1em;
+    position: relative;
 }
 
+.song-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.audio-player {
+    width: 250px;
+    height: 35px;
+}
+
+.song-title {
+    font-weight: bold;
+}
+
+/* Estilos para los botones */
 .like-button,
 .delete-button {
     background-color: var(--primary-color);
     border: none;
-    color: white;
+    color: rgb(238, 11, 11);
     padding: 5px 10px;
     cursor: pointer;
     border-radius: 4px;
     transition: background-color 0.2s ease;
+    margin-left: 1rem;
+    /* Espacio para separarlos un poco */
 }
 
 .like-button:hover,

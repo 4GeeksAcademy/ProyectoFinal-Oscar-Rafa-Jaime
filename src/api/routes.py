@@ -51,6 +51,11 @@ def register():
     # Si el usuario es artista, creamos un perfil de artista
     if is_artist:
         artist_profile = ArtistProfile(user_id=user.id, bio=data.get("bio", ""))
+        genre_ids = data.get("genres", [])
+        for genre_id in genre_ids: 
+            genre = Genre.query.get(genre_id)
+            if genre: 
+                artist_profile.genres.append(genre)
         db.session.add(artist_profile)
         db.session.commit()
     
@@ -104,11 +109,12 @@ def get_current_profile():
 # -----------------------------------------------------------------
 # Obtener perfil de artista (datos, multimedia y géneros)
 # -----------------------------------------------------------------
-@api.route("/artist/<int:artist_profile_id>/profile", methods=["GET"])
+@api.route("/artist/profile", methods=["GET"])
 @jwt_required()
-def get_artist_profile(artist_profile_id):
+def get_artist_profile():
     # Aquí se permite que cualquier usuario autenticado vea el perfil
-    artist_profile = ArtistProfile.query.filter_by(id=artist_profile_id).first()
+    user_id = get_jwt_identity()
+    artist_profile = ArtistProfile.query.filter_by(user_id=user_id).first()
     if not artist_profile:
         raise APIException("Perfil de artista no encontrado", status_code=404)
     return jsonify(artist_profile.serialize()), 200
@@ -118,150 +124,137 @@ def get_artist_profile(artist_profile_id):
 # -----------------------------------------------------------------
 
 # Imágenes
-@api.route("/artist/<int:artist_profile_id>/images", methods=["POST"])
+@api.route("/artist/images", methods=["POST"])
 @jwt_required()
-def upload_artist_image(artist_profile_id):
+def upload_artist_image():
     current_user = get_jwt_identity()
-    if current_user != artist_profile_id:
-        raise APIException("No autorizado", status_code=401)
-    
-    if "img" not in request.files:
-        raise APIException("No se proporcionó una imagen", status_code=400)
-    img = request.files["img"]
-    try:
-        upload_result = cloudinary.uploader.upload(img)
-    except Exception as e:
-        raise APIException("Error al subir la imagen: " + str(e), status_code=500)
-    
-    media_url = upload_result.get("url")
-    if not media_url:
-        raise APIException("Error al obtener la URL de la imagen", status_code=500)
-    
+    artist_profile_id = ArtistProfile.query.filter_by(user_id=current_user).first()
+    data = request.get_json()
+
+    photo_url = data.get("photo_url")
+    if not photo_url:
+        raise APIException("No existe URL de imagen", status_code=400)
+   
     photo = Photo(
-        title=request.form.get("title", "Sin título"),
-        media_url=media_url,
-        artist_profile_id=artist_profile_id
+        title=data.get("title", "Sin título"),
+        media_url=photo_url,
+        artist_profile_id=artist_profile_id.id
     )
+ 
     db.session.add(photo)
     db.session.commit()
     return jsonify(photo.serialize()), 201
 
-@api.route("/artist/<int:artist_profile_id>/images", methods=["GET"])
+@api.route("/artist/images", methods=["GET"])
 @jwt_required()
-def get_artist_images(artist_profile_id):
-    photos = Photo.query.filter_by(artist_profile_id=artist_profile_id).all()
+def get_artist_images():
+    current_user = get_jwt_identity()
+    artist_profile_id = ArtistProfile.query.filter_by(user_id=current_user).first()
+   
+    photos = Photo.query.filter_by(artist_profile_id=artist_profile_id.id).all()
     return jsonify([photo.serialize() for photo in photos]), 200
 
-@api.route("/artist/<int:artist_profile_id>/images/<int:img_id>", methods=["DELETE"])
+@api.route("/artist/images/<int:img_id>", methods=["DELETE"])
 @jwt_required()
-def delete_artist_image(artist_profile_id, img_id):
+def delete_artist_image(img_id):
     current_user = get_jwt_identity()
-    if current_user != artist_profile_id:
-        raise APIException("No autorizado", status_code=401)
-    photo = Photo.query.filter_by(id=img_id, artist_profile_id=artist_profile_id).first()
+    artist_profile_id = ArtistProfile.query.filter_by(user_id=current_user).first()
+
+    photo = Photo.query.filter_by(id=img_id, artist_profile_id=artist_profile_id.id).first()
     if not photo:
         raise APIException("Imagen no encontrada", status_code=404)
+    
     db.session.delete(photo)
     db.session.commit()
     return jsonify({"msg": "Imagen eliminada con éxito"}), 200
 
 # Vídeos
-@api.route("/artist/<int:artist_profile_id>/videos", methods=["POST"])
+@api.route("/artist/videos", methods=["POST"])
 @jwt_required()
-def upload_artist_video(artist_profile_id):
+def upload_artist_video():
     current_user = get_jwt_identity()
-    if current_user != artist_profile_id:
-        raise APIException("No autorizado", status_code=401)
-    
-    if "video" not in request.files:
-        raise APIException("No se proporcionó un video", status_code=400)
-    video_file = request.files["video"]
-    try:
-        upload_result = cloudinary.uploader.upload(video_file, resource_type="video")
-    except Exception as e:
-        raise APIException("Error al subir el video: " + str(e), status_code=500)
-    
-    media_url = upload_result.get("url")
-    duration = upload_result.get("duration")
-    if not media_url:
-        raise APIException("Error al obtener la URL del video", status_code=500)
-    
+    artist_profile_id = ArtistProfile.query.filter_by(user_id=current_user).first()
+    data = request.get_json()
+
+    video_url = data.get("video_url")
+    if not video_url:
+        raise APIException("No existe URL de video", status_code=400)
+   
     video = Video(
-        title=request.form.get("title", "Sin título"),
-        media_url=media_url,
-        duration=duration,
-        artist_profile_id=artist_profile_id
+        title=data.get("title", "Sin título"),
+        media_url=video_url,
+        duration=data.get("duration", 0),
+        artist_profile_id=artist_profile_id.id
     )
     db.session.add(video)
     db.session.commit()
     return jsonify(video.serialize()), 201
 
-@api.route("/artist/<int:artist_profile_id>/videos", methods=["GET"])
+@api.route("/artist/videos", methods=["GET"])
 @jwt_required()
-def get_artist_videos(artist_profile_id):
-    videos = Video.query.filter_by(artist_profile_id=artist_profile_id).all()
+def get_artist_videos():
+    current_user = get_jwt_identity()
+    artist_profile_id = ArtistProfile.query.filter_by(user_id=current_user).first()
+
+    videos = Video.query.filter_by(artist_profile_id=artist_profile_id.id).all()
     return jsonify([video.serialize() for video in videos]), 200
 
-@api.route("/artist/<int:artist_profile_id>/videos/<int:video_id>", methods=["DELETE"])
+@api.route("/artist/videos/<int:video_id>", methods=["DELETE"])
 @jwt_required()
-def delete_artist_video(artist_profile_id, video_id):
+def delete_artist_video(video_id):
     current_user = get_jwt_identity()
-    if current_user != artist_profile_id:
-        raise APIException("No autorizado", status_code=401)
-    video = Video.query.filter_by(id=video_id, artist_profile_id=artist_profile_id).first()
+    artist_profile_id = ArtistProfile.query.filter_by(user_id=current_user).first()
+
+    video = Video.query.filter_by(id=video_id, artist_profile_id=artist_profile_id.id).first()
     if not video:
         raise APIException("Video no encontrado", status_code=404)
+    
     db.session.delete(video)
     db.session.commit()
     return jsonify({"msg": "Video eliminado con éxito"}), 200
 
 # Canciones
-@api.route("/artist/<int:artist_profile_id>/songs", methods=["POST"])
+@api.route("/artist/songs", methods=["POST"])
 @jwt_required()
-def upload_artist_song(artist_profile_id):
+def upload_artist_song():
     current_user = get_jwt_identity()
-    if current_user != artist_profile_id:
-        raise APIException("No autorizado", status_code=401)
+    artist_profile_id = ArtistProfile.query.filter_by(user_id=current_user).first()
+    data = request.get_json()
     
-    if "song" not in request.files:
-        raise APIException("No se proporcionó un archivo de audio", status_code=400)
-    song_file = request.files["song"]
-    try:
-        # Usamos resource_type "video" para audio, si así lo configura Cloudinary
-        upload_result = cloudinary.uploader.upload(song_file, resource_type="video")
-    except Exception as e:
-        raise APIException("Error al subir la canción: " + str(e), status_code=500)
-    
-    media_url = upload_result.get("url")
-    duration = upload_result.get("duration")
-    if not media_url:
-        raise APIException("Error al obtener la URL de la canción", status_code=500)
-    
+    song_url = data.get("song_url")
+    if not song_url:
+        raise APIException("No existe URL de cancion", status_code=400)
+   
     song = Song(
-        title=request.form.get("title", "Sin título"),
-        media_url=media_url,
-        duration=duration,
-        artist_profile_id=artist_profile_id
+        title=data.get("title", "Sin título"),
+        media_url=song_url,
+        duration=data.get("duration", 0),
+        artist_profile_id=artist_profile_id.id
     )
+
     db.session.add(song)
     db.session.commit()
     return jsonify(song.serialize()), 201
 
-@api.route("/artist/<int:artist_profile_id>/songs", methods=["GET"])
+@api.route("/artist/songs", methods=["GET"])
 @jwt_required()
-def get_artist_songs(artist_profile_id):
-    songs = Song.query.filter_by(artist_profile_id=artist_profile_id).all()
+def get_artist_songs():
+    current_user = get_jwt_identity()
+    artist_profile_id = ArtistProfile.query.filter_by(user_id=current_user).first()
+
+    songs = Song.query.filter_by(artist_profile_id=artist_profile_id.id).all()
     return jsonify([song.serialize() for song in songs]), 200
 
-@api.route("/artist/<int:artist_profile_id>/songs/<int:song_id>", methods=["DELETE"])
+@api.route("/artist/songs/<int:song_id>", methods=["DELETE"])
 @jwt_required()
-def delete_artist_song(artist_profile_id, song_id):
+def delete_artist_song(song_id):
     current_user = get_jwt_identity()
-    if current_user != artist_profile_id:
-        raise APIException("No autorizado", status_code=401)
-    song = Song.query.filter_by(id=song_id, artist_profile_id=artist_profile_id).first()
+    artist_profile_id = ArtistProfile.query.filter_by(user_id=current_user).first()
+
+    song = Song.query.filter_by(id=song_id, artist_profile_id=artist_profile_id.id).first()
     if not song:
         raise APIException("Canción no encontrada", status_code=404)
+    
     db.session.delete(song)
     db.session.commit()
     return jsonify({"msg": "Canción eliminada con éxito"}), 200
@@ -328,7 +321,7 @@ def unfollow_artist(artist_profile_id):
 @api.route("/getGenres", methods=["GET"])
 def get_genres():
     genres = Genre.query.all()
-    return jsonify({"genres": [genre.serialize() for genre in genres]}), 200
+    return jsonify({"genres": [genre.serialize() for genre in genres][1:]}), 200
 
 @api.route('/getGenresapi', methods=["GET"])
 def getGenresApi():
@@ -344,7 +337,11 @@ def getGenresApi():
     return jsonify(data)
 
 @api.route('/img', methods=["POST"])
+@jwt_required()
 def upload_image():
+    current_user = get_jwt_identity()
+    current_user = User.query.filter_by(id=current_user).first() 
+
     if "img" not in request.files:
         return jsonify({"msg": "No se proporcionó un archivo de imagen"}), 400
 
@@ -352,9 +349,54 @@ def upload_image():
 
     try:
         upload_result = cloudinary.uploader.upload(img)
+
+            # Update the profile photo in the database
+        current_user.profile_photo = upload_result["url"]
+        db.session.commit()  # Save the changes to the database
+
+
     except Exception as e:
         return jsonify({"msg": f"Error al subir la imagen: {str(e)}"}), 500
-
-    print(upload_result)
+    
     return jsonify({"img": upload_result["url"]}), 200
 
+
+
+@api.route("/artist/profile", methods=["PUT"])
+@jwt_required()
+def update_artist_profile():
+    user_id = get_jwt_identity()
+    artist_profile = ArtistProfile.query.filter_by(user_id=user_id).first()
+    if not artist_profile:
+        raise APIException("Perfil de artista no encontrado", status_code=404)
+    
+    data = request.get_json()
+    if "bio" not in data:
+        raise APIException("No se proporcionó la biografía", status_code=400)
+    
+    artist_profile.bio = data["bio"]
+    db.session.commit()
+    return jsonify(artist_profile.serialize()), 200
+
+@api.route('/user/<int:user_id>', methods=['PUT'])
+@jwt_required()
+def update_user(user_id):
+    
+    data = request.get_json()
+
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"msg": "Usuario no encontrado"}), 404
+
+    current_user_id = get_jwt_identity()
+    if current_user_id != user_id:
+        return jsonify({"msg": "No autorizado para modificar este usuario"}), 403
+
+    user.fullName = data.get("fullName", user.fullName)
+    user.username = data.get("username", user.username)
+    user.email = data.get("email", user.email)
+    user.address = data.get("address", user.address)
+    
+    db.session.commit()
+
+    return jsonify({"user": user.serialize()}), 200

@@ -1,9 +1,9 @@
-// src/front/js/pages/Artist/Images.js
 import React, { useState } from "react";
+import "../../../styles/images.css"; // o la ruta a tu CSS
 
-export const Images = ({ data, isOwner }) => {
+export const Images = ({ data, isOwner, refreshArtistData }) => {
   const [file, setFile] = useState(null);
-  const [uploadedUrl, setUploadedUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   const handleImgChange = (e) => {
     if (e.target.files && e.target.files.length) {
@@ -16,25 +16,69 @@ export const Images = ({ data, isOwner }) => {
       alert("Selecciona una imagen.");
       return;
     }
+    setUploading(true);
     try {
       const formData = new FormData();
-      formData.append("img", file);
-      const token = localStorage.getItem("Token");
+      formData.append("file", file);
+      formData.append("upload_preset", "SoundCript");
       const response = await fetch(
-        `${process.env.BACKEND_URL}/api/artist/${data.user.id}/images`,
+        `https://api.cloudinary.com/v1_1/${process.env.CLOUD_NAME}/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      if (!response.ok) throw new Error("Error al subir imagen");
+      const resData = await response.json();
+      const photoUrl = resData.secure_url;
+      const token = localStorage.getItem("Token");
+      const backendResponse = await fetch(
+        `${process.env.BACKEND_URL}/api/artist/images`,
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
-          body: formData
+          body: JSON.stringify({
+            photo_url: photoUrl,
+          }),
         }
       );
-      if (!response.ok) throw new Error("Error al subir la imagen");
-      const resData = await response.json();
-      setUploadedUrl(resData.media_url);
+      if (!backendResponse.ok)
+        throw new Error("Error al subir la imagen al backend");
+      await backendResponse.json();
+      alert("Imagen subida con éxito. A continuación se recargara la página para ver los cambios.");
+      window.location.reload();
+      if (refreshArtistData) await refreshArtistData();
+      setFile(null);
     } catch (error) {
       console.error(error);
+      alert(error.message);
+    }
+    setUploading(false);
+  };
+
+  const handleDeleteImage = async (imgId) => {
+    if (!window.confirm("¿Estás seguro de eliminar esta imagen?")) return;
+    try {
+      const token = localStorage.getItem("Token");
+      const response = await fetch(
+        `${process.env.BACKEND_URL}/api/artist/images/${imgId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Error al eliminar la imagen");
+      alert("Imagen eliminada. A continuación se recargara la página para ver los cambios.");
+      window.location.reload();
+      if (refreshArtistData) await refreshArtistData();
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
     }
   };
 
@@ -44,24 +88,36 @@ export const Images = ({ data, isOwner }) => {
       {isOwner && (
         <div>
           <input type="file" accept="image/*" onChange={handleImgChange} />
-          <button onClick={handleUpload}>Subir Imagen</button>
+          <button onClick={handleUpload} disabled={uploading}>
+            {uploading ? "Subiendo..." : "Subir Imagen"}
+          </button>
         </div>
       )}
+
       <div className="images-container">
         {data.photos && data.photos.length > 0 ? (
           data.photos.map((img) => (
-            <img key={img.id} src={img.media_url} alt={img.title} />
+            <div className="image-wrapper" key={img.id}>
+              <img
+                src={img.media_url}
+                alt={img.title}
+              />
+              {isOwner && (
+                <button
+                  className="delete-button"
+                  onClick={() => handleDeleteImage(img.id)}
+                >
+                  X
+                </button>
+              )}
+            </div>
           ))
         ) : (
           <p>No hay imágenes disponibles.</p>
         )}
       </div>
-      {uploadedUrl && (
-        <div>
-          <p>Imagen subida:</p>
-          <img src={uploadedUrl} alt="Nueva imagen" style={{ width: "200px" }} />
-        </div>
-      )}
     </div>
   );
 };
+
+export default Images;

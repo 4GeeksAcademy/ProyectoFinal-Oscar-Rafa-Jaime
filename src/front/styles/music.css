@@ -1,0 +1,56 @@
+/* music.css */
+
+.music-container {
+    background-color: var(--background-color);
+    padding: 20px;
+    color: var(--text-color);
+    border-radius: 8px;
+}
+
+.song-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.song-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1em;
+    position: relative;
+}
+
+.song-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.audio-player {
+    width: 250px;
+    height: 35px;
+}
+
+.song-title {
+    font-weight: bold;
+}
+
+/* Estilos para los botones */
+.like-button,
+.delete-button {
+    background-color: var(--primary-color);
+    border: none;
+    color: rgb(238, 11, 11);
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    margin-left: 1rem;
+    /* Espacio para separarlos un poco */
+}
+
+.like-button:hover,
+.delete-button:hover {
+    background-color: var(--secondary-color);
+}

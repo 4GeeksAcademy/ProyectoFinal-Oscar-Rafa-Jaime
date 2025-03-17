@@ -1,3 +1,4 @@
+// src/front/js/component/navbar.js
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
@@ -17,10 +18,16 @@ export const Navbar = () => {
     navigate("/");
   };
 
+  // Determinamos la ruta de "home" según el tipo de usuario.
+  // Por ejemplo, si es artista redirigimos a /artist/{id}, si no a /homeuser/{id}
+  const homeRoute = store.user
+    ? (store.user.is_artist ? `/artist/${store.user.id}` : `/homeuser/${store.user.id}`)
+    : "/";
+
   return (
     <nav className="navbar">
       <div className="container">
-        <Link to="/homeuser/123" className="navbar-brand">
+        <Link to={homeRoute} className="navbar-brand">
           SoundCript
         </Link>
         <div className="user-menu">

@@ -10,8 +10,8 @@
 
 .boton {
   background: linear-gradient(135deg,
-      var(--color-red),
-      var(--color-giants-orange),
+      var(--color-mauveine),
+      var(--color-green),
       var(--color-atomic-tangerine));
   color: var(--color-white);
   border: none;

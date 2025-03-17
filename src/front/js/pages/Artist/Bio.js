@@ -1,22 +1,41 @@
 // src/front/js/pages/Artist/Bio.js
 import React, { useState } from "react";
 
-export const Bio = ({ data, isOwner }) => {
+export const Bio = ({ data, isOwner, refreshArtistData }) => {
   const [editMode, setEditMode] = useState(false);
-  const [bio, setBio] = useState(data.bio || "");
+  const [bio, setBio] = useState(data?.bio || "");
 
   const handleEdit = () => setEditMode(true);
+
   const handleCancel = (e) => {
     e.preventDefault();
+    // Restaurar la bio anterior
+    setBio(data?.bio || "");
     setEditMode(false);
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    // Aquí se llamaría a una acción o se hace un fetch para actualizar la biografía
-    console.log("Guardar biografía:", bio);
-    alert("Biografía actualizada (simulación)");
-    setEditMode(false);
+    try {
+      const token = localStorage.getItem("Token");
+      const resp = await fetch(`${process.env.BACKEND_URL}/api/artist/profile`, {
+        method: "PUT", // O PATCH, según tu backend
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ bio }) // Mandamos la bio nueva
+      });
+      if (!resp.ok) throw new Error("Error al actualizar la biografía");
+
+      // Refrescamos la data para que se vea la nueva bio sin recargar manualmente
+      await refreshArtistData();
+
+      setEditMode(false);
+    } catch (error) {
+      console.error(error);
+      alert(error.message || "Error actualizando la biografía");
+    }
   };
 
   return (
@@ -36,7 +55,7 @@ export const Bio = ({ data, isOwner }) => {
         </form>
       ) : (
         <>
-          <p>{bio || "No se ha definido una biografía."}</p>
+          <p>{data?.bio || "No se ha definido una biografía."}</p>
           {isOwner && <button onClick={handleEdit}>Editar Biografía</button>}
         </>
       )}

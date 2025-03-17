@@ -1,9 +1,10 @@
 // src/front/js/pages/Artist/Videos.js
 import React, { useState } from "react";
+import "../../../styles/video.css"; // Asegúrate de tener estilos para videos
 
-export const Videos = ({ data, isOwner }) => {
+export const Videos = ({ data, isOwner, refreshArtistData }) => {
     const [file, setFile] = useState(null);
-    const [uploadedUrl, setUploadedUrl] = useState("");
+    const [uploading, setUploading] = useState(false);
 
     const handleVideoChange = (e) => {
         if (e.target.files && e.target.files.length) {
@@ -16,25 +17,74 @@ export const Videos = ({ data, isOwner }) => {
             alert("Selecciona un vídeo.");
             return;
         }
+        setUploading(true);
         try {
             const formData = new FormData();
-            formData.append("video", file);
-            const token = localStorage.getItem("Token");
+            formData.append("file", file);
+            formData.append("upload_preset", "SoundCript");
+
             const response = await fetch(
-                `${process.env.BACKEND_URL}/api/artist/${data.user.id}/videos`,
+                `https://api.cloudinary.com/v1_1/${process.env.CLOUD_NAME}/video/upload`,
+                {
+                    method: "POST",
+                    body: formData,
+                }
+            );
+            if (!response.ok) throw new Error("Error al subir el vídeo");
+            const resData = await response.json();
+            const videoUrl = resData.secure_url;
+            const token = localStorage.getItem("Token");
+            const backendResponse = await fetch(
+                `${process.env.BACKEND_URL}/api/artist/videos`,
                 {
                     method: "POST",
                     headers: {
-                        Authorization: `Bearer ${token}`
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
                     },
-                    body: formData
+                    body: JSON.stringify({
+                        video_url: videoUrl,
+                    }),
                 }
             );
-            if (!response.ok) throw new Error("Error al subir el video");
-            const resData = await response.json();
-            setUploadedUrl(resData.media_url);
+            if (!backendResponse.ok)
+                throw new Error("Error al subir el vídeo al backend");
+            await backendResponse.json();
+            alert(
+                "Vídeo subido con éxito. A continuación se recargara la página para ver los cambios."
+            );
+            window.location.reload();
+            if (refreshArtistData) await refreshArtistData();
+            setFile(null);
         } catch (error) {
             console.error(error);
+            alert(error.message);
+        }
+        setUploading(false);
+    };
+
+    const handleDeleteVideo = async (videoId) => {
+        if (!window.confirm("¿Estás seguro de eliminar este vídeo?")) return;
+        try {
+            const token = localStorage.getItem("Token");
+            const response = await fetch(
+                `${process.env.BACKEND_URL}/api/artist/videos/${videoId}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            if (!response.ok) throw new Error("Error al eliminar el vídeo");
+            alert(
+                "Vídeo eliminado. A continuación se recargara la página para ver los cambios."
+            );
+            window.location.reload();
+            if (refreshArtistData) await refreshArtistData();
+        } catch (error) {
+            console.error(error);
+            alert(error.message);
         }
     };
 
@@ -44,44 +94,40 @@ export const Videos = ({ data, isOwner }) => {
             {isOwner && (
                 <div>
                     <input type="file" accept="video/*" onChange={handleVideoChange} />
-                    <button onClick={handleUpload}>Subir Vídeo</button>
+                    <button onClick={handleUpload} disabled={uploading}>
+                        {uploading ? "Subiendo..." : "Subir Vídeo"}
+                    </button>
                 </div>
             )}
             <div className="videos-container">
                 {data.videos && data.videos.length > 0 ? (
                     data.videos.map((video) => (
-                        <div key={video.id} className="video-wrapper">
+                        <div className="video-wrapper" key={video.id}>
                             <iframe
-                                width="560"
+                                width="100%"
                                 height="315"
                                 src={video.media_url}
                                 title={video.title}
                                 frameBorder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 allowFullScreen
                             ></iframe>
+                            {isOwner && (
+                                <button
+                                    className="delete-button"
+                                    onClick={() => handleDeleteVideo(video.id)}
+                                >
+                                    X
+                                </button>
+                            )}
                         </div>
                     ))
                 ) : (
                     <p>No hay vídeos disponibles.</p>
                 )}
             </div>
-            {uploadedUrl && (
-                <div>
-                    <p>Vídeo subido:</p>
-                    <iframe
-                        width="560"
-                        height="315"
-                        src={uploadedUrl}
-                        title="Nuevo vídeo"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                    ></iframe>
-                </div>
-            )}
         </div>
     );
 };
 
-
+export default Videos;

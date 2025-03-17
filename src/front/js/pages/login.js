@@ -411,13 +411,7 @@ export const Login = () => {
           }}
         >
           <h1 className="text-white fs-1 fs-md-2 fs-lg-3">
-            Conéctata y comparte tu talento.
-          </h1>
-          <h1 className="text-white fs-1 fs-md-2 fs-lg-3">
-          Haz que el mundo te conozca.
-          </h1>
-          <h1 className="text-white fs-1 fs-md-2 fs-lg-3">
-            Tu arte, tu voz.
+            Conéctate y comparte tu talento.
           </h1>
           <h1 className="text-white fs-1 fs-md-2 fs-lg-3">
             SoundCript

@@ -254,20 +254,6 @@ export const UserData = () => {
             />
           </div>
 
-          {/* Si el user es artista y quieres editar su bio, puedes mostrar: */}
-          {store.user?.is_artist && (
-            <div className="mb-3">
-              <label>Biografía</label>
-              <textarea
-                className="form-control"
-                rows={5}
-                name="bio"
-                value={formData.bio}
-                onChange={handleChange}
-              />
-            </div>
-          )}
-
           <div className="d-flex col-md-12 justify-content-center">
             <button type="submit" className="boton">
               Guardar

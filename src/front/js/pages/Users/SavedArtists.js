@@ -58,7 +58,7 @@ export const SavedArtists = () => {
     };
 
     return (
-        <div className="profile-container">
+        <div className="profile-container text-dark">
             <h2>🎤 Artistas Seguidos</h2>
 
             {followedArtists.length === 0 ? (

@@ -52,7 +52,7 @@ export const SavedSongs = () => {
   };
 
   return (
-    <div className="profile-container">
+    <div className="profile-container text-dark">
       <h2>🎵 Canciones Guardadas</h2>
       {savedSongs.length === 0 ? (
         <p>No tienes canciones guardadas.</p>

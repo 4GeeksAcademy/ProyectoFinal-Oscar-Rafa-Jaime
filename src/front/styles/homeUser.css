@@ -30,9 +30,9 @@
     width: 200px;
     background-color: rgba(97, 235, 97, 0.1);
     /* Un verde translúcido */
-    border-radius: 8px;
+    border-radius: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 16px;
+    padding: 0px;
     text-align: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -47,20 +47,20 @@
 }
 
 .artistcard .card-img-top {
-    width: 170px;
-    /* Ajusta el tamaño a tu gusto */
-    height: 170px;
-    /* Igual que width para que sea cuadrado */
+    width: 150px;
+
+    height: 150px;
+
     border-radius: 20%;
-    /* Hace la forma circular */
+
     object-fit: cover;
-    /* Recorta la imagen sin deformarla */
+
     object-position: center;
-    /* Centra la imagen dentro del recuadro */
+
     display: block;
-    /* Asegura que no herede display inline */
+
     margin: 0 auto;
-    /* Opcional, para centrar la imagen */
+
 }
 
 

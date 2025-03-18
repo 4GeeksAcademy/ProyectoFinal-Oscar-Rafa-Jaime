@@ -14,6 +14,7 @@ export const Login = () => {
   const { store, actions } = useContext(Context);
   const [genres, setGenres] = useState([]);
   const [uploading, setUploading] = useState("")
+  const [uploadSuccess, setUploadSuccess] = useState(false); // New state for success message
 
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -56,23 +57,30 @@ export const Login = () => {
   };
   console.log(formulario);
 
+
   const handleImgChange = (e) => {
     if (e.target.files && e.target.files.length) {
-      setFile(e.target.files[0]);
+      const file = e.target.files[0];
+      console.log(file); // Optional: Check if file is selected correctly
+      setFile(file);
+      sendFile(file);
     }
   };
 
-  const sendFile = async () => {
+
+  const sendFile = async (file) => {
     if (!file) {
       alert("Selecciona una imagen.");
       return;
     }
 
     setUploading(true);
+    setUploadSuccess(false); // Reset success message on new upload attempt
 
     try {
       const formData = new FormData();
       formData.append("img", file);
+
       const response = await fetch(
         `${process.env.BACKEND_URL}/api/uploadImg`,
         {
@@ -81,13 +89,20 @@ export const Login = () => {
         }
       );
       if (!response.ok) throw new Error("Error al subir la imagen");
+
       const data = await response.json();
+
       setFormulario((prevForm) => ({
         ...prevForm,
         profile_photo: data.img
       }));
+
+      setUploadSuccess(true); // Set success message after upload
+
     } catch (error) {
       console.error("Error al subir la imagen:", error);
+      setUploadSuccess(false); // If there's an error, reset success message
+
     }
 
     setUploading(false);
@@ -151,7 +166,7 @@ export const Login = () => {
       localStorage.setItem("Token", data.access_token);
       localStorage.setItem("user", JSON.stringify(data.user));
       actions.setUser(data.user);
-      
+
       if (data.redirect_url) {
         navigate(data.redirect_url);
       }
@@ -393,10 +408,18 @@ export const Login = () => {
                   className="form-control mb-2"
                   accept="image/jpeg, image/png"
                   onChange={handleImgChange}
+                  id="file-input"
+                  style={{ display: 'none' }}
                 />
-                <button type="button" className="boton" onClick={sendFile} disabled={uploading}>
-                  {uploading ? "Subiendo..." : "Subir Imagen"}
+                <button type="button" className="boton"
+                  onClick={() => document.getElementById('file-input').click()}
+                  disabled={uploading}>
+                  {uploading ? "Subiendo..." : file ? "Cambiar imagen" : "Subir imagen de perfil"}
                 </button>
+
+                {uploadSuccess && <p className="text-success mt-2">¡Imagen subida con éxito!</p>}
+                {!uploadSuccess && file && <p className="text-danger mt-2">Imagen seleccionada</p>}
+
               </div>
               <button type="submit" className="btn btn-success w-100 py-2">
                 Registrarse

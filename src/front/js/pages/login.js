@@ -13,6 +13,8 @@ export const Login = () => {
   const [file, setFile] = useState(null);
   const { store, actions } = useContext(Context);
   const [genres, setGenres] = useState([]);
+  const [uploading, setUploading] = useState("")
+
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
@@ -65,6 +67,9 @@ export const Login = () => {
       alert("Selecciona una imagen.");
       return;
     }
+
+    setUploading(true);
+
     try {
       const formData = new FormData();
       formData.append("img", file);
@@ -84,6 +89,9 @@ export const Login = () => {
     } catch (error) {
       console.error("Error al subir la imagen:", error);
     }
+
+    setUploading(false);
+
   };
 
   const handleRegister = async (e) => {
@@ -384,8 +392,8 @@ export const Login = () => {
                   accept="image/jpeg, image/png"
                   onChange={handleImgChange}
                 />
-                <button type="button" onClick={sendFile}>
-                  Subir Imagen
+                <button type="button" className="boton" onClick={sendFile} disabled={uploading}>
+                  {uploading ? "Subiendo..." : "Subir Imagen"}
                 </button>
               </div>
               <button type="submit" className="btn btn-success w-100 py-2">

@@ -424,3 +424,42 @@ def get_artist_profile_by_id(artist_id):
     if not artist_profile:
         raise APIException("Perfil de artista no encontrado", status_code=404)
     return jsonify(artist_profile.serialize()), 200
+
+
+@api.route("/profile/followed/artist", methods=["GET"])
+@jwt_required()
+def get_followed_artists():
+    user_id = get_jwt_identity()
+    followed = FollowArtist.query.filter_by(user_id=user_id).all()
+    results = []
+    for f in followed:
+        artist_profile = ArtistProfile.query.get(f.artist_profile_id)
+        if artist_profile and artist_profile.user:
+            results.append({
+                "artist_profile_id": artist_profile.id,
+                "artist_name": artist_profile.user.fullName,
+                "artist_image": artist_profile.user.profile_photo
+            })
+    return jsonify({"followed_artists": results}), 200
+
+
+@api.route("/profile/favourite/songs", methods=["GET"])
+@jwt_required()
+def get_saved_songs():
+    user_id = get_jwt_identity()
+    saved = SavedSong.query.filter_by(user_id=user_id).all()
+    results = []
+    for s in saved:
+        if s.song:
+            results.append({
+                "song_id": s.song.id,
+                "song_title": s.song.title,
+                "song_url": s.song.media_url,
+                "artist_name": s.song.artist_profile.user.fullName 
+                    if s.song.artist_profile and s.song.artist_profile.user else "",
+                "artist_id": s.song.artist_profile.id 
+                    if s.song.artist_profile else None
+            })
+    return jsonify({"saved_songs": results}), 200
+
+

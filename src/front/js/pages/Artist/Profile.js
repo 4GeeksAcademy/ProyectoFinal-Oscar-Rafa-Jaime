@@ -23,24 +23,23 @@ export const Profile = () => {
   const [activeTab, setActiveTab] = useState("bio"); // Pestaña por defecto
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [file, setFile] = useState("")
-  const [uploading, setUploading] = useState("")
+  const [file, setFile] = useState("");
+  const [uploading, setUploading] = useState("");
+
   // Usuario logueado (puede venir de store o localStorage)
   const loggedUser = store.user || JSON.parse(localStorage.getItem("user") || "null");
   const isOwner = loggedUser && Number(loggedUser.id) === Number(artistId);
 
-  // Al montar, traemos datos del artista
   useEffect(() => {
     fetchArtistData();
     // eslint-disable-next-line
   }, [artistId]);
 
-  // Función para hacer GET y actualizar artistData
   const fetchArtistData = async () => {
     try {
       const token = localStorage.getItem("Token");
       const response = await fetch(
-        `${process.env.BACKEND_URL}/api/artist/profile/${artistId}`,  // <-- OJO
+        `${process.env.BACKEND_URL}/api/artist/profile`,
         {
           method: "GET",
           headers: {
@@ -62,8 +61,7 @@ export const Profile = () => {
     }
   };
 
-  console.log(artistData)
-  // Función para re-obtener los datos luego de un PUT en la bio
+  // Función para refrescar la data luego de una actualización (por ejemplo, al editar la bio)
   const refreshArtistData = async () => {
     try {
       const token = localStorage.getItem("Token");
@@ -91,7 +89,7 @@ export const Profile = () => {
   if (error) return <p>{error}</p>;
   if (!artistData) return <p>No se encontraron datos del artista.</p>;
 
-  // Si es el dueño, puede editar su foto de perfil (redirige a la vista de edición)
+  // Función para manejar el cambio de imagen
   const handleImgChange = (e) => {
     if (e.target.files && e.target.files.length) {
       const selectedFile = e.target.files[0];
@@ -99,12 +97,12 @@ export const Profile = () => {
       setUploading(true);
 
       handleUploadFile(selectedFile).finally(() => {
-        setUploading(false); // Set uploading to false after the upload is complete (either success or failure)
+        setUploading(false);
       });
     }
   };
 
-  // Send file to the server
+  // Función para enviar el archivo al servidor
   const handleUploadFile = async (file) => {
     if (!file) {
       alert("Selecciona una imagen.");
@@ -129,20 +127,17 @@ export const Profile = () => {
 
       const data = await response.json();
 
-      // Update profile photo in local storage
+      // Actualizamos la imagen en el localStorage y en el store global
       const updatedUser = { ...store.user, profile_photo: data.img };
       localStorage.setItem("user", JSON.stringify(updatedUser));
-
-      // Update global context
       actions.setUser(updatedUser);
 
-
-      // Update profile photo URL or handle accordingly
+      // Actualizamos la data del perfil del artista
       setArtistData((prevData) => ({
         ...prevData,
         user: {
           ...prevData.user,
-          profile_photo: data.img, // Assuming the server returns the image URL
+          profile_photo: data.img,
         },
       }));
     } catch (error) {
@@ -150,12 +145,18 @@ export const Profile = () => {
     }
   };
 
+  // Función para manejar el botón de "Seguir"
+  const handleFollow = () => {
+    actions.followArtist(artistId);
+    // Opcional: Puedes notificar al usuario o actualizar el estado global para reflejar el cambio en SavedArtists
+    alert("¡Ahora sigues a este artista!");
+  };
+
   return (
     <>
       <Navbar />
 
       <div className="artist-profile-container">
-        {/* Encabezado */}
         <div className="artist-header">
           <div className="artist-img-container">
             <img
@@ -185,16 +186,17 @@ export const Profile = () => {
             ) : (
               <button
                 className="follow-button"
-                onClick={() => actions.followArtist(artistId)}
+                onClick={handleFollow}
               >
                 Seguir
               </button>
             )}
           </div>
-          <h1 className="nombre">{artistData.user?.fullName || "Nombre del Artista"}</h1>
+          <h1 className="nombre">
+            {artistData.user?.fullName || "Nombre del Artista"}
+          </h1>
         </div>
 
-        {/* Tabs */}
         <div className="artist-tabs">
           <button
             className={activeTab === "bio" ? "active" : ""}
@@ -222,7 +224,6 @@ export const Profile = () => {
           </button>
         </div>
 
-        {/* Contenido según la pestaña */}
         <div className="artist-content">
           {activeTab === "bio" && (
             <Bio
@@ -241,3 +242,5 @@ export const Profile = () => {
     </>
   );
 };
+
+export default Profile;

@@ -1,6 +1,6 @@
 // src/front/js/pages/Artist/Music.js
 import React, { useState } from "react";
-import "../../../styles/music.css"; // Asegúrate de tener estilos para música
+import "../../../styles/music.css";
 
 export const Music = ({ data, isOwner, refreshArtistData }) => {
     const [file, setFile] = useState(null);
@@ -28,7 +28,6 @@ export const Music = ({ data, isOwner, refreshArtistData }) => {
             formData.append("file", file);
             formData.append("upload_preset", "SoundCript");
 
-            // Subida a Cloudinary
             const response = await fetch(
                 `https://api.cloudinary.com/v1_1/${process.env.CLOUD_NAME}/video/upload`,
                 {
@@ -38,11 +37,8 @@ export const Music = ({ data, isOwner, refreshArtistData }) => {
             );
             if (!response.ok) throw new Error("Error al subir la canción");
             const resData = await response.json();
-
-            // Extraemos la URL de la canción
             const songUrl = resData.secure_url;
 
-            // Ahora enviamos al backend nuestra URL y título
             const token = localStorage.getItem("Token");
             const backendResponse = await fetch(
                 `${process.env.BACKEND_URL}/api/artist/songs`,
@@ -55,6 +51,7 @@ export const Music = ({ data, isOwner, refreshArtistData }) => {
                     body: JSON.stringify({
                         song_url: songUrl,
                         title: songTitle,
+                        duration: resData.duration || 0 // O ajusta según tu API
                     }),
                 }
             );
@@ -62,7 +59,9 @@ export const Music = ({ data, isOwner, refreshArtistData }) => {
                 throw new Error("Error al subir la canción al backend");
             await backendResponse.json();
 
-            alert("Canción subida con éxito. Recarga la vista para ver los cambios.");
+            alert(
+                "Canción subida con éxito. Recarga la vista para ver los cambios."
+            );
             window.location.reload();
             if (refreshArtistData) await refreshArtistData();
 
@@ -98,15 +97,21 @@ export const Music = ({ data, isOwner, refreshArtistData }) => {
         }
     };
 
-    const handleLike = (songId) => {
-        console.log("Like a la canción:", songId);
-        // Aquí puedes agregar la lógica para el like si es necesario
+    const handleLike = async (songId) => {
+        try {
+            const token = localStorage.getItem("Token");
+            await actions.saveSong(songId);
+            alert("Canción agregada a tus favoritos");
+        } catch (error) {
+            console.error("Error guardando la canción:", error);
+            alert("Error guardando la canción");
+        }
     };
 
     return (
         <div>
             <h2>Música</h2>
-            {isOwner && (
+            {isOwner ? (
                 <div style={{ marginBottom: "1em" }}>
                     <input
                         type="file"
@@ -125,7 +130,7 @@ export const Music = ({ data, isOwner, refreshArtistData }) => {
                         {uploading ? "Subiendo..." : "Subir Canción"}
                     </button>
                 </div>
-            )}
+            ) : null}
 
             <div className="music-container">
                 {data.songs && data.songs.length > 0 ? (
@@ -133,28 +138,28 @@ export const Music = ({ data, isOwner, refreshArtistData }) => {
                         {data.songs.map((song) => (
                             <li key={song.id} className="song-item">
                                 <div className="song-content">
-                                    <audio controls src={song.media_url} className="audio-player">
+                                    <audio controls src={song.media_url}>
                                         Tu navegador no soporta el elemento de audio.
                                     </audio>
                                     <span className="song-title">{song.title}</span>
                                 </div>
-
-                                {isOwner && (
-                                    <button
-                                        className="eliminar-button"
-                                        onClick={() => handleDeleteSong(song.id)}
-                                    >
-                                        X
-                                    </button>
-                                )}
-                                {!isOwner && (
-                                    <button
-                                        className="like-button"
-                                        onClick={() => handleLike(song.id)}
-                                    >
-                                        👍 Like
-                                    </button>
-                                )}
+                                <div className="song-actions">
+                                    {isOwner ? (
+                                        <button
+                                            className="btn btn-danger eliminar-button"
+                                            onClick={() => handleDeleteSong(song.id)}
+                                        >
+                                            X
+                                        </button>
+                                    ) : (
+                                        <button
+                                            className="btn btn-success like-button"
+                                            onClick={() => handleLike(song.id)}
+                                        >
+                                            👍 Like
+                                        </button>
+                                    )}
+                                </div>
                             </li>
                         ))}
                     </ul>

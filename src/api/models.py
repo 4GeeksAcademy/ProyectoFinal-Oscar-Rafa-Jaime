@@ -58,7 +58,7 @@ class ArtistProfile(db.Model):
     __tablename__ = "artist_profile"
 
     id = db.Column(db.Integer, primary_key=True)
-    bio = db.Column(db.String(400), nullable=True)
+    bio = db.Column(db.String(3000), nullable=True)
 
     # Relación 1:1 con el usuario (solo para artistas)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), unique=True)

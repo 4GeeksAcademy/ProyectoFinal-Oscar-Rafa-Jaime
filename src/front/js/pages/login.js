@@ -442,7 +442,7 @@ export const Login = () => {
           }}
         >
           <h3 className="text-white fs-1 fs-md-2 fs-lg-3">
-            Conéctata y comparte tu talento
+            Conecta y comparte tu talento
           </h3>
           <h1 className="text-white fs-1 fs-md-2 fs-lg-3">
             SoundCript

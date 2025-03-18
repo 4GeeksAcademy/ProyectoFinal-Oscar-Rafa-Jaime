@@ -2,18 +2,20 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-			user: null,
-			message: null,
-			demo: [
-				{ title: "FIRST", background: "white", initial: "white" },
-				{ title: "SECOND", background: "white", initial: "white" }
-			],
-			genres: [] // Se cargarán desde el endpoint /api/getGenres
+			user: null,			
+			genres: []
 		},
 		actions: {
 			setUser: (user) => {
 				setStore({ user: user });
 			},
+
+			loadUser: () => {
+				const user = JSON.parse(localStorage.getItem("user"));
+				if (user) {
+				  setStore({ user: user });
+				}
+			  },
 
 			loadGenres: async () => {
 				try {

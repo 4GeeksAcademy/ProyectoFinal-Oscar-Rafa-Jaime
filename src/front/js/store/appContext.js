@@ -19,6 +19,8 @@ const injectContext = (PassedComponent) => {
     );
 
     useEffect(() => {
+      state.actions.setUser();
+      state.actions.loadUser();
       state.actions.loadGenres();
     }, []);
 

@@ -143,9 +143,11 @@ export const Login = () => {
         throw new Error(errorData.message || "Error en el inicio de sesión");
       }
       const data = await response.json();
+
       localStorage.setItem("Token", data.access_token);
       localStorage.setItem("user", JSON.stringify(data.user));
       actions.setUser(data.user);
+      
       if (data.redirect_url) {
         navigate(data.redirect_url);
       }

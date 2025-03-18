@@ -1,8 +1,8 @@
 // src/front/js/pages/Artist/Videos.js
 import React, { useState } from "react";
-import "../../../styles/video.css"; // Asegúrate de tener estilos para videos
+import "../../../styles/video.css";
 
-export const Videos = ({ data, isOwner, refreshArtistData }) => {
+function Videos({ data, isOwner, refreshArtistData }) {
     const [file, setFile] = useState(null);
     const [uploading, setUploading] = useState(false);
 
@@ -19,20 +19,24 @@ export const Videos = ({ data, isOwner, refreshArtistData }) => {
         }
         setUploading(true);
         try {
+            // Subir a Cloudinary
             const formData = new FormData();
             formData.append("file", file);
             formData.append("upload_preset", "SoundCript");
 
+            const cloudName = process.env.CLOUD_NAME;
             const response = await fetch(
-                `https://api.cloudinary.com/v1_1/${process.env.CLOUD_NAME}/video/upload`,
+                `https://api.cloudinary.com/v1_1/${cloudName}/video/upload`,
                 {
                     method: "POST",
-                    body: formData,
+                    body: formData
                 }
             );
             if (!response.ok) throw new Error("Error al subir el vídeo");
             const resData = await response.json();
             const videoUrl = resData.secure_url;
+
+            // Guardar en backend
             const token = localStorage.getItem("Token");
             const backendResponse = await fetch(
                 `${process.env.BACKEND_URL}/api/artist/videos`,
@@ -40,21 +44,24 @@ export const Videos = ({ data, isOwner, refreshArtistData }) => {
                     method: "POST",
                     headers: {
                         Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
+                        "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
                         video_url: videoUrl,
-                    }),
+                        title: "Mi video subido",
+                        duration: 0
+                    })
                 }
             );
-            if (!backendResponse.ok)
-                throw new Error("Error al subir el vídeo al backend");
+            if (!backendResponse.ok) throw new Error("Error al subir el vídeo al backend");
             await backendResponse.json();
-            alert(
-                "Vídeo subido con éxito. A continuación se recargara la página para ver los cambios."
-            );
-            window.location.reload();
-            if (refreshArtistData) await refreshArtistData();
+
+            alert("Vídeo subido con éxito.");
+
+            if (refreshArtistData) {
+                await refreshArtistData();
+            }
+
             setFile(null);
         } catch (error) {
             console.error(error);
@@ -72,16 +79,16 @@ export const Videos = ({ data, isOwner, refreshArtistData }) => {
                 {
                     method: "DELETE",
                     headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                        Authorization: `Bearer ${token}`
+                    }
                 }
             );
             if (!response.ok) throw new Error("Error al eliminar el vídeo");
-            alert(
-                "Vídeo eliminado. A continuación se recargara la página para ver los cambios."
-            );
-            window.location.reload();
-            if (refreshArtistData) await refreshArtistData();
+            alert("Vídeo eliminado.");
+
+            if (refreshArtistData) {
+                await refreshArtistData();
+            }
         } catch (error) {
             console.error(error);
             alert(error.message);
@@ -99,6 +106,7 @@ export const Videos = ({ data, isOwner, refreshArtistData }) => {
                     </button>
                 </div>
             )}
+
             <div className="videos-container">
                 {data.videos && data.videos.length > 0 ? (
                     data.videos.map((video) => (
@@ -128,6 +136,6 @@ export const Videos = ({ data, isOwner, refreshArtistData }) => {
             </div>
         </div>
     );
-};
+}
 
 export default Videos;

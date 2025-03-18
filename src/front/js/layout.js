@@ -6,7 +6,7 @@ import injectContext from "./store/appContext";
 
 // Importamos las vistas
 import { Login } from "./pages/login";
-import { Profile } from "./pages/Artist/Profile";
+import Profile from "./pages/Artist/Profile";
 import { UserData } from "./pages/Artist/UserData";
 import { HomeUser } from "./pages/Users/HomeUser";
 import UserProfile from "./pages/Users/UserProfile"; // Actualizamos para usar el dashboard con pestañas

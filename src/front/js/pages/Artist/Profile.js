@@ -4,50 +4,82 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Context } from "../../store/appContext";
 import "../../../styles/Profile.css";
 
-// Importamos los componentes de cada pestaña
 import { Bio } from "./Bio";
-import { Images } from "./Images";
-import { Videos } from "./Videos";
-import { Music } from "./Music";
+import Images from "./Images";
+import Videos from "./Videos";
+import Music from "./Music";
 
 import { Navbar } from "../../component/navbar";
 import { Footer } from "../../component/footer";
 
-export const Profile = () => {
+const Profile = () => {
   const { id: artistId } = useParams();
   const navigate = useNavigate();
   const { store, actions } = useContext(Context);
 
-  // Estado local para la data del artista
   const [artistData, setArtistData] = useState(null);
-  const [activeTab, setActiveTab] = useState("bio"); // Pestaña por defecto
+  const [activeTab, setActiveTab] = useState("bio");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [file, setFile] = useState("");
-  const [uploading, setUploading] = useState("");
 
-  // Usuario logueado (puede venir de store o localStorage)
+  // Para saber si estoy siguiendo
+  const [isFollowing, setIsFollowing] = useState(false);
+
   const loggedUser = store.user || JSON.parse(localStorage.getItem("user") || "null");
-  const isOwner = loggedUser && Number(loggedUser.id) === Number(artistId);
+  const isOwner =
+    loggedUser &&
+    loggedUser.is_artist === true &&
+    Number(loggedUser.id) === Number(artistId);
 
   useEffect(() => {
     fetchArtistData();
+    checkIfFollowing();
     // eslint-disable-next-line
   }, [artistId]);
 
-  const fetchArtistData = async () => {
+  const checkIfFollowing = async () => {
     try {
       const token = localStorage.getItem("Token");
-      const response = await fetch(
-        `${process.env.BACKEND_URL}/api/artist/profile`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          }
+      // 1) Trae la lista de artistas que sigue
+      const resp = await fetch(`${process.env.BACKEND_URL}/api/profile/followed/artist`, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
+      });
+      if (!resp.ok) throw new Error("Error consultando si sigue al artista");
+      const data = await resp.json();
+
+      // data.followed_artists => un array con "artist_profile_id" por ejemplo
+      // Compruebas si el "artistId" actual está en la lista
+      const found = data.followed_artists?.some(
+        (a) => Number(a.artist_profile_id) === Number(artistId)
       );
+      setIsFollowing(found);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchArtistData = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("Token");
+
+      let url = "";
+      if (isOwner) {
+        url = `${process.env.BACKEND_URL}/api/artist/profile`;
+      } else {
+        url = `${process.env.BACKEND_URL}/api/artist/profile/${artistId}`;
+      }
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      });
+
       if (!response.ok) {
         throw new Error("Error al obtener los datos del artista");
       }
@@ -61,17 +93,24 @@ export const Profile = () => {
     }
   };
 
-  // Función para refrescar la data luego de una actualización (por ejemplo, al editar la bio)
   const refreshArtistData = async () => {
     try {
       const token = localStorage.getItem("Token");
-      const response = await fetch(`${process.env.BACKEND_URL}/api/artist/profile`, {
+      let url = "";
+      if (isOwner) {
+        url = `${process.env.BACKEND_URL}/api/artist/profile`;
+      } else {
+        url = `${process.env.BACKEND_URL}/api/artist/profile/${artistId}`;
+      }
+
+      const response = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         }
       });
+
       if (!response.ok) throw new Error("Error al refrescar datos del artista");
       const data = await response.json();
       setArtistData(data);
@@ -80,115 +119,69 @@ export const Profile = () => {
     }
   };
 
-  // Cambio de pestaña
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+  };
+
+  // Toggle Follow
+  const handleToggleFollow = async () => {
+    try {
+      const token = localStorage.getItem("Token");
+      if (isFollowing) {
+        // Unfollow
+        const resp = await fetch(
+          `${process.env.BACKEND_URL}/api/profile/followed/artist/${artistId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+        if (!resp.ok) throw new Error("Error al dejar de seguir");
+        alert("Has dejado de seguir al artista");
+        setIsFollowing(false);
+      } else {
+        // Follow
+        const resp = await fetch(
+          `${process.env.BACKEND_URL}/api/profile/followed/artist/${artistId}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+        if (!resp.ok) throw new Error("Error al seguir al artista");
+        alert("¡Ahora sigues a este artista!");
+        setIsFollowing(true);
+      }
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
   };
 
   if (loading) return <p>Cargando...</p>;
   if (error) return <p>{error}</p>;
   if (!artistData) return <p>No se encontraron datos del artista.</p>;
 
-  // Función para manejar el cambio de imagen
-  const handleImgChange = (e) => {
-    if (e.target.files && e.target.files.length) {
-      const selectedFile = e.target.files[0];
-      setFile(selectedFile);
-      setUploading(true);
-
-      handleUploadFile(selectedFile).finally(() => {
-        setUploading(false);
-      });
-    }
-  };
-
-  // Función para enviar el archivo al servidor
-  const handleUploadFile = async (file) => {
-    if (!file) {
-      alert("Selecciona una imagen.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("img", file);
-
-    const token = localStorage.getItem("Token");
-
-    try {
-      const response = await fetch(`${process.env.BACKEND_URL}/api/img`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      if (!response.ok) throw new Error("Error al subir la imagen");
-
-      const data = await response.json();
-
-      // Actualizamos la imagen en el localStorage y en el store global
-      const updatedUser = { ...store.user, profile_photo: data.img };
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      actions.setUser(updatedUser);
-
-      // Actualizamos la data del perfil del artista
-      setArtistData((prevData) => ({
-        ...prevData,
-        user: {
-          ...prevData.user,
-          profile_photo: data.img,
-        },
-      }));
-    } catch (error) {
-      console.error("Error al subir la imagen:", error);
-    }
-  };
-
-  // Función para manejar el botón de "Seguir"
-  const handleFollow = () => {
-    actions.followArtist(artistId);
-    // Opcional: Puedes notificar al usuario o actualizar el estado global para reflejar el cambio en SavedArtists
-    alert("¡Ahora sigues a este artista!");
-  };
-
   return (
     <>
       <Navbar />
-
       <div className="artist-profile-container">
         <div className="artist-header">
           <div className="artist-img-container">
             <img
-              src={
-                artistData.user?.profile_photo || "https://placehold.co/200"
-              }
+              src={artistData.user?.profile_photo || "https://placehold.co/200"}
               alt="Perfil de artista"
               className="artist-profile-picture"
             />
             {isOwner ? (
-              <div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImgChange}
-                  id="file-input"
-                  style={{ display: "none" }}
-                />
-                <button
-                  className="follow-button"
-                  onClick={() => document.getElementById("file-input").click()}
-                >
-                  Editar foto
-                </button>
-                {uploading && <p>Subiendo...</p>}
-              </div>
+              <p>(Aquí pondrías tu lógica de cambiar foto, etc.)</p>
             ) : (
-              <button
-                className="follow-button"
-                onClick={handleFollow}
-              >
-                Seguir
+              <button className="follow-button" onClick={handleToggleFollow}>
+                {isFollowing ? "Dejar de seguir" : "Seguir"}
               </button>
             )}
           </div>
@@ -226,18 +219,19 @@ export const Profile = () => {
 
         <div className="artist-content">
           {activeTab === "bio" && (
-            <Bio
-              data={artistData}
-              isOwner={isOwner}
-              refreshArtistData={refreshArtistData}
-            />
+            <Bio data={artistData} isOwner={isOwner} refreshArtistData={refreshArtistData} />
           )}
-          {activeTab === "images" && <Images data={artistData} isOwner={isOwner} />}
-          {activeTab === "videos" && <Videos data={artistData} isOwner={isOwner} />}
-          {activeTab === "music" && <Music data={artistData} isOwner={isOwner} />}
+          {activeTab === "images" && (
+            <Images data={artistData} isOwner={isOwner} refreshArtistData={refreshArtistData} />
+          )}
+          {activeTab === "videos" && (
+            <Videos data={artistData} isOwner={isOwner} refreshArtistData={refreshArtistData} />
+          )}
+          {activeTab === "music" && (
+            <Music data={artistData} isOwner={isOwner} refreshArtistData={refreshArtistData} />
+          )}
         </div>
       </div>
-
       <Footer />
     </>
   );

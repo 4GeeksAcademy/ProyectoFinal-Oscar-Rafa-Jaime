@@ -462,4 +462,14 @@ def get_saved_songs():
             })
     return jsonify({"saved_songs": results}), 200
 
+@api.route("/artist/profile/<int:user_id>", methods=["GET"])
+def get_artist_profile_by_user_id(user_id):
+    """
+    Devuelve el perfil de artista cuyo user_id sea <user_id>.
+    """
+    artist_profile = ArtistProfile.query.filter_by(user_id=user_id).first()
+    if not artist_profile:
+        raise APIException("Perfil de artista no encontrado", status_code=404)
+    return jsonify(artist_profile.serialize()), 200
+
 

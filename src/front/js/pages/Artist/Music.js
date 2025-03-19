@@ -1,11 +1,14 @@
 // src/front/js/pages/Artist/Music.js
 import React, { useState } from "react";
+import "../../../styles/music.css"; // Asegúrate de tener estilos para música
+import { useTranslation } from "react-i18next";
 import "../../../styles/music.css";
 
 function Music({ data, isOwner, refreshArtistData }) {
     const [file, setFile] = useState(null);
     const [songTitle, setSongTitle] = useState("");
     const [uploading, setUploading] = useState(false);
+    const { t } = useTranslation();
 
     // Manejar selección de archivo
     const handleSongChange = (e) => {
@@ -17,11 +20,11 @@ function Music({ data, isOwner, refreshArtistData }) {
     // Subir nueva canción (solo si isOwner)
     const handleUpload = async () => {
         if (!file) {
-            alert("Selecciona un archivo de audio.");
+            alert(t("Selecciona un archivo de audio."));
             return;
         }
         if (!songTitle) {
-            alert("Debes introducir un título para la canción.");
+            alert(t("Debes introducir un título para la canción."));
             return;
         }
         setUploading(true);
@@ -39,7 +42,7 @@ function Music({ data, isOwner, refreshArtistData }) {
                     body: formData
                 }
             );
-            if (!response.ok) throw new Error("Error al subir la canción");
+            if (!response.ok) throw new Error(t("Error al subir la canción"));
             const resData = await response.json();
             const songUrl = resData.secure_url;
 
@@ -60,13 +63,14 @@ function Music({ data, isOwner, refreshArtistData }) {
                 }
             );
             if (!backendResponse.ok)
-                throw new Error("Error al subir la canción al backend");
-
+                throw new Error(t("Error al subir la canción al backend"));
+          
             await backendResponse.json();
 
-            alert("Canción subida con éxito.");
+            alert(t("Canción subida con éxito. Recarga la vista para ver los cambios."));
+          
             if (refreshArtistData) {
-                await refreshArtistData();
+              await refreshArtistData();
             }
 
             setFile(null);
@@ -80,7 +84,7 @@ function Music({ data, isOwner, refreshArtistData }) {
 
     // Eliminar canción (solo si isOwner)
     const handleDeleteSong = async (songId) => {
-        if (!window.confirm("¿Estás seguro de eliminar esta canción?")) return;
+        if (!window.confirm(t("¿Estás seguro de eliminar esta canción?"))) return;
         try {
             const token = localStorage.getItem("Token");
             const response = await fetch(
@@ -92,17 +96,19 @@ function Music({ data, isOwner, refreshArtistData }) {
                     }
                 }
             );
-            if (!response.ok) throw new Error("Error al eliminar la canción");
-            alert("Canción eliminada.");
-
+            if (!response.ok) throw new Error(t("Error al eliminar la canción"));
+            alert(t("Canción eliminada. Recarga la vista para ver los cambios."));
+          
             if (refreshArtistData) {
-                await refreshArtistData();
+              await refreshArtistData();
             }
+
         } catch (error) {
             console.error(error);
             alert(error.message);
         }
     };
+
 
     // Like a una canción (si NO eres el dueño)
     const handleLike = async (songId) => {
@@ -116,8 +122,8 @@ function Music({ data, isOwner, refreshArtistData }) {
                 },
                 body: JSON.stringify({ songId })
             });
-            if (!resp.ok) throw new Error("Error al dar like a la canción");
-            alert("¡Canción guardada en tus favoritos!");
+            if (!resp.ok) throw new Error(t("Error al dar like a la canción"));
+            alert(t("¡Canción guardada en tus favoritos!"));
         } catch (error) {
             console.error(error);
             alert(error.message);
@@ -126,19 +132,19 @@ function Music({ data, isOwner, refreshArtistData }) {
 
     return (
         <div>
-            <h2>Música</h2>
+            <h2>{t("Música")}</h2>
             {isOwner && (
                 <div style={{ marginBottom: "1em" }}>
                     <input type="file" accept="audio/*" onChange={handleSongChange} />
                     <input
                         type="text"
-                        placeholder="Título de la canción"
+                        placeholder={t("Título de la canción")}
                         value={songTitle}
                         onChange={(e) => setSongTitle(e.target.value)}
                         style={{ marginRight: "0.5em" }}
                     />
                     <button onClick={handleUpload} disabled={uploading}>
-                        {uploading ? "Subiendo..." : "Subir Canción"}
+                        {uploading ? t("Subiendo...") : t("Subir Canción")}
                     </button>
                 </div>
             )}
@@ -149,7 +155,7 @@ function Music({ data, isOwner, refreshArtistData }) {
                         <li key={song.id} className="song-item">
                             <div className="song-content">
                                 <audio controls src={song.media_url} className="audio-player">
-                                    Tu navegador no soporta el elemento de audio.
+                                    {t("Tu navegador no soporta el elemento de audio.")}
                                 </audio>
                                 <span className="song-title">{song.title}</span>
                             </div>
@@ -170,7 +176,7 @@ function Music({ data, isOwner, refreshArtistData }) {
                     ))}
                 </ul>
             ) : (
-                <p>No hay canciones disponibles.</p>
+                <p>{t("No hay canciones disponibles.")}</p>
             )}
         </div>
     );

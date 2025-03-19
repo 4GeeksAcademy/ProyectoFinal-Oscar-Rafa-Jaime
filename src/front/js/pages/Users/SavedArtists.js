@@ -2,11 +2,14 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Context } from "../../store/appContext";
 import "../../../styles/userProfile.css";
+import { useTranslation } from "react-i18next";
+
 
 export const SavedArtists = () => {
   const { store, actions } = useContext(Context);
   const [followedArtists, setFollowedArtists] = useState([]);
-
+  const { t } = useTranslation();
+  
   useEffect(() => {
     const fetchFollowedArtists = async () => {
       try {
@@ -20,7 +23,7 @@ export const SavedArtists = () => {
             }
           }
         );
-        if (!response.ok) throw new Error("Error al obtener artistas seguidos");
+        if (!response.ok) throw new Error(t("Error al obtener artistas seguidos"));
         const data = await response.json();
         setFollowedArtists(data.followed_artists || []);
       } catch (error) {
@@ -43,7 +46,7 @@ export const SavedArtists = () => {
           }
         }
       );
-      if (!response.ok) throw new Error("No se pudo dejar de seguir al artista");
+      if (!response.ok) throw new Error(t("No se pudo eliminar el artista"));
 
       setFollowedArtists((prev) =>
         prev.filter((artist) => artist.artist_profile_id !== artist_profile_id)
@@ -55,10 +58,10 @@ export const SavedArtists = () => {
 
   return (
     <div className="profile-container text-dark">
-      <h2>🎤 Artistas Seguidos</h2>
+      <h2>🎤 {t("Artistas Seguidos")}</h2>
 
       {followedArtists.length === 0 ? (
-        <p>No sigues a ningún artista.</p>
+        <p>{t("No sigues a ningún artista.")}</p>
       ) : (
         <div className="artist-grid">
           {followedArtists.map((artist) => (
@@ -75,7 +78,7 @@ export const SavedArtists = () => {
                 className="btn btn-danger remove-btn"
                 onClick={() => removeArtist(artist.artist_profile_id)}
               >
-                Dejar de seguir
+                {t("Dejar de seguir")}
               </button>
             </div>
           ))}

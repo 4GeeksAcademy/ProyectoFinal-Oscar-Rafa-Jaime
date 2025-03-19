@@ -3,6 +3,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Context } from "../../store/appContext";
 import "../../../styles/Profile.css";
+import { useTranslation } from "react-i18next";
 
 import { Bio } from "./Bio";
 import Images from "./Images";
@@ -16,6 +17,7 @@ const Profile = () => {
   const { id: artistId } = useParams();
   const navigate = useNavigate();
   const { store, actions } = useContext(Context);
+  const { t } = useTranslation();
 
   const [artistData, setArtistData] = useState(null);
   const [activeTab, setActiveTab] = useState("bio");
@@ -81,14 +83,14 @@ const Profile = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Error al obtener los datos del artista");
+        throw new Error(t("Error al obtener los datos del artista"));
       }
       const data = await response.json();
       setArtistData(data);
       setLoading(false);
     } catch (err) {
       console.error(err);
-      setError(err.message || "Error al cargar el perfil del artista.");
+      setError(err.message || t("Error al cargar el perfil del artista."));
       setLoading(false);
     }
   };
@@ -110,8 +112,7 @@ const Profile = () => {
           Authorization: `Bearer ${token}`
         }
       });
-
-      if (!response.ok) throw new Error("Error al refrescar datos del artista");
+      if (!response.ok) throw new Error(t("Error al refrescar datos del artista"));
       const data = await response.json();
       setArtistData(data);
     } catch (error) {
@@ -123,7 +124,69 @@ const Profile = () => {
     setActiveTab(tab);
   };
 
-  // Toggle Follow
+  if (loading) return <p>{t("Cargando...")}</p>;
+  if (error) return <p>{error}</p>;
+  if (!artistData) return <p>{t("No se encontraron datos del artista.")}</p>;
+
+  // Si es el dueño, puede editar su foto de perfil (redirige a la vista de edición)
+  const handleImgChange = (e) => {
+    if (e.target.files && e.target.files.length) {
+      const selectedFile = e.target.files[0];
+      setFile(selectedFile);
+      setUploading(true);
+
+      handleUploadFile(selectedFile).finally(() => {
+        setUploading(false); // Set uploading to false after the upload is complete (either success or failure)
+      });
+    }
+  };
+
+  // Send file to the server
+  const handleUploadFile = async (file) => {
+    if (!file) {
+      alert(t("Selecciona una imagen."));
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("img", file);
+
+    const token = localStorage.getItem("Token");
+
+    try {
+      const response = await fetch(`${process.env.BACKEND_URL}/api/img`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error(t("Error al subir la imagen"));
+
+      const data = await response.json();
+
+      // Update profile photo in local storage
+      const updatedUser = { ...store.user, profile_photo: data.img };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      // Update global context
+      actions.setUser(updatedUser);
+
+
+      // Update profile photo URL or handle accordingly
+      setArtistData((prevData) => ({
+        ...prevData,
+        user: {
+          ...prevData.user,
+          profile_photo: data.img, // Assuming the server returns the image URL
+        },
+      }));
+    } catch (error) {
+      console.error(t("Error al subir la imagen:"), error);
+
+      
+      // Toggle Follow
   const handleToggleFollow = async () => {
     try {
       const token = localStorage.getItem("Token");
@@ -138,8 +201,8 @@ const Profile = () => {
             }
           }
         );
-        if (!resp.ok) throw new Error("Error al dejar de seguir");
-        alert("Has dejado de seguir al artista");
+        if (!resp.ok) throw new Error(t("Error al dejar de seguir"));
+        alert(t("Has dejado de seguir al artista"));
         setIsFollowing(false);
       } else {
         // Follow
@@ -152,8 +215,8 @@ const Profile = () => {
             }
           }
         );
-        if (!resp.ok) throw new Error("Error al seguir al artista");
-        alert("¡Ahora sigues a este artista!");
+        if (!resp.ok) throw new Error(t("Error al seguir al artista"));
+        alert(t("¡Ahora sigues a este artista!"));
         setIsFollowing(true);
       }
     } catch (error) {
@@ -162,9 +225,9 @@ const Profile = () => {
     }
   };
 
-  if (loading) return <p>Cargando...</p>;
+  if (loading) return <p>{t("Cargando...")}</p>;
   if (error) return <p>{error}</p>;
-  if (!artistData) return <p>No se encontraron datos del artista.</p>;
+  if (!artistData) return <p>{t("No se encontraron datos del artista.")}</p>;
 
   return (
     <>
@@ -174,19 +237,34 @@ const Profile = () => {
           <div className="artist-img-container">
             <img
               src={artistData.user?.profile_photo || "https://placehold.co/200"}
-              alt="Perfil de artista"
+              alt={t("Perfil de artista")}
               className="artist-profile-picture"
             />
             {isOwner ? (
-              <p>(Aquí pondrías tu lógica de cambiar foto, etc.)</p>
+              <div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImgChange}
+                  id="file-input"
+                  style={{ display: "none" }}
+                />
+                <button
+                  className="follow-button"
+                  onClick={() => document.getElementById("file-input").click()}
+                >
+                  {t("Editar foto")}
+                </button>
+                {uploading && <p>{t("Subiendo...")}</p>}
+              </div>
             ) : (
               <button className="follow-button" onClick={handleToggleFollow}>
-                {isFollowing ? "Dejar de seguir" : "Seguir"}
+                {isFollowing ? t("Dejar de seguir") : t("Seguir")}
               </button>
             )}
           </div>
           <h1 className="nombre">
-            {artistData.user?.fullName || "Nombre del Artista"}
+            {artistData.user?.fullName || t("Nombre del Artista")}
           </h1>
         </div>
 
@@ -195,25 +273,25 @@ const Profile = () => {
             className={activeTab === "bio" ? "active" : ""}
             onClick={() => handleTabChange("bio")}
           >
-            Biografía
+             {t("Biografía")}
           </button>
           <button
             className={activeTab === "images" ? "active" : ""}
             onClick={() => handleTabChange("images")}
           >
-            Imágenes
+           {t("Imágenes")}
           </button>
           <button
             className={activeTab === "videos" ? "active" : ""}
             onClick={() => handleTabChange("videos")}
           >
-            Vídeos
+            {t("Vídeos")}
           </button>
           <button
             className={activeTab === "music" ? "active" : ""}
             onClick={() => handleTabChange("music")}
           >
-            Música
+             {t("Música")}
           </button>
         </div>
 

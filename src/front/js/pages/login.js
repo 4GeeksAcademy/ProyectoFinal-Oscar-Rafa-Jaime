@@ -6,6 +6,9 @@ import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
 import logo from "../../img/logo.png"
 
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "../component/LanguageSwitcher";
+
 export const Login = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
@@ -15,6 +18,8 @@ export const Login = () => {
   const [genres, setGenres] = useState([]);
   const [uploading, setUploading] = useState("")
   const [uploadSuccess, setUploadSuccess] = useState(false); // New state for success message
+
+  const { t } = useTranslation();
 
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -88,7 +93,7 @@ export const Login = () => {
           body: formData
         }
       );
-      if (!response.ok) throw new Error("Error al subir la imagen");
+      if (!response.ok) throw new Error(t("Error al subir la imagen"));
 
       const data = await response.json();
 
@@ -100,7 +105,7 @@ export const Login = () => {
       setUploadSuccess(true); // Set success message after upload
 
     } catch (error) {
-      console.error("Error al subir la imagen:", error);
+      console.error(t("Error al subir la imagen:"), error);
       setUploadSuccess(false); // If there's an error, reset success message
 
     }
@@ -210,6 +215,12 @@ export const Login = () => {
           height: "100%",
         }}
       >
+
+        {/* Language Switcher */}
+        <div className="position-absolute top-0 end-0 p-3">
+          <LanguageSwitcher />
+        </div>
+
         <div
           className="text-center "
           style={{
@@ -232,7 +243,7 @@ export const Login = () => {
         >
           {!showLogin && !showRegister && !showForgoten && (
             <div>
-              <h2 className="text-center text-dark mb-4">Bienvenido</h2>
+              <h2 className="text-center text-dark mb-4">{t("Bienvenido")}</h2>
               <button
                 className="btn btn-danger boton w-100 mb-3"
                 onClick={() => {
@@ -241,7 +252,7 @@ export const Login = () => {
                   setShowForgoten(false);
                 }}
               >
-                Iniciar sesión
+                {t("Iniciar sesión")}
               </button>
               <button
                 className="btn btn-secondary w-100"
@@ -251,20 +262,21 @@ export const Login = () => {
                   setShowForgoten(false);
                 }}
               >
-                Registrarse
+                {t("Registrarse")}
               </button>
             </div>
           )}
 
           {showLogin && !showForgoten && (
             <form onSubmit={handleLogin}>
-              <h2 className="text-center text-dark mb-4">Iniciar sesión</h2>
+              <h2 className="text-center text-dark mb-4">{t("Iniciar sesión")}
+              </h2>
               <div className="text-center mb-4"></div>
               <div className="mb-3">
                 <input
                   type="text"
                   className="form-control form-control-lg"
-                  placeholder="Nombre de usuario"
+                  placeholder={t("Nombre de usuario")}
                   name="username"
                   value={loginData.username}
                   onChange={(e) =>
@@ -277,7 +289,7 @@ export const Login = () => {
                 <input
                   type="password"
                   className="form-control form-control-lg"
-                  placeholder="Contraseña"
+                  placeholder={t("Contraseña")}
                   name="password"
                   value={loginData.password}
                   onChange={(e) =>
@@ -287,7 +299,7 @@ export const Login = () => {
                 />
               </div>
               <button type="submit" className="btn btn-danger w-100 py-2">
-                Ingresar
+                {t("Ingresar")}
               </button>
               <div className="text-center mt-2">
                 <a
@@ -295,7 +307,7 @@ export const Login = () => {
                   className="text-decoration-none"
                   onClick={() => setShowForgoten(true)}
                 >
-                  ¿He olvidado mi contraseña?
+                  {t("¿He olvidado mi contraseña?")}
                 </a>
                 <button
                   type="button"
@@ -306,7 +318,7 @@ export const Login = () => {
                     setShowRegister(false);
                   }}
                 >
-                  Volver
+                  {t("Volver")}
                 </button>
               </div>
             </form>
@@ -314,12 +326,12 @@ export const Login = () => {
 
           {showRegister && (
             <form onSubmit={handleRegister}>
-              <h2 className="text-center text-dark mb-4">Registro</h2>
+              <h2 className="text-center text-dark mb-4">{t("Registro")}</h2>
               <div className="mb-3">
                 <input
                   type="text"
                   className="form-control form-control-lg"
-                  placeholder="Nombre y apellidos"
+                  placeholder={t("Nombre y apellidos")}
                   name="fullName"
                   value={formulario.fullName}
                   onChange={handleChange}
@@ -330,7 +342,7 @@ export const Login = () => {
                 <input
                   type="text"
                   className="form-control form-control-lg"
-                  placeholder="Nombre de usuario"
+                  placeholder={t("Nombre de usuario")}
                   name="username"
                   value={formulario.username}
                   onChange={handleChange}
@@ -341,7 +353,7 @@ export const Login = () => {
                 <input
                   type="email"
                   className="form-control form-control-lg"
-                  placeholder="Correo electrónico"
+                  placeholder={t("Correo electrónico")}
                   name="email"
                   value={formulario.email}
                   onChange={handleChange}
@@ -352,7 +364,7 @@ export const Login = () => {
                 <input
                   type="text"
                   className="form-control form-control-lg"
-                  placeholder="Dirección"
+                  placeholder={t("Dirección")}
                   name="address"
                   value={formulario.address}
                   onChange={handleChange}
@@ -363,7 +375,7 @@ export const Login = () => {
                 <input
                   type="password"
                   className="form-control form-control-lg"
-                  placeholder="Contraseña"
+                  placeholder={t("Contraseña")}
                   name="password"
                   value={formulario.password}
                   onChange={handleChange}
@@ -374,7 +386,7 @@ export const Login = () => {
                 <input
                   type="password"
                   className="form-control form-control-lg"
-                  placeholder="Confirmar contraseña"
+                  placeholder={t("Confirmar contraseña")}
                   name="confirmPassword"
                   value={formulario.confirmPassword}
                   onChange={handleChange}
@@ -382,7 +394,7 @@ export const Login = () => {
                 />
               </div>
               <div className="mb-3">
-                <label className="form-label me-2">¿Eres artista?</label>
+                <label className="form-label me-2">{t("¿Eres artista?")}</label>
                 <input
                   type="checkbox"
                   className="form-check-input"
@@ -414,34 +426,34 @@ export const Login = () => {
                 <button type="button" className="boton"
                   onClick={() => document.getElementById('file-input').click()}
                   disabled={uploading}>
-                  {uploading ? "Subiendo..." : file ? "Cambiar imagen" : "Subir imagen de perfil"}
+                  {uploading ? t("Subiendo...") : file ? t("Cambiar imagen") : t("Subir imagen de perfil")}
                 </button>
 
-                {uploadSuccess && <p className="text-success mt-2">¡Imagen subida con éxito!</p>}
-                {!uploadSuccess && file && <p className="text-danger mt-2">Imagen seleccionada</p>}
+                {uploadSuccess && <p className="text-success mt-2">{t("¡Imagen subida con éxito!")}</p>}
+                {!uploadSuccess && file && <p className="text-danger mt-2">{t("Imagen seleccionada")}</p>}
 
               </div>
               <button type="submit" className="btn btn-success w-100 py-2">
-                Registrarse
+                {t("Registrarse")}
               </button>
               <button
                 type="button"
                 className="btn btn-link w-100 mt-2"
                 onClick={() => setShowRegister(false)}
               >
-                Volver
+                {t("Volver")}
               </button>
             </form>
           )}
 
           {showForgoten && (
             <form onSubmit={handlePasswordReset}>
-              <h2 className="text-center mb-4">¿He olvidado mi contraseña?</h2>
+              <h2 className="text-center mb-4">{t("¿He olvidado mi contraseña?")}</h2>
               <div className="mb-3">
                 <input
                   type="text"
                   className="form-control form-control-lg"
-                  placeholder="Nombre de usuario"
+                  placeholder={t("Nombre de usuario")}
                   required
                 />
               </div>
@@ -449,7 +461,7 @@ export const Login = () => {
                 <input
                   type="password"
                   className="form-control form-control-lg"
-                  placeholder="Nueva contraseña"
+                  placeholder={t("Nueva contraseña")}
                   required
                 />
               </div>
@@ -462,7 +474,7 @@ export const Login = () => {
                   setShowForgoten(false);
                 }}
               >
-                Volver
+                {t("Volver")}
               </button>
             </form>
           )}
@@ -475,7 +487,7 @@ export const Login = () => {
           }}
         >
           <h3 className="text-white fs-1 fs-md-2 fs-lg-3">
-            Conecta y comparte tu talento
+            {t("Conecta y comparte tu talento")}
           </h3>
           <h1 className="text-white fs-1 fs-md-2 fs-lg-3">
             SoundCript

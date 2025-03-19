@@ -1,9 +1,8 @@
-// src/front/js/pages/SavedSongs.js
+// src/front/js/pages/Users/SavedSongs.js
 import React, { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
-import "../../../styles/userProfile.css";
 import { Context } from "../../store/appContext";
 import { useTranslation } from "react-i18next";
+import "../../../styles/userProfile.css";
 
 export const SavedSongs = () => {
   const { store } = useContext(Context);
@@ -46,8 +45,10 @@ export const SavedSongs = () => {
           }
         }
       );
+
       if (!response.ok) throw new Error(t("Error al eliminar la canción"));
-      setSavedSongs(savedSongs.filter((song) => song.song_id !== songId));
+      
+      setSavedSongs((prev) => prev.filter((song) => song.song_id !== songId));
     } catch (error) {
       console.error(error);
     }
@@ -56,14 +57,15 @@ export const SavedSongs = () => {
   return (
     <div className="profile-container text-dark">
       <h2>🎵 {t("Canciones Guardadas")}</h2>
+
       {savedSongs.length === 0 ? (
         <p>{t("No tienes canciones guardadas.")}</p>
       ) : (
         <div className="song-grid">
           {savedSongs.map((song) => (
-            <div key={song.id} className="song-card">
+            <div key={song.song_id} className="song-card">
               <h4 className="song-title">{song.song_title}</h4>
-              <audio controls src={song.song_media_url || song.media_url}>
+              <audio controls src={song.song_url}>
                 {t("Tu navegador no soporta el elemento de audio.")}
               </audio>
               <button

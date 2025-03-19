@@ -2,7 +2,7 @@ const fs = require("fs");
 const fetch = require("node-fetch");
 
 // 🔑 Your Google Cloud Translation API Key
-const API_KEY = "AIzaSyA7X03N8ZFLmU3zB4DmRTt4sQS3BxVw_Vc"; // Replace with your actual API key from Google Cloud
+const API_KEY = `${process.env.GOOGLE_API_KEY}`; // Replace with your actual API key from Google Cloud
 const URL = `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`;
 
 // 📂 File paths

@@ -6,10 +6,12 @@ import { Context } from "../../store/appContext";
 import { Navbar } from "../../component/navbar";
 import { Footer } from "../../component/footer";
 import "../../../styles/data.css";
+import { useTranslation } from "react-i18next";
 
 export const UserData = () => {
   const { store, actions } = useContext(Context);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Datos de formulario
   const [formData, setFormData] = useState({
@@ -66,7 +68,7 @@ export const UserData = () => {
   // Subir la imagen de perfil
   const handleUploadImage = async () => {
     if (!file) {
-      alert("Primero selecciona una imagen de perfil.");
+      alert(t("Primero selecciona una imagen de perfil."));
       return;
     }
     setUploading(true);
@@ -87,13 +89,13 @@ export const UserData = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.msg || "Error al subir la imagen");
+        throw new Error(errorData.msg || t("Error al subir la imagen"));
       }
 
       const data = await response.json();
 
       // Notificar al usuario
-      alert("Imagen de perfil actualizada con éxito.");
+      alert(t("Imagen de perfil actualizada con éxito."));
 
       // Actualizar user en store (para que se vea el cambio en Navbar y otros sitios)
       const updatedUser = {
@@ -108,7 +110,7 @@ export const UserData = () => {
       setPreviewUrl("");
     } catch (error) {
       console.error(error);
-      alert(error.message || "Error subiendo la imagen de perfil.");
+      alert(error.message || t("Error subiendo la imagen de perfil."));
     }
     setUploading(false);
   };
@@ -132,11 +134,11 @@ export const UserData = () => {
 
       if (!response.ok) {
         const errData = await response.json();
-        throw new Error(errData.message || "Error al actualizar perfil");
+        throw new Error(errData.message || t("Error al actualizar perfil"));
       }
 
       const data = await response.json();
-      alert("Perfil actualizado correctamente");
+      alert(t("Perfil actualizado correctamente"));
 
       // Actualizar store.user
       actions.setUser(data.user);
@@ -149,7 +151,7 @@ export const UserData = () => {
       }
     } catch (err) {
       console.error(err);
-      alert(err.message || "Error al actualizar perfil");
+      alert(err.message || t("Error al actualizar perfil"));
     }
   };
 
@@ -157,7 +159,7 @@ export const UserData = () => {
     <>
       <Navbar />
       <div className="container mt-4">
-        <h1 className="text-center mb-4 text-white">Editar Datos del Usuario</h1>
+        <h1 className="text-center mb-4 text-white">{t("Editar Datos del Usuario")}</h1>
 
         {/* Contenedor con foto de perfil y botón para elegir archivo */}
         <div className="d-flex align-items-center mb-4">
@@ -187,12 +189,12 @@ export const UserData = () => {
                 className="boton"
                 onClick={() => document.getElementById("profileImageInput").click()}
               >
-                Cambiar imagen
+                {t("Cambiar imagen")}
               </button>
               {/* Si se ha seleccionado un archivo, mostramos su nombre */}
               {file && (
                 <div className="mt-2">
-                  <small>Archivo seleccionado: {file.name}</small>
+                  <small>{t("Archivo seleccionado:")} {file.name}</small>
                 </div>
               )}
               <button
@@ -201,7 +203,7 @@ export const UserData = () => {
                 onClick={handleUploadImage}
                 disabled={uploading}
               >
-                {uploading ? "Subiendo..." : "Subir Imagen"}
+                {uploading ? t("Subiendo...") : t("Subir Imagen")}
               </button>
             </div>
           </div>
@@ -210,7 +212,7 @@ export const UserData = () => {
         {/* Formulario para los datos de usuario */}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label>Nombre completo</label>
+            <label>{t("Nombre completo")}</label>
             <input
               type="text"
               className="form-control form-control-lg"
@@ -221,7 +223,7 @@ export const UserData = () => {
             />
           </div>
           <div className="mb-3">
-            <label>Nombre de usuario</label>
+            <label>{t("Nombre de usuario")}</label>
             <input
               type="text"
               className="form-control form-control-lg"
@@ -232,7 +234,7 @@ export const UserData = () => {
             />
           </div>
           <div className="mb-3">
-            <label>Email</label>
+            <label>{t("Email")}</label>
             <input
               type="email"
               className="form-control form-control-lg"
@@ -243,7 +245,7 @@ export const UserData = () => {
             />
           </div>
           <div className="mb-3">
-            <label>Dirección</label>
+            <label>{t("Dirección")}</label>
             <input
               type="text"
               className="form-control form-control-lg"
@@ -256,7 +258,7 @@ export const UserData = () => {
 
           <div className="d-flex col-md-12 justify-content-center">
             <button type="submit" className="boton">
-              Guardar
+              {t("Guardar")}
             </button>
             <button
               type="button"
@@ -269,7 +271,7 @@ export const UserData = () => {
                 }
               }}
             >
-              Volver
+              {t("Volver")}
             </button>
           </div>
         </form>

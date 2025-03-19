@@ -1,0 +1,76 @@
+{
+  "auditReportVersion": 2,
+  "vulnerabilities": {
+    "parse-git-config": {
+      "name": "parse-git-config",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        {
+          "source": 1103099,
+          "name": "parse-git-config",
+          "dependency": "parse-git-config",
+          "title": "Prototype Pollution Vulnerability in parse-git-config",
+          "url": "https://github.com/advisories/GHSA-8g77-54rh-46hx",
+          "severity": "high",
+          "cwe": [
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<=3.0.0"
+        }
+      ],
+      "effects": [
+        "remote-origin-url"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/parse-git-config"
+      ],
+      "fixAvailable": {
+        "name": "remote-origin-url",
+        "version": "0.2.1",
+        "isSemVerMajor": true
+      }
+    },
+    "remote-origin-url": {
+      "name": "remote-origin-url",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        "parse-git-config"
+      ],
+      "effects": [],
+      "range": ">=0.3.0",
+      "nodes": [
+        "node_modules/remote-origin-url"
+      ],
+      "fixAvailable": {
+        "name": "remote-origin-url",
+        "version": "0.2.1",
+        "isSemVerMajor": true
+      }
+    }
+  },
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 2,
+      "critical": 0,
+      "total": 2
+    },
+    "dependencies": {
+      "prod": 26,
+      "dev": 747,
+      "optional": 2,
+      "peer": 1,
+      "peerOptional": 0,
+      "total": 773
+    }
+  }
+}

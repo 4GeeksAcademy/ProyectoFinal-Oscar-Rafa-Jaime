@@ -1,9 +1,11 @@
 // src/front/js/pages/Artist/Bio.js
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export const Bio = ({ data, isOwner, refreshArtistData }) => {
   const [editMode, setEditMode] = useState(false);
   const [bio, setBio] = useState(data?.bio || "");
+  const { t } = useTranslation();
 
   const handleEdit = () => setEditMode(true);
 
@@ -26,7 +28,7 @@ export const Bio = ({ data, isOwner, refreshArtistData }) => {
         },
         body: JSON.stringify({ bio }) // Mandamos la bio nueva
       });
-      if (!resp.ok) throw new Error("Error al actualizar la biografía");
+      if (!resp.ok) throw new Error(t("Error al actualizar la biografía"));
 
       // Refrescamos la data para que se vea la nueva bio sin recargar manualmente
       await refreshArtistData();
@@ -34,13 +36,13 @@ export const Bio = ({ data, isOwner, refreshArtistData }) => {
       setEditMode(false);
     } catch (error) {
       console.error(error);
-      alert(error.message || "Error actualizando la biografía");
+      alert(error.message || t("Error actualizando la biografía"));
     }
   };
 
   return (
     <div>
-      <h2>Biografía</h2>
+      <h2>{t("Biografía")}</h2>
       {editMode ? (
         <form onSubmit={handleSave}>
           <textarea
@@ -50,13 +52,13 @@ export const Bio = ({ data, isOwner, refreshArtistData }) => {
             style={{ width: "100%" }}
           />
           <br />
-          <button type="submit">Guardar</button>
-          <button onClick={handleCancel}>Cancelar</button>
+          <button type="submit">{t("Guardar")}</button>
+          <button onClick={handleCancel}>{t("Cancelar")}</button>
         </form>
       ) : (
         <>
-          <p>{data?.bio || "No se ha definido una biografía."}</p>
-          {isOwner && <button onClick={handleEdit}>Editar Biografía</button>}
+          <p>{data?.bio || t("No se ha definido una biografía.")}</p>
+          {isOwner && <button onClick={handleEdit}>{t("Editar Biografía")}</button>}
         </>
       )}
     </div>

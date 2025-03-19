@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import "../../../styles/images.css"; // o la ruta a tu CSS
+import { useTranslation } from "react-i18next";
 
 export const Images = ({ data, isOwner, refreshArtistData }) => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const { t } = useTranslation();
 
   const handleImgChange = (e) => {
     if (e.target.files && e.target.files.length) {
@@ -13,7 +15,7 @@ export const Images = ({ data, isOwner, refreshArtistData }) => {
 
   const handleUpload = async () => {
     if (!file) {
-      alert("Selecciona una imagen.");
+      alert(t("Selecciona una imagen."));
       return;
     }
     setUploading(true);
@@ -28,7 +30,7 @@ export const Images = ({ data, isOwner, refreshArtistData }) => {
           body: formData,
         }
       );
-      if (!response.ok) throw new Error("Error al subir imagen");
+      if (!response.ok) throw new Error(t("Error al subir imagen"));
       const resData = await response.json();
       const photoUrl = resData.secure_url;
       const token = localStorage.getItem("Token");
@@ -46,9 +48,9 @@ export const Images = ({ data, isOwner, refreshArtistData }) => {
         }
       );
       if (!backendResponse.ok)
-        throw new Error("Error al subir la imagen al backend");
+        throw new Error(t("Error al subir la imagen al backend"));
       await backendResponse.json();
-      alert("Imagen subida con éxito. A continuación se recargara la página para ver los cambios.");
+      alert(t("Imagen subida con éxito. A continuación se recargara la página para ver los cambios."));
       window.location.reload();
       if (refreshArtistData) await refreshArtistData();
       setFile(null);
@@ -60,7 +62,7 @@ export const Images = ({ data, isOwner, refreshArtistData }) => {
   };
 
   const handleDeleteImage = async (imgId) => {
-    if (!window.confirm("¿Estás seguro de eliminar esta imagen?")) return;
+    if (!window.confirm(t("¿Estás seguro de eliminar esta imagen?"))) return;
     try {
       const token = localStorage.getItem("Token");
       const response = await fetch(
@@ -72,8 +74,8 @@ export const Images = ({ data, isOwner, refreshArtistData }) => {
           },
         }
       );
-      if (!response.ok) throw new Error("Error al eliminar la imagen");
-      alert("Imagen eliminada. A continuación se recargara la página para ver los cambios.");
+      if (!response.ok) throw new Error(t("Error al eliminar la imagen"));
+      alert(t("Imagen eliminada. A continuación se recargara la página para ver los cambios."));
       window.location.reload();
       if (refreshArtistData) await refreshArtistData();
     } catch (error) {
@@ -84,12 +86,12 @@ export const Images = ({ data, isOwner, refreshArtistData }) => {
 
   return (
     <div>
-      <h2>Imágenes</h2>
+      <h2>{t("Imágenes")}</h2>
       {isOwner && (
         <div>
           <input type="file" accept="image/*" onChange={handleImgChange} />
           <button onClick={handleUpload} disabled={uploading}>
-            {uploading ? "Subiendo..." : "Subir Imagen"}
+            {uploading ? t("Subiendo...") : t("Subir Imagen")}
           </button>
         </div>
       )}
@@ -113,7 +115,7 @@ export const Images = ({ data, isOwner, refreshArtistData }) => {
             </div>
           ))
         ) : (
-          <p>No hay imágenes disponibles.</p>
+          <p>{t("No hay imágenes disponibles.")}</p>
         )}
       </div>
     </div>

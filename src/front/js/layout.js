@@ -3,6 +3,8 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 import injectContext from "./store/appContext";
+import { useTranslation } from "react-i18next";
+import "../i18n"; // Import i18n configuration
 
 // Importamos las vistas
 import { Login } from "./pages/login";
@@ -14,8 +16,10 @@ import { SavedArtists } from "./pages/Users/SavedArtists";
 import { SavedSongs } from "./pages/Users/SavedSongs";
 import "../styles/index.css"; // Puedes actualizar o agregar nuevos estilos
 
+
 const Layout = () => {
     const basename = process.env.BASENAME || "";
+    
     return (
         <BrowserRouter basename={basename}>
             <ScrollToTop>

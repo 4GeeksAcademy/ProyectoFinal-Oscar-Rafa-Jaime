@@ -6,9 +6,11 @@ import "../../../styles/homeUser.css";
 import { Navbar } from "../../component/navbar";
 import { Footer } from "../../component/footer";
 import { CardGenres } from "./componentes/CardGenres";
+import { useTranslation } from "react-i18next";
 
 export const HomeUser = () => {
     const { store, actions } = useContext(Context);
+    const { t } = useTranslation();
 
     useEffect(() => {
         actions.loadGenres();
@@ -31,7 +33,7 @@ export const HomeUser = () => {
                                     <CardGenres key={artist.id} {...artist} />
                                 ))
                             ) : (
-                                <p>No hay artistas en este género</p>
+                                <p>{t("No hay artistas en este género")}</p>
                             )}
 
 

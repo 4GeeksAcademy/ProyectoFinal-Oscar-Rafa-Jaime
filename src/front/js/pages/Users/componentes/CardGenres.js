@@ -1,8 +1,11 @@
 // CardGenres.js
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export const CardGenres = ({ profile_photo, name, id }) => {
+      const { t } = useTranslation();
+    
     return (
         <div className="artistcard">
             <div className="card">
@@ -12,7 +15,7 @@ export const CardGenres = ({ profile_photo, name, id }) => {
                 </div>
                 <div className="d-flex justify-content-between mb-3 mx-2">
                     <Link className="btn btn-outline-purple" to={`/artist/${id}`}>
-                        Ver perfil
+                        {t("Ver perfil")}
                     </Link>
                 </div>
             </div>

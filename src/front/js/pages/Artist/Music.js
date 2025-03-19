@@ -1,11 +1,13 @@
 // src/front/js/pages/Artist/Music.js
 import React, { useState } from "react";
 import "../../../styles/music.css"; // Asegúrate de tener estilos para música
+import { useTranslation } from "react-i18next";
 
 export const Music = ({ data, isOwner, refreshArtistData }) => {
     const [file, setFile] = useState(null);
     const [songTitle, setSongTitle] = useState("");
     const [uploading, setUploading] = useState(false);
+    const { t } = useTranslation();
 
     const handleSongChange = (e) => {
         if (e.target.files && e.target.files.length) {
@@ -15,11 +17,11 @@ export const Music = ({ data, isOwner, refreshArtistData }) => {
 
     const handleUpload = async () => {
         if (!file) {
-            alert("Selecciona un archivo de audio.");
+            alert(t("Selecciona un archivo de audio."));
             return;
         }
         if (!songTitle) {
-            alert("Debes introducir un título para la canción.");
+            alert(t("Debes introducir un título para la canción."));
             return;
         }
         setUploading(true);
@@ -36,7 +38,7 @@ export const Music = ({ data, isOwner, refreshArtistData }) => {
                     body: formData,
                 }
             );
-            if (!response.ok) throw new Error("Error al subir la canción");
+            if (!response.ok) throw new Error(t("Error al subir la canción"));
             const resData = await response.json();
 
             // Extraemos la URL de la canción
@@ -59,10 +61,10 @@ export const Music = ({ data, isOwner, refreshArtistData }) => {
                 }
             );
             if (!backendResponse.ok)
-                throw new Error("Error al subir la canción al backend");
+                throw new Error(t("Error al subir la canción al backend"));
             await backendResponse.json();
 
-            alert("Canción subida con éxito. Recarga la vista para ver los cambios.");
+            alert(t("Canción subida con éxito. Recarga la vista para ver los cambios."));
             window.location.reload();
             if (refreshArtistData) await refreshArtistData();
 
@@ -76,7 +78,7 @@ export const Music = ({ data, isOwner, refreshArtistData }) => {
     };
 
     const handleDeleteSong = async (songId) => {
-        if (!window.confirm("¿Estás seguro de eliminar esta canción?")) return;
+        if (!window.confirm(t("¿Estás seguro de eliminar esta canción?"))) return;
         try {
             const token = localStorage.getItem("Token");
             const response = await fetch(
@@ -88,8 +90,8 @@ export const Music = ({ data, isOwner, refreshArtistData }) => {
                     },
                 }
             );
-            if (!response.ok) throw new Error("Error al eliminar la canción");
-            alert("Canción eliminada. Recarga la vista para ver los cambios.");
+            if (!response.ok) throw new Error(t("Error al eliminar la canción"));
+            alert(t("Canción eliminada. Recarga la vista para ver los cambios."));
             window.location.reload();
             if (refreshArtistData) await refreshArtistData();
         } catch (error) {
@@ -99,13 +101,13 @@ export const Music = ({ data, isOwner, refreshArtistData }) => {
     };
 
     const handleLike = (songId) => {
-        console.log("Like a la canción:", songId);
+        console.log(t("Like a la canción:"), songId);
         // Aquí puedes agregar la lógica para el like si es necesario
     };
 
     return (
         <div>
-            <h2>Música</h2>
+            <h2>{t("Música")}</h2>
             {isOwner && (
                 <div style={{ marginBottom: "1em" }}>
                     <input
@@ -116,13 +118,13 @@ export const Music = ({ data, isOwner, refreshArtistData }) => {
                     />
                     <input
                         type="text"
-                        placeholder="Título de la canción"
+                        placeholder={t("Título de la canción")}
                         value={songTitle}
                         onChange={(e) => setSongTitle(e.target.value)}
                         style={{ marginRight: "0.5em" }}
                     />
                     <button onClick={handleUpload} disabled={uploading}>
-                        {uploading ? "Subiendo..." : "Subir Canción"}
+                        {uploading ? t("Subiendo...") : t("Subir Canción")}
                     </button>
                 </div>
             )}
@@ -134,7 +136,7 @@ export const Music = ({ data, isOwner, refreshArtistData }) => {
                             <li key={song.id} className="song-item">
                                 <div className="song-content">
                                     <audio controls src={song.media_url} className="audio-player">
-                                        Tu navegador no soporta el elemento de audio.
+                                        {t("Tu navegador no soporta el elemento de audio.")}
                                     </audio>
                                     <span className="song-title">{song.title}</span>
                                 </div>
@@ -159,7 +161,7 @@ export const Music = ({ data, isOwner, refreshArtistData }) => {
                         ))}
                     </ul>
                 ) : (
-                    <p>No hay canciones disponibles.</p>
+                    <p>{t("No hay canciones disponibles.")}</p>
                 )}
             </div>
         </div>

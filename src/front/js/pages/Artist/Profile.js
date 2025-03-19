@@ -3,6 +3,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Context } from "../../store/appContext";
 import "../../../styles/Profile.css";
+import { useTranslation } from "react-i18next";
 
 // Importamos los componentes de cada pestaña
 import { Bio } from "./Bio";
@@ -17,6 +18,7 @@ export const Profile = () => {
   const { id: artistId } = useParams();
   const navigate = useNavigate();
   const { store, actions } = useContext(Context);
+  const { t } = useTranslation();
 
   // Estado local para la data del artista
   const [artistData, setArtistData] = useState(null);
@@ -50,14 +52,14 @@ export const Profile = () => {
         }
       );
       if (!response.ok) {
-        throw new Error("Error al obtener los datos del artista");
+        throw new Error(t("Error al obtener los datos del artista"));
       }
       const data = await response.json();
       setArtistData(data);
       setLoading(false);
     } catch (err) {
       console.error(err);
-      setError(err.message || "Error al cargar el perfil del artista.");
+      setError(err.message || t("Error al cargar el perfil del artista."));
       setLoading(false);
     }
   };
@@ -74,7 +76,7 @@ export const Profile = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      if (!response.ok) throw new Error("Error al refrescar datos del artista");
+      if (!response.ok) throw new Error(t("Error al refrescar datos del artista"));
       const data = await response.json();
       setArtistData(data);
     } catch (error) {
@@ -87,9 +89,9 @@ export const Profile = () => {
     setActiveTab(tab);
   };
 
-  if (loading) return <p>Cargando...</p>;
+  if (loading) return <p>{t("Cargando...")}</p>;
   if (error) return <p>{error}</p>;
-  if (!artistData) return <p>No se encontraron datos del artista.</p>;
+  if (!artistData) return <p>{t("No se encontraron datos del artista.")}</p>;
 
   // Si es el dueño, puede editar su foto de perfil (redirige a la vista de edición)
   const handleImgChange = (e) => {
@@ -107,7 +109,7 @@ export const Profile = () => {
   // Send file to the server
   const handleUploadFile = async (file) => {
     if (!file) {
-      alert("Selecciona una imagen.");
+      alert(t("Selecciona una imagen."));
       return;
     }
 
@@ -125,7 +127,7 @@ export const Profile = () => {
         body: formData,
       });
 
-      if (!response.ok) throw new Error("Error al subir la imagen");
+      if (!response.ok) throw new Error(t("Error al subir la imagen"));
 
       const data = await response.json();
 
@@ -146,7 +148,7 @@ export const Profile = () => {
         },
       }));
     } catch (error) {
-      console.error("Error al subir la imagen:", error);
+      console.error(t("Error al subir la imagen:"), error);
     }
   };
 
@@ -162,7 +164,7 @@ export const Profile = () => {
               src={
                 artistData.user?.profile_photo || "https://placehold.co/200"
               }
-              alt="Perfil de artista"
+              alt={t("Perfil de artista")}
               className="artist-profile-picture"
             />
             {isOwner ? (
@@ -178,20 +180,20 @@ export const Profile = () => {
                   className="follow-button"
                   onClick={() => document.getElementById("file-input").click()}
                 >
-                  Editar foto
+                  {t("Editar foto")}
                 </button>
-                {uploading && <p>Subiendo...</p>}
+                {uploading && <p>{t("Subiendo...")}</p>}
               </div>
             ) : (
               <button
                 className="follow-button"
                 onClick={() => actions.followArtist(artistId)}
               >
-                Seguir
+                {t("Seguir")}
               </button>
             )}
           </div>
-          <h1 className="nombre">{artistData.user?.fullName || "Nombre del Artista"}</h1>
+          <h1 className="nombre">{artistData.user?.fullName ||  t("Nombre del Artista")}</h1>
         </div>
 
         {/* Tabs */}
@@ -200,25 +202,25 @@ export const Profile = () => {
             className={activeTab === "bio" ? "active" : ""}
             onClick={() => handleTabChange("bio")}
           >
-            Biografía
+             {t("Biografía")}
           </button>
           <button
             className={activeTab === "images" ? "active" : ""}
             onClick={() => handleTabChange("images")}
           >
-            Imágenes
+           {t("Imágenes")}
           </button>
           <button
             className={activeTab === "videos" ? "active" : ""}
             onClick={() => handleTabChange("videos")}
           >
-            Vídeos
+            {t("Vídeos")}
           </button>
           <button
             className={activeTab === "music" ? "active" : ""}
             onClick={() => handleTabChange("music")}
           >
-            Música
+             {t("Música")}
           </button>
         </div>
 

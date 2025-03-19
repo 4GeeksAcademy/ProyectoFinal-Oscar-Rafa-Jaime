@@ -21,6 +21,12 @@
     font-weight: bold;
 }
 
+.navbar-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
 .user-menu {
     position: relative;
 }

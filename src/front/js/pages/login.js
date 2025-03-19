@@ -394,7 +394,7 @@ export const Login = () => {
                 />
               </div>
               <div className="mb-3">
-                <label className="form-label me-2">{t("¿Eres artista?")}</label>
+                <label className="form-label text-dark me-2">{t("¿Eres artista?")}</label>
                 <input
                   type="checkbox"
                   className="form-check-input"

@@ -123,5 +123,10 @@
   "Error al obtener canciones guardadas": "Error al obtener canciones guardadas",
   "Canciones Guardadas": "Canciones Guardadas",
   "No tienes canciones guardadas.": "No tienes canciones guardadas.",
-  "Eliminar": "Eliminar"
+  "Eliminar": "Eliminar",
+
+  "Error al dar like a la canción": "Error al dar like a la canción",
+  "Error al seguir al artista": "Error al seguir al artista",
+  "Error al dejar de seguir": "Error al dejar de seguir",
+  "Nombre del Artista": "Nombre del Artista"
 }

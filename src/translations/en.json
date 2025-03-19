@@ -101,7 +101,6 @@
   "Ver perfil": "View profile",
   "Mi Perfil": "My Profile",
   "No hay artistas en este género": "No artists in this genre yet",
-
   "Perfil de Usuario": "User Profile",
   "Perfil Artista": "Artist Profile",
   "Perfil": "Profile",
@@ -114,5 +113,9 @@
   "Error al obtener canciones guardadas": "Error getting saved songs",
   "Canciones Guardadas": "Saved Songs",
   "No tienes canciones guardadas.": "You have no saved songs.",
-  "Eliminar": "Delete"
+  "Eliminar": "Delete",
+  "Error al dar like a la canción": "Error liking the song",
+  "Error al seguir al artista": "Error following artist",
+  "Error al dejar de seguir": "Error unfollowing",
+  "Nombre del Artista": "Artist name"
 }

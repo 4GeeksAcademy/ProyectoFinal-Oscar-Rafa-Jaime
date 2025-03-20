@@ -15,6 +15,7 @@ import UserProfile from "./pages/Users/UserProfile"; // Actualizamos para usar e
 import { SavedArtists } from "./pages/Users/SavedArtists";
 import { SavedSongs } from "./pages/Users/SavedSongs";
 import "../styles/index.css"; // Puedes actualizar o agregar nuevos estilos
+import ResetPassword from "./pages/ResetPassword";
 
 
 const Layout = () => {
@@ -33,6 +34,8 @@ const Layout = () => {
                         <Route path="/artist/:id" element={<Profile />} />
                         <Route path="/UserData" element={<UserData />} />
                         <Route path="*" element={<h1>Not found!</h1>} />
+                        <Route path="/password-reset/:id" element={<ResetPassword />} />
+
                     </Routes>
                 </div>
             </ScrollToTop>

@@ -78,5 +78,6 @@ dist/*
 .venv
 database.database
 database.db
-diagram.png
+diagram.png 
 __pycache__/
+migrations

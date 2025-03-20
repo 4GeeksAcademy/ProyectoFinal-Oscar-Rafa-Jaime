@@ -34,3 +34,38 @@ h1{
     font-size: 1.5rem;
     font-weight: bold;
 }
+
+/* Reset password button */
+.reset-password-button {
+  width: 100%; /* Full width to match the form's width */
+  padding: 12px; /* Add some padding for a better clickable area */
+  background-color: #4CAF50; /* Green background color */
+  color: white; /* Text color */
+  font-size: 16px; /* Adjust font size */
+  font-weight: 600; /* Make the text bold */
+  border: none; /* Remove the default border */
+  border-radius: 8px; /* Rounded corners */
+  cursor: pointer; /* Cursor pointer on hover */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effect */
+}
+
+/* Hover effect */
+.reset-password-button:hover {
+  background-color: #45a049; /* Darker green on hover */
+  transform: translateY(-2px); /* Slight raise effect */
+}
+
+/* Disabled state styling */
+.reset-password-button:disabled {
+  background-color: #b3b3b3; /* Light grey when disabled */
+  cursor: not-allowed; /* Change cursor to show it's disabled */
+}
+
+/* Button with success or failure messages */
+.reset-password-button:not(:disabled) {
+  background-color: #3b82f6; /* Default blue background */
+}
+
+.reset-password-button:not(:disabled):hover {
+  background-color: #2563eb; /* Hover with a darker blue */
+}

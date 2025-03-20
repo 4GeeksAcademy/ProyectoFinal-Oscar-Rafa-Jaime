@@ -7,6 +7,13 @@ import cloudinary
 import cloudinary.uploader
 from flask_cors import CORS
 
+from datetime import timedelta
+
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
+sg = SendGridAPIClient(os.getenv('SENDGRID_API_KEY'))
+
 api = Blueprint("api", __name__)
 CORS(api)
 import requests
@@ -473,3 +480,58 @@ def get_artist_profile_by_user_id(user_id):
     return jsonify(artist_profile.serialize()), 200
 
 
+
+# Email sending route
+@api.route('/sendEmail', methods=['POST'])
+def send_email():
+    data = request.get_json()
+    to = data.get("to")
+
+    user = User.query.filter_by(email=to).first()
+    if user is None:
+        return jsonify({"msg": "Email not found"}), 400
+
+    # Create the reset password link
+    reset_link = f"{os.getenv('FRONTEND_URL')}/password-reset/{user.id}"
+
+    # Compose the reset email
+    message = Mail(
+        from_email='soundcript@outlook.com',
+        to_emails=to,
+        subject='Password Reset Request',
+        html_content=f'<strong>Click <a href="{reset_link}">here</a> to reset your password.</strong>')
+    print("BACKEND_URL:", os.getenv('BACKEND_URL'))
+
+    try:
+        response = sg.send(message)
+
+        return jsonify({"msg": "Password reset link sent to your email!",
+            "status_code": response.status_code,
+            "body": response.body.decode() if response.body else "no body"}), 200
+    except Exception as e:
+        print(str(e))
+
+
+@api.route('/password-reset/<int:id>', methods=['PUT'])
+def password_reset(id):
+    try:
+        user = User.query.get(id)
+        if not user:
+            return jsonify({"msg": "User not found"}), 404
+
+        # Get the new password from the request
+        data = request.get_json()
+        new_password = data.get("password")
+
+        if not new_password:
+            return jsonify({"msg": "New password is required"}), 400
+
+        # Set the new password
+        user.set_password(new_password)
+        db.session.commit()
+
+        return jsonify({"msg": "Password reset successful"}), 200
+
+    except Exception as e:
+        print(e)
+        return jsonify({"msg": "Invalid or expired token"}), 400

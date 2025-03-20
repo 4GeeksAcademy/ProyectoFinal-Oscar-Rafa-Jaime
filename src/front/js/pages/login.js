@@ -18,6 +18,11 @@ export const Login = () => {
   const [genres, setGenres] = useState([]);
   const [uploading, setUploading] = useState("")
   const [uploadSuccess, setUploadSuccess] = useState(false); // New state for success message
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+
 
   const { t } = useTranslation();
 
@@ -75,7 +80,7 @@ export const Login = () => {
 
   const sendFile = async (file) => {
     if (!file) {
-      alert("Selecciona una imagen.");
+      alert(t("Selecciona una imagen."));
       return;
     }
 
@@ -117,11 +122,11 @@ export const Login = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     if (formulario.password !== formulario.confirmPassword) {
-      alert("Las contraseñas no coinciden");
+      alert(t("¡Las contraseñas no coinciden!"));
       return;
     }
     if (!formulario.profile_photo) {
-      alert("Sube una imagen para tu perfil.");
+      alert(t("Sube una imagen para tu perfil"));
       return;
     }
     try {
@@ -140,16 +145,16 @@ export const Login = () => {
       );
       const registerData = await registerResponse.json();
       if (registerResponse.ok) {
-        alert("Usuario registrado con éxito");
+        alert(t("Usuario registrado con éxito"));
         setShowLogin(true);
         setShowRegister(false);
         setShowForgoten(false);
       } else {
-        alert(registerData.msg || "Error al registrar usuario");
+        alert(registerData.msg || t("Error al registrar usuario"));
       }
     } catch (error) {
-      console.error("Error en el registro:", error);
-      alert(error.message || "Error en el servidor");
+      console.error(t("Error en el registro:"), error);
+      alert(error.message || t("Error en el servidor"));
     }
   };
 
@@ -164,7 +169,7 @@ export const Login = () => {
       );
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Error en el inicio de sesión");
+        throw new Error(errorData.message || t("Error en el inicio de sesión"));
       }
       const data = await response.json();
 
@@ -177,13 +182,37 @@ export const Login = () => {
       }
     } catch (error) {
       console.error("Error al hacer fetch:", error);
-      alert(error.message || "Error en el servidor");
+      alert(error.message || t("Error en el servidor"));
     }
   };
 
-  const handlePasswordReset = (e) => {
-    e.preventDefault();
-    alert("Funcionalidad de recuperación no implementada");
+  const handlePasswordReset = async (e) => {
+    setIsLoading(true);
+    setSent(false);
+
+    try {
+      const response = await fetch(`${process.env.BACKEND_URL}/api/sendEmail`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ to: email }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage(data.msg); // success message
+        setSent(true);
+      } else {
+        setMessage(data.msg); // error message
+      }
+    } catch (error) {
+      setMessage(t("Algo salió mal. Por favor, inténtalo de nuevo."));
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -451,19 +480,27 @@ export const Login = () => {
               <h2 className="text-center mb-4">{t("¿He olvidado mi contraseña?")}</h2>
               <div className="mb-3">
                 <input
-                  type="text"
+                  type="email"
                   className="form-control form-control-lg"
-                  placeholder={t("Nombre de usuario")}
+                  placeholder={t("Email")}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
               <div className="mb-3">
-                <input
-                  type="password"
-                  className="form-control form-control-lg"
-                  placeholder={t("Nueva contraseña")}
+                <button
+                  type="submit"
+                  className="reset-password-button"
+                  onClick={() => handlePasswordReset(email)}
                   required
-                />
+                  disabled={isLoading || sent}>
+                  {isLoading
+                    ? t("Enviando...")
+                    : sent
+                      ? t("Enviado") // Show "Enviado" after email is sent
+                      : t("Enviar")}
+                </button>
               </div>
               <button
                 type="button"

@@ -186,10 +186,6 @@ const Profile = () => {
 
 
       // Toggle Follow
-
-    };
-  }
-
   const handleToggleFollow = async () => {
     try {
       const token = localStorage.getItem("Token");

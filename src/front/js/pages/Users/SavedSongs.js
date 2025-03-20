@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Context } from "../../store/appContext";
 import { useTranslation } from "react-i18next";
-import "../../../styles/Saveds.css"; // <-- nuevo CSS
+import "../../../styles/Saveds.css"; // <-- hoja de estilos unificada
 
 export const SavedSongs = () => {
   const { store } = useContext(Context);
@@ -23,7 +23,9 @@ export const SavedSongs = () => {
           }
         );
         if (!response.ok) throw new Error(t("Error al obtener canciones guardadas"));
+
         const data = await response.json();
+
         setSavedSongs(data.saved_songs || []);
       } catch (error) {
         console.error(error);
@@ -45,8 +47,8 @@ export const SavedSongs = () => {
           }
         }
       );
-
       if (!response.ok) throw new Error(t("Error al eliminar la canción"));
+
 
       setSavedSongs(prev => prev.filter(song => song.song_id !== songId));
     } catch (error) {
@@ -55,31 +57,35 @@ export const SavedSongs = () => {
   };
 
   return (
-    <div className="saveds-container">
-      <h2 className="saveds-title">🎵 {t("Canciones Guardadas")}</h2>
+    <div className="saved-songs-container">
+      <h4>{t("Canciones Guardadas")}</h4>
 
       {savedSongs.length === 0 ? (
-        <p className="text-white">{t("No tienes canciones guardadas.")}</p>
+        <p style={{ color: "#fff", textAlign: "center" }}>
+          {t("No tienes canciones guardadas.")}
+        </p>
       ) : (
-        <div className="saveds-grid">
-          {savedSongs.map((song) => (
+        <div className="saved-songs-grid">
+          {savedSongs.map(song => (
             <div key={song.song_id} className="song-card">
               <h4 className="song-title">{song.song_title}</h4>
-              <audio controls className="song-audio" src={song.song_url}>
-                {t("Tu navegador no soporta el elemento de audio.")}
-              </audio>
-              <button
-                className="remove-btn"
-                onClick={() => removeSong(song.song_id)}
-              >
-                {t("Eliminar")}
-              </button>
-            </div>
+              <div className="audio-button-row">
+                <audio controls src={song.song_url}>
+                  {t("Tu navegador no soporta el elemento de audio.")}
+                </audio>
+                <button
+                  className="delete-btn"
+                  onClick={() => removeSong(song.song_id)}
+                >
+                  {t("Eliminar")}
+                </button>
+                </div>
+              </div>
           ))}
+            </div>
+          )}
         </div>
-      )}
-    </div>
-  );
+      );
 };
 
-export default SavedSongs;
+      export default SavedSongs;

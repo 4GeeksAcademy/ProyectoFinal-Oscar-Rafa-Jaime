@@ -1,102 +1,164 @@
-/* src/front/styles/saveds.css */
-
-/* Sección general (puedes ajustarlo a tu gusto) */
-.saved-section {
-  color: #fff; /* Texto en blanco si tienes fondo oscuro */
-  background-color: transparent; /* o #1e1e1e si quieres un contenedor */
-  padding: 2rem 1rem;
-  border-radius: 8px;
+/* =========================
+   CANCIONES GUARDADAS
+   ========================= */
+.saved-songs-container {
+    margin: 2rem auto;
+    width: 90%;
+    max-width: 1100px;
 }
 
-/* Título */
-.section-title {
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
+.saved-songs-container h4 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #fff;
 }
 
-/* Mensaje cuando no hay items */
-.no-items {
-  text-align: center;
-  color: #ccc;
-  margin-top: 2rem;
+.audio-button-row {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    /* Centra verticalmente */
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    /* Espacio respecto al título */
 }
 
-/* GRID para artistas/canciones guardadas */
-.saveds-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center; /* Para centrar las tarjetas */
-  gap: 1.5rem; /* espacio entre tarjetas */
+.audio-button-row audio {
+    width: 80%;
+    /* Ajusta el ancho del reproductor */
 }
 
-/* Tarjeta general */
-.saveds-card {
-  background-color: #2c2c2c; /* un gris oscuro */
-  border: 1px solid #444;
-  border-radius: 8px;
-  width: 220px; /* ajusta el ancho fijo para que sean más "cuadradas" */
-  padding: 1rem;
-  text-align: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  /* margin: 0 auto;  si quieres centrarlas, pero ya tenemos justify-content en el contenedor */
+.saved-songs-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
 }
 
-/* Imagen dentro de la tarjeta */
-.saveds-card img {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-  border-radius: 5px;
-  margin-bottom: 0.5rem;
+.song-card {
+    background: linear-gradient(135deg, #ffffff 0%, #5a5959 100%) !important;
+    border-radius: 8px;
+    padding: 1rem;
+    width: 1000px !important;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
 }
 
-/* Título dentro de la tarjeta */
-.saveds-card h4 {
-  color: #fff;
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
+.song-card .song-title {
+    color: #000;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
 }
 
-/* Contenedor de botones */
-.btns-container {
-  margin-top: 0.5rem;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+.song-card audio {
+    width: 100%;
 }
 
-/* Botón de "Ver perfil" */
-.btn-visit-profile {
-  background-color: #f05a24;
-  border: none;
-  color: #fff;
-  padding: 0.4rem 0.6rem;
-  border-radius: 5px;
-  font-size: 0.85rem;
-  text-decoration: none;
-  transition: background 0.3s ease;
-}
-.btn-visit-profile:hover {
-  background-color: #d94d20;
-}
-
-/* Botón de "Dejar de seguir" o "Eliminar" */
+.delete-btn,
 .remove-btn {
-  font-size: 0.85rem;
-  padding: 0.4rem 0.6rem;
-  border-radius: 5px;
-  border: none;
-  transition: background 0.3s ease;
+    background-color: rgb(216, 70, 70);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    margin-left: 10px;
 }
 
-/* Ejemplo para un audio más ancho en canciones, 
-   si lo usas en SavedSongs.js */
-.saveds-card audio {
-  width: 100%;
-  margin-top: 0.5rem;
+.delete-btn:hover,
+.remove-btn:hover {
+    background-color: #c00;
+}
+
+/* =========================
+     ARTISTAS SEGUIDOS
+     ========================= */
+.saved-artists-container h4 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #fff;
+}
+
+.saved-artists-container {
+    margin: 2rem auto;
+    width: 90%;
+    max-width: 1200px;
+}
+
+.saved-artists-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.artist-card {
+    background: linear-gradient(135deg, #ffffff 0%, #5a5959 100%) !important;
+    border-radius: 8px;
+    width: 220px !important;
+    padding: 0.5rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 280px;
+    max-height: 280px;
+}
+
+.artist-image {
+    width: 160px !important;
+    height: 160px !important;
+    object-fit: cover;
+    border-radius: 20% !important;
+    display: block;
+    margin: 0 auto;
+}
+
+.artist-name {
+    color: #000000 !important;
+    font-size: 1rem;
+    margin: 0.2rem 0 !important;
+    text-align: center;
+}
+
+.profile-btn {
+    background-color: #6f42c1;
+    /* Morado */
+    color: #fff;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.profile-btn:hover {
+    background-color: #5a4fcc;
+
+}
+
+.unfollow-btn {
+    position: absolute;
+    bottom: 0.5rem;
+    right: 0.5rem;
+    background-color: rgb(216, 70, 70);
+    color: #fff;
+    border: none;
+    padding: 0.3rem 0.5rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.6rem;
+    margin-top: 0.2rem;
+
+}
+
+.unfollow-btn:hover {
+    background-color: #c00;
 }

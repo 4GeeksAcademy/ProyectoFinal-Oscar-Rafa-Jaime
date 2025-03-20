@@ -472,4 +472,30 @@ def get_artist_profile_by_user_id(user_id):
         raise APIException("Perfil de artista no encontrado", status_code=404)
     return jsonify(artist_profile.serialize()), 200
 
+@api.route("/search", methods=["GET"])
+def search_artists():
+    query = request.args.get("q", "").lower()
+
+    # Buscar solo los usuarios que son artistas
+    #artists_query = User.query.filter_by(is_artist=True).all()
+
+   #if query:
+    artists_query = User.query.filter(User.fullName.ilike(f"%{query}%"),User.is_artist==True).all()
+
+
+    # Convertir artistas a JSON
+    results = [
+        # {
+        #     "id": artist.id,
+        #     "fullName": artist.fullName,
+        #     "username": artist.username,
+        #     "profile_photo": artist.profile_photo or "https://cdn-icons-png.flaticon.com/512/3106/3106921.png",
+        #     "artist_profile_id":artist.artist_profile_id
+        # }
+        artist.serialize()
+        for artist in artists_query
+    ]
+
+    return jsonify(results)
+
 

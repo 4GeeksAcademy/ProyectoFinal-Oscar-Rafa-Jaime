@@ -10,6 +10,9 @@ export const Navbar = () => {
   const { store, actions } = useContext(Context);
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [query, setQuery] = useState(""); // Definir query en el estado
+  const [results, setResults] = useState([]);
+  const [genre, setGenre] = useState(""); // Estado para el género (corrección)
   const { t } = useTranslation();
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
@@ -26,13 +29,55 @@ export const Navbar = () => {
     ? (store.user.is_artist ? `/artist/${store.user.id}` : `/homeuser/${store.user.id}`)
     : "/";
 
+    const handleSearch = async (event) => {
+      const query = event.target.value;
+      setQuery(query);
+    
+      if (query.length > 2 || genre.length > 2) {
+        try {
+          const response = await fetch(
+            `${process.env.BACKEND_URL}/api/search?q=${query}`
+          );
+          const data = await response.json();
+          setResults(data);
+          console.log(data)
+        } catch (error) {
+          console.error("Error en la búsqueda:", error);
+        }
+      } else {
+        setResults([]);
+      }
+    };
+
   return (
     <nav className="navbar">
       <div className="container">
         <Link to={homeRoute} className="navbar-brand">
           SoundCript
         </Link>
-
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Buscar artistas..."
+            value={query}
+            onChange={handleSearch}
+          />
+          {/* Mostrar resultados de búsqueda */}
+          {results.length > 0 && (
+            <div className="search-results">
+              {results.map((artist) => (
+                <Link
+                  key={artist.id}
+                  to={`/artist/${artist.artist_profile_id}`}
+                  className="search-item"
+                >
+                  <img src={artist.profile_photo} alt={artist.fullName} />
+                  <span>{artist.fullName}</span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
         <div className="navbar-right">
           <LanguageSwitcher /> {/* Display the LanguageSwitcher component here */}
 

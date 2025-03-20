@@ -39,7 +39,8 @@ class User(db.Model):
             "email": self.email,
             "address": self.address,
             "is_artist": self.is_artist,
-            "profile_photo": self.profile_photo
+            "profile_photo": self.profile_photo,
+            "artist_profile_id":self.artist_profile.id if self.artist_profile else None
         }
 
 

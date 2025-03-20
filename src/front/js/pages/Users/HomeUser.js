@@ -16,8 +16,6 @@ export const HomeUser = () => {
         actions.loadGenres();
     }, []);
 
-    // Aquí puedes tener datos reales o simulados para los artistas
-
     console.log(store)
     return (
         <div>

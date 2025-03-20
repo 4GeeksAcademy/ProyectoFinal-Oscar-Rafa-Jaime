@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Context } from "../../store/appContext";
 import { useTranslation } from "react-i18next";
-import "../../../styles/userProfile.css";
+import "../../../styles/Saveds.css"; // <-- nuevo CSS
 
 export const SavedSongs = () => {
   const { store } = useContext(Context);
@@ -31,7 +31,7 @@ export const SavedSongs = () => {
     };
 
     fetchSavedSongs();
-  }, []);
+  }, [t]);
 
   const removeSong = async (songId) => {
     try {
@@ -47,29 +47,29 @@ export const SavedSongs = () => {
       );
 
       if (!response.ok) throw new Error(t("Error al eliminar la canción"));
-      
-      setSavedSongs((prev) => prev.filter((song) => song.song_id !== songId));
+
+      setSavedSongs(prev => prev.filter(song => song.song_id !== songId));
     } catch (error) {
       console.error(error);
     }
   };
 
   return (
-    <div className="profile-container text-dark">
-      <h2>🎵 {t("Canciones Guardadas")}</h2>
+    <div className="saveds-container">
+      <h2 className="saveds-title">🎵 {t("Canciones Guardadas")}</h2>
 
       {savedSongs.length === 0 ? (
-        <p>{t("No tienes canciones guardadas.")}</p>
+        <p className="text-white">{t("No tienes canciones guardadas.")}</p>
       ) : (
-        <div className="song-grid">
+        <div className="saveds-grid">
           {savedSongs.map((song) => (
             <div key={song.song_id} className="song-card">
               <h4 className="song-title">{song.song_title}</h4>
-              <audio controls src={song.song_url}>
+              <audio controls className="song-audio" src={song.song_url}>
                 {t("Tu navegador no soporta el elemento de audio.")}
               </audio>
               <button
-                className="btn btn-danger remove-btn"
+                className="remove-btn"
                 onClick={() => removeSong(song.song_id)}
               >
                 {t("Eliminar")}

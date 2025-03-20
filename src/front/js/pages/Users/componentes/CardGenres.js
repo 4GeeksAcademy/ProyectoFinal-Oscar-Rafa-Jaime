@@ -13,7 +13,7 @@ export const CardGenres = ({ profile_photo, name, id }) => {
                 <div className="card-body">
                     <p>{name}</p>
                 </div>
-                <div className="d-flex justify-content-between mb-3 mx-2">
+                <div className="d-flex justify-content-center mb-3 mx-2">
                     <Link className="btn btn-outline-purple" to={`/artist/${id}`}>
                         {t("Ver perfil")}
                     </Link>
@@ -22,12 +22,3 @@ export const CardGenres = ({ profile_photo, name, id }) => {
         </div>
     );
 };
-
-
-
-{/* <button
-                        className="btn btn-outline-purple"
-                        onClick={() => actions.saveSong(id)}
-                    >
-                        <i className="fa-regular fa-star"></i>
-                    </button> */}

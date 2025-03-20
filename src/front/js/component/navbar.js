@@ -42,7 +42,7 @@ export const Navbar = () => {
           setResults(data);
           console.log(data)
         } catch (error) {
-          console.error("Error en la búsqueda:", error);
+          console.error(t("Error en la búsqueda:"), error);
         }
       } else {
         setResults([]);
@@ -58,7 +58,7 @@ export const Navbar = () => {
         <div className="search-bar">
           <input
             type="text"
-            placeholder="Buscar artistas..."
+            placeholder={t("Buscar artistas...")}
             value={query}
             onChange={handleSearch}
           />

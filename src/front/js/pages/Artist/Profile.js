@@ -164,24 +164,21 @@ const Profile = () => {
 
       const data = await response.json();
 
-      // Update profile photo in local storage
       const updatedUser = { ...store.user, profile_photo: data.img };
       localStorage.setItem("user", JSON.stringify(updatedUser));
-
-      // Update global context
       actions.setUser(updatedUser);
 
-
-      // Update profile photo URL or handle accordingly
       setArtistData((prevData) => ({
         ...prevData,
         user: {
           ...prevData.user,
-          profile_photo: data.img, // Assuming the server returns the image URL
+          profile_photo: data.img,
         },
       }));
     } catch (error) {
       console.error(t("Error al subir la imagen:"), error);
+    }
+  };
 
 
       // Toggle Follow
@@ -312,6 +309,4 @@ const Profile = () => {
         </>
       );
     };
-  }
-}
 export default Profile;

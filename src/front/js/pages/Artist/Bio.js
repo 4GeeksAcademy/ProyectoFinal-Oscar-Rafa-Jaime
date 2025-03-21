@@ -1,4 +1,3 @@
-// src/front/js/pages/Artist/Bio.js
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -11,7 +10,6 @@ export const Bio = ({ data, isOwner, refreshArtistData }) => {
 
   const handleCancel = (e) => {
     e.preventDefault();
-    // Restaurar la bio anterior
     setBio(data?.bio || "");
     setEditMode(false);
   };
@@ -21,16 +19,15 @@ export const Bio = ({ data, isOwner, refreshArtistData }) => {
     try {
       const token = localStorage.getItem("Token");
       const resp = await fetch(`${process.env.BACKEND_URL}/api/artist/profile`, {
-        method: "PUT", // O PATCH, según tu backend
+        method: "PUT", 
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ bio }) // Mandamos la bio nueva
+        body: JSON.stringify({ bio })
       });
       if (!resp.ok) throw new Error(t("Error al actualizar la biografía"));
 
-      // Refrescamos la data para que se vea la nueva bio sin recargar manualmente
       await refreshArtistData();
 
       setEditMode(false);

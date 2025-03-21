@@ -1,14 +1,13 @@
-/* src/styles/languageSwitcher.css */
 .language-switcher {
     position: relative;
     display: inline-block;
-    margin-right: 20px; /* Space from other items */
+    margin-right: 20px;
 }
 
 .language-switcher button {
     background-color: var(--color-coquelicot);
     color: var(--color-white);
-    border: 1px solid var(--color-mauveine); /* Border in mauveine color */
+    border: 1px solid var(--color-mauveine);
     padding: 6px 12px;
     font-size: 12px;
     cursor: pointer;
@@ -16,9 +15,9 @@
 }
 
 .language-switcher button:hover {
-    background-color: var(--color-mauveine); /* Switch background on hover */
-    color: var(--color-white); /* White text on hover */
-    transform: scale(1.05); /* Slight scale on hover */
+    background-color: var(--color-mauveine);
+    color: var(--color-white);
+    transform: scale(1.05);
 }
 
 .language-dropdown {
@@ -45,7 +44,7 @@
 
 .language-dropdown button:hover {
     background-color: var(--color-mauveine);
-    color: var(--color-white); /* Text changes to white on hover */
+    color: var(--color-white);
 }
 
 .language-switcher.open .language-dropdown {

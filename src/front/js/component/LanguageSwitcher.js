@@ -1,4 +1,3 @@
-// src/front/js/component/navbar.js
 import React, { useContext, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
@@ -12,7 +11,7 @@ const LanguageSwitcher = () => {
     const toggleDropdown = () => setIsOpen(!isOpen);
   
     const switchLanguage = (lang) => {
-      i18n.changeLanguage(lang); // Changes language when the button is clicked
+      i18n.changeLanguage(lang);
     };
   
     return (

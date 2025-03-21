@@ -1,10 +1,8 @@
-/* src/front/styles/navbar.css */
 .navbar {
     margin-top: 15px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    /* Gradiente desde rojo a atomic tangerine */
     background: linear-gradient(90deg,
             var(--color-red) 0%,
             var(--color-atomic-tangerine) 100%);

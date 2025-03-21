@@ -19,8 +19,7 @@ class User(db.Model):
     profile_photo = db.Column(db.String(512), nullable=True)
     is_active = db.Column(db.Boolean, default=True)
 
-    # Relaciones
-    # Si el usuario es artista, tendrá un perfil asociado
+  
     artist_profile = db.relationship("ArtistProfile", backref="user", uselist=False)
     saved_songs = db.relationship("SavedSong", backref="user")
     followed_artists = db.relationship("FollowArtist", backref="user")
@@ -61,15 +60,13 @@ class ArtistProfile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     bio = db.Column(db.String(3000), nullable=True)
 
-    # Relación 1:1 con el usuario (solo para artistas)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), unique=True)
 
-    # Relaciones multimedia
+
     artist_photos = db.relationship("Photo", backref="artist_profile", lazy=True)
     artist_videos = db.relationship("Video", backref="artist_profile", lazy=True)
     artist_songs = db.relationship("Song", backref="artist_profile", lazy=True)
 
-    # Relación muchos a muchos con Géneros
     genres = db.relationship("Genre", secondary=artist_genres, backref=db.backref("artists", lazy=True))
 
     def serialize(self):

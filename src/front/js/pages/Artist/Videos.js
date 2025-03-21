@@ -1,9 +1,7 @@
 // src/front/js/pages/Artist/Videos.js
 import React, { useState } from "react";
-import "../../../styles/video.css"; // Asegúrate de tener estilos para videos
-import { useTranslation } from "react-i18next";
 import "../../../styles/video.css";
-
+import { useTranslation } from "react-i18next";
 
 function Videos({ data, isOwner, refreshArtistData }) {
     const [file, setFile] = useState(null);
@@ -12,7 +10,8 @@ function Videos({ data, isOwner, refreshArtistData }) {
 
     const handleVideoChange = (e) => {
         if (e.target.files && e.target.files.length) {
-            setFile(e.target.files[0]);
+            const selectedFile = e.target.files[0];
+            setFile(selectedFile);
         }
     };
 
@@ -58,18 +57,12 @@ function Videos({ data, isOwner, refreshArtistData }) {
                 }
             );
 
-          if (!backendResponse.ok)
+            if (!backendResponse.ok)
                 throw new Error(t("Error al subir el vídeo al backend"));
             await backendResponse.json();
-          
-            alert(
-                t("Vídeo subido con éxito. A continuación se recargara la página para ver los cambios.")
-            );
-          
-            if (refreshArtistData) {
-              await refreshArtistData();
-            }
 
+            alert(t("Vídeo subido con éxito. Recargara la página para ver los cambios."));
+            if (refreshArtistData) await refreshArtistData();
             setFile(null);
         } catch (error) {
             console.error(error);
@@ -91,16 +84,10 @@ function Videos({ data, isOwner, refreshArtistData }) {
                     }
                 }
             );
-
-          if (!response.ok) throw new Error(t("Error al eliminar el vídeo"));
-            alert(
-                t("Vídeo eliminado. A continuación se recargara la página para ver los cambios.")
-            );
-          
-            if (refreshArtistData) {
-              await refreshArtistData();
-            }
-
+            if (!response.ok)
+                throw new Error(t("Error al eliminar el vídeo"));
+            alert(t("Vídeo eliminado. Recargara la página para ver los cambios."));
+            if (refreshArtistData) await refreshArtistData();
         } catch (error) {
             console.error(error);
             alert(error.message);
@@ -111,14 +98,24 @@ function Videos({ data, isOwner, refreshArtistData }) {
         <div>
             <h2>{t("Vídeos")}</h2>
             {isOwner && (
-                <div>
-                    <input type="file" accept="video/*" onChange={handleVideoChange} />
-                    <button onClick={handleUpload} disabled={uploading}>
+                <div className="upload-section">
+                    {/* Input oculto */}
+                    <input
+                        type="file"
+                        id="videoInput"
+                        style={{ display: "none" }}
+                        accept="video/*"
+                        onChange={handleVideoChange}
+                    />
+                    <label htmlFor="videoInput" className="upload-label">
+                        {t("Seleccionar Vídeo")}
+                    </label>
+                    {file && <span className="file-name">{file.name}</span>}
+                    <button onClick={handleUpload} disabled={uploading} className="upload-button">
                         {uploading ? t("Subiendo...") : t("Subir Vídeo")}
                     </button>
                 </div>
             )}
-
             <div className="videos-container">
                 {data.videos && data.videos.length > 0 ? (
                     data.videos.map((video) => (
@@ -134,7 +131,7 @@ function Videos({ data, isOwner, refreshArtistData }) {
                             ></iframe>
                             {isOwner && (
                                 <button
-                                    className="delete-button"
+                                    className="eliminar-button"
                                     onClick={() => handleDeleteVideo(video.id)}
                                 >
                                     X

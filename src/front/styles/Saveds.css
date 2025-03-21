@@ -17,15 +17,12 @@
     display: flex;
     width: 100%;
     align-items: center;
-    /* Centra verticalmente */
     justify-content: space-between;
     margin-top: 0.5rem;
-    /* Espacio respecto al título */
 }
 
 .audio-button-row audio {
     width: 80%;
-    /* Ajusta el ancho del reproductor */
 }
 
 .saved-songs-grid {

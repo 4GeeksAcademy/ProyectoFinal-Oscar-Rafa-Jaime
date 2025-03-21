@@ -58,7 +58,6 @@ def register():
     db.session.add(user)
     db.session.commit()
     
-    # Si el usuario es artista, creamos un perfil de artista
     if is_artist:
         artist_profile = ArtistProfile(user_id=user.id, bio=data.get("bio", ""))
         genre_ids = data.get("genres", [])
@@ -81,23 +80,19 @@ def login():
     username = data.get("username")
     password = data.get("password")
 
-    # Buscando al usuario en la base de datos
     user = User.query.filter_by(username=username).first()
 
 # Validando las credenciales
     if not user or not user.check_password(password):
         raise APIException("Credenciales inválidas", status_code=401)
 
-    # Generando el token de acceso, usando el ID del usuario
     access_token = create_access_token(identity=user)
 
-    # Determinando la URL de redirección según el tipo de usuario
     if user.is_artist:
         redirect_url = f"/artist/{user.id}"
     else:
         redirect_url = f"/homeuser/{user.id}"
 
-    # Respuesta con el token de acceso, los datos del usuario y la URL de redirección
     return jsonify({
         "access_token": access_token,
         "user": user.serialize(),
@@ -122,7 +117,6 @@ def get_current_profile():
 @api.route("/artist/profile", methods=["GET"])
 @jwt_required()
 def get_artist_profile():
-    # Aquí se permite que cualquier usuario autenticado vea el perfil
     user_id = get_jwt_identity()
     artist_profile = ArtistProfile.query.filter_by(user_id=user_id).first()
     if not artist_profile:
@@ -483,10 +477,6 @@ def get_artist_profile_by_user_id(user_id):
 def search_artists():
     query = request.args.get("q", "").lower()
 
-    # Buscar solo los usuarios que son artistas
-    #artists_query = User.query.filter_by(is_artist=True).all()
-
-   #if query:
     artists_query = User.query.filter(User.fullName.ilike(f"%{query}%"),User.is_artist==True).all()
 
 
@@ -517,10 +507,8 @@ def send_email():
     if user is None:
         return jsonify({"msg": "Email not found"}), 400
 
-    # Create the reset password link
     reset_link = f"{os.getenv('FRONTEND_URL')}/password-reset/{user.id}"
 
-    # Compose the reset email
     message = Mail(
         from_email='soundcript@outlook.com',
         to_emails=to,
@@ -545,14 +533,12 @@ def password_reset(id):
         if not user:
             return jsonify({"msg": "User not found"}), 404
 
-        # Get the new password from the request
         data = request.get_json()
         new_password = data.get("password")
 
         if not new_password:
             return jsonify({"msg": "New password is required"}), 400
 
-        # Set the new password
         user.set_password(new_password)
         db.session.commit()
 

@@ -26,8 +26,8 @@ body {
     border-radius: 5px;
     cursor: pointer;
     transition: background 0.3s, transform 0.2s;
-    margin-right: 8px; /* Separa horizontalmente los botones */
-    margin-top: 6px;   /* Un pequeño espacio vertical */
+    margin-right: 8px;
+    margin-top: 6px;
 }
 
 .boton:hover {

@@ -19,21 +19,26 @@
     object-fit: cover;
 }
 
-.delete-button {
+.eliminar-button {
     position: absolute;
     top: 8px;
     right: 8px;
-    background-color: rgba(231, 76, 60, 0.8);
-    border: 2px solid black;
-    border-radius: 50%;
+    background-color: var(--color-red, #dc3545);
     color: #fff;
-    padding: 6px 9px;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
     cursor: pointer;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
 }
 
-.video-wrapper:hover .delete-button {
-    opacity: 1;
+.eliminar-button:hover {
+    background-color: #f30808;
+}
+
+.file-name {
+    font-size: 0.9rem;
+    color: #333;
+    margin-left: 10px;
 }

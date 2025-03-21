@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "../../styles/data.css"
-import Imagen from "../../img/microphone.jpg";  // Asegúrate de que la ruta sea correcta
+import Imagen from "../../img/microphone.jpg";
 import { Context } from "../store/appContext";
 
 export const UserData = () => {
@@ -34,7 +34,7 @@ export const UserData = () => {
     };
 
     const cancelEditData = (event) => {
-        event.preventDefault();  // Prevenir el comportamiento por defecto
+        event.preventDefault();  
         setShowEditData(false);
     };
 

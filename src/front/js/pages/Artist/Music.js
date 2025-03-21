@@ -1,26 +1,53 @@
 // src/front/js/pages/Artist/Music.js
-import React, { useState } from "react";
-import "../../../styles/music.css"; // Asegúrate de tener estilos para música
-import { useTranslation } from "react-i18next";
+import React, { useState, useEffect } from "react";
 import "../../../styles/music.css";
+import { useTranslation } from "react-i18next";
 
 function Music({ data, isOwner, refreshArtistData }) {
     const [file, setFile] = useState(null);
     const [songTitle, setSongTitle] = useState("");
     const [uploading, setUploading] = useState(false);
+    const [likedSongIds, setLikedSongIds] = useState([]);
     const { t } = useTranslation();
 
-    // Manejar selección de archivo
+    useEffect(() => {
+        const fetchUserFavorites = async () => {
+            try {
+                const token = localStorage.getItem("Token");
+                const resp = await fetch(
+                    `${process.env.BACKEND_URL}/api/profile/favourite/songs`,
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+                if (!resp.ok) throw new Error(t("Error al obtener favoritos"));
+                const data = await resp.json();
+                const favoriteIds = data.saved_songs.map((s) => s.song_id);
+                setLikedSongIds(favoriteIds);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        if (!isOwner) {
+            fetchUserFavorites();
+        }
+    }, [t, isOwner]);
+
     const handleSongChange = (e) => {
         if (e.target.files && e.target.files.length) {
-            setFile(e.target.files[0]);
+            const selectedFile = e.target.files[0];
+            setFile(selectedFile);
+            setSongTitle(selectedFile.name);
         }
     };
 
-    // Subir nueva canción (solo si isOwner)
     const handleUpload = async () => {
         if (!file) {
-            alert(t("Selecciona un archivo de audio."));
+            alert(t("Seleccionar archivo"));
             return;
         }
         if (!songTitle) {
@@ -42,11 +69,12 @@ function Music({ data, isOwner, refreshArtistData }) {
                     body: formData
                 }
             );
-            if (!response.ok) throw new Error(t("Error al subir la canción"));
+            if (!response.ok)
+                throw new Error(t("Error al subir la canción"));
             const resData = await response.json();
             const songUrl = resData.secure_url;
 
-            // 2) Guardar en backend la canción
+            // 2) Guardar la canción en el backend
             const token = localStorage.getItem("Token");
             const backendResponse = await fetch(
                 `${process.env.BACKEND_URL}/api/artist/songs`,
@@ -64,14 +92,11 @@ function Music({ data, isOwner, refreshArtistData }) {
             );
             if (!backendResponse.ok)
                 throw new Error(t("Error al subir la canción al backend"));
-          
+
             await backendResponse.json();
 
             alert(t("Canción subida con éxito. Recarga la vista para ver los cambios."));
-          
-            if (refreshArtistData) {
-              await refreshArtistData();
-            }
+            if (refreshArtistData) await refreshArtistData();
 
             setFile(null);
             setSongTitle("");
@@ -82,7 +107,6 @@ function Music({ data, isOwner, refreshArtistData }) {
         setUploading(false);
     };
 
-    // Eliminar canción (solo si isOwner)
     const handleDeleteSong = async (songId) => {
         if (!window.confirm(t("¿Estás seguro de eliminar esta canción?"))) return;
         try {
@@ -96,34 +120,48 @@ function Music({ data, isOwner, refreshArtistData }) {
                     }
                 }
             );
-            if (!response.ok) throw new Error(t("Error al eliminar la canción"));
+            if (!response.ok)
+                throw new Error(t("Error al eliminar la canción"));
             alert(t("Canción eliminada. Recarga la vista para ver los cambios."));
-          
-            if (refreshArtistData) {
-              await refreshArtistData();
-            }
-
+            if (refreshArtistData) await refreshArtistData();
         } catch (error) {
             console.error(error);
             alert(error.message);
         }
     };
 
-
-    // Like a una canción (si NO eres el dueño)
-    const handleLike = async (songId) => {
+    const handleLikeToggle = async (songId) => {
         try {
             const token = localStorage.getItem("Token");
-            const resp = await fetch(`${process.env.BACKEND_URL}/api/profile/favourite/songs`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify({ songId })
-            });
-            if (!resp.ok) throw new Error(t("Error al dar like a la canción"));
-            alert(t("¡Canción guardada en tus favoritos!"));
+            if (likedSongIds.includes(songId)) {
+                // Si la canción ya está en favoritos, quitarla (Dislike)
+                const resp = await fetch(
+                    `${process.env.BACKEND_URL}/api/profile/favourite/songs/${songId}`,
+                    {
+                        method: "DELETE",
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+                if (!resp.ok)
+                    throw new Error(t("Error al quitar la canción de favoritos"));
+                setLikedSongIds((prev) => prev.filter((id) => id !== songId));
+                alert(t("Canción eliminada de tus favoritos"));
+            } else {
+                // Si no está en favoritos, agregarla (Like)
+                const resp = await fetch(`${process.env.BACKEND_URL}/api/profile/favourite/songs`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ songId })
+                });
+                if (!resp.ok) throw new Error(t("Error al dar like a la canción"));
+                setLikedSongIds((prev) => [...prev, songId]);
+                alert(t("¡Canción guardada en tus favoritos!"));
+            }
         } catch (error) {
             console.error(error);
             alert(error.message);
@@ -134,16 +172,31 @@ function Music({ data, isOwner, refreshArtistData }) {
         <div>
             <h2>{t("Música")}</h2>
             {isOwner && (
-                <div style={{ marginBottom: "1em" }}>
-                    <input type="file" accept="audio/*" onChange={handleSongChange} />
+                <div className="upload-section">
+                    {/* Input oculto para seleccionar archivo */}
+                    <input
+                        type="file"
+                        id="fileInput"
+                        style={{ display: "none" }}
+                        accept="audio/*"
+                        onChange={handleSongChange}
+                    />
+                    <label htmlFor="fileInput" className="upload-label">
+                        {t("Seleccionar Archivo")}
+                    </label>
+                    {/* Input de texto para el título, que ahora se autocompleta */}
                     <input
                         type="text"
                         placeholder={t("Título de la canción")}
                         value={songTitle}
                         onChange={(e) => setSongTitle(e.target.value)}
-                        style={{ marginRight: "0.5em" }}
+                        className="upload-input"
                     />
-                    <button onClick={handleUpload} disabled={uploading}>
+                    <button
+                        onClick={handleUpload}
+                        disabled={uploading}
+                        className="upload-button"
+                    >
                         {uploading ? t("Subiendo...") : t("Subir Canción")}
                     </button>
                 </div>
@@ -151,29 +204,38 @@ function Music({ data, isOwner, refreshArtistData }) {
 
             {data.songs && data.songs.length > 0 ? (
                 <ul className="song-list">
-                    {data.songs.map((song) => (
-                        <li key={song.id} className="song-item">
-                            <div className="song-content">
-                                <audio controls src={song.media_url} className="audio-player">
-                                    {t("Tu navegador no soporta el elemento de audio.")}
-                                </audio>
-                                <span className="song-title">{song.title}</span>
-                            </div>
-
-                            {isOwner ? (
-                                <button
-                                    className="eliminar-button"
-                                    onClick={() => handleDeleteSong(song.id)}
-                                >
-                                    Eliminar
-                                </button>
-                            ) : (
-                                <button className="like-button" onClick={() => handleLike(song.id)}>
-                                    Like
-                                </button>
-                            )}
-                        </li>
-                    ))}
+                    {data.songs.map((song) => {
+                        const isLiked = likedSongIds.includes(song.id);
+                        return (
+                            <li key={song.id} className="song-item">
+                                <div className="song-content">
+                                    <audio
+                                        controls
+                                        src={song.media_url}
+                                        className="audio-player"
+                                    >
+                                        {t("Tu navegador no soporta el elemento de audio.")}
+                                    </audio>
+                                    <span className="song-title">{song.title}</span>
+                                </div>
+                                {isOwner ? (
+                                    <button
+                                        className="eliminar-button"
+                                        onClick={() => handleDeleteSong(song.id)}
+                                    >
+                                        {t("Eliminar")}
+                                    </button>
+                                ) : (
+                                    <button
+                                        className={`like-button ${isLiked ? "liked" : ""}`}
+                                        onClick={() => handleLikeToggle(song.id)}
+                                    >
+                                        {isLiked ? t("Dislike") : t("Like")}
+                                    </button>
+                                )}
+                            </li>
+                        );
+                    })}
                 </ul>
             ) : (
                 <p>{t("No hay canciones disponibles.")}</p>

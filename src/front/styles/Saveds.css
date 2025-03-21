@@ -1,0 +1,161 @@
+/* =========================
+   CANCIONES GUARDADAS
+   ========================= */
+.saved-songs-container {
+    margin: 2rem auto;
+    width: 90%;
+    max-width: 1100px;
+}
+
+.saved-songs-container h4 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #fff;
+}
+
+.audio-button-row {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+}
+
+.audio-button-row audio {
+    width: 80%;
+}
+
+.saved-songs-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.song-card {
+    background: linear-gradient(135deg, #ffffff 0%, #5a5959 100%) !important;
+    border-radius: 8px;
+    padding: 1rem;
+    width: 1000px !important;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+}
+
+.song-card .song-title {
+    color: #000;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.song-card audio {
+    width: 100%;
+}
+
+.delete-btn,
+.remove-btn {
+    background-color: rgb(216, 70, 70);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    margin-left: 10px;
+}
+
+.delete-btn:hover,
+.remove-btn:hover {
+    background-color: #c00;
+}
+
+/* =========================
+     ARTISTAS SEGUIDOS
+     ========================= */
+.saved-artists-container h4 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #fff;
+}
+
+.saved-artists-container {
+    margin: 2rem auto;
+    width: 90%;
+    max-width: 1200px;
+}
+
+.saved-artists-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.artist-card {
+    background: linear-gradient(135deg, #ffffff 0%, #5a5959 100%) !important;
+    border-radius: 8px;
+    width: 220px !important;
+    padding: 0.5rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 280px;
+    max-height: 280px;
+}
+
+.artist-image {
+    width: 160px !important;
+    height: 160px !important;
+    object-fit: cover;
+    border-radius: 20% !important;
+    display: block;
+    margin: 0 auto;
+}
+
+.artist-name {
+    color: #000000 !important;
+    font-size: 1rem;
+    margin: 0.2rem 0 !important;
+    text-align: center;
+}
+
+.profile-btn {
+    background-color: #6f42c1;
+    /* Morado */
+    color: #fff;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.profile-btn:hover {
+    background-color: #5a4fcc;
+
+}
+
+.unfollow-btn {
+    position: absolute;
+    bottom: 0.5rem;
+    right: 0.5rem;
+    background-color: rgb(216, 70, 70);
+    color: #fff;
+    border: none;
+    padding: 0.3rem 0.5rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.6rem;
+    margin-top: 0.2rem;
+
+}
+
+.unfollow-btn:hover {
+    background-color: #c00;
+}

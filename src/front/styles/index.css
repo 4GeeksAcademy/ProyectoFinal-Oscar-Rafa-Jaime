@@ -1,4 +1,3 @@
-/* src/front/styles/index.css */
 :root {
     --color-white: #FFFFFF;
     --color-black: #0C121C;
@@ -19,7 +18,6 @@ body {
     background-color: var(--color-white);
 }
 
-/* Ejemplo de enlaces */
 a {
     text-decoration: none;
     color: var(--color-red);

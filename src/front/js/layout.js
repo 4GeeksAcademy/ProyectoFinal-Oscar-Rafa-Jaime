@@ -1,4 +1,3 @@
-// src/front/js/layout.js
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
@@ -6,15 +5,15 @@ import injectContext from "./store/appContext";
 import { useTranslation } from "react-i18next";
 import "../i18n"; // Import i18n configuration
 
-// Importamos las vistas
+
 import { Login } from "./pages/login";
 import Profile from "./pages/Artist/Profile";
 import { UserData } from "./pages/Artist/UserData";
 import { HomeUser } from "./pages/Users/HomeUser";
-import UserProfile from "./pages/Users/UserProfile"; // Actualizamos para usar el dashboard con pestañas
+import UserProfile from "./pages/Users/UserProfile";
 import { SavedArtists } from "./pages/Users/SavedArtists";
 import { SavedSongs } from "./pages/Users/SavedSongs";
-import "../styles/index.css"; // Puedes actualizar o agregar nuevos estilos
+import "../styles/index.css"; 
 import ResetPassword from "./pages/ResetPassword";
 
 

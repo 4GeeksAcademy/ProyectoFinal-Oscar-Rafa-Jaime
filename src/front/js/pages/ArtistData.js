@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../../styles/data.css"
-import Imagen from "../../img/microphone.jpg";  // Asegúrate de que la ruta sea correcta
+import Imagen from "../../img/microphone.jpg";
 
 export const ArtistData = () => {
     const [showEditData, setShowEditData] = useState(false);
@@ -10,7 +10,7 @@ export const ArtistData = () => {
     };
 
     const cancelEditData = (event) => {
-        event.preventDefault();  // Prevenir el comportamiento por defecto
+        event.preventDefault();
         setShowEditData(false);
     };
 

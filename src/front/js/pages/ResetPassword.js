@@ -30,7 +30,6 @@ const ResetPassword = () => {
         }
 
         try {
-            // Make sure we're using the backend URL
             const response = await fetch(`${process.env.BACKEND_URL}/api/password-reset/${id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
@@ -42,7 +41,6 @@ const ResetPassword = () => {
 
             if (response.ok) {
                 setIsSuccess(true);
-                // Redirect to login page after successful password reset
                 setTimeout(() => {
                     navigate('/');
                 }, 3000);

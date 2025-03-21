@@ -1,5 +1,3 @@
-// src/front/js/pages/Artist/UserData.js
-
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../../store/appContext";
@@ -19,16 +17,13 @@ export const UserData = () => {
     username: "",
     email: "",
     address: "",
-    // Si el usuario es artista y quieres editar su bio también, podrías agregar:
     bio: "",
   });
 
-  // Estados para manejo de imagen de perfil
-  const [file, setFile] = useState(null);     // archivo seleccionado
-  const [previewUrl, setPreviewUrl] = useState(""); // url de previsualización
-  const [uploading, setUploading] = useState(false); // indicador de "subiendo..."
+  const [file, setFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
 
-  // Cargar datos iniciales desde store.user
   useEffect(() => {
     if (store.user) {
       setFormData({
@@ -36,7 +31,6 @@ export const UserData = () => {
         username: store.user.username || "",
         email: store.user.email || "",
         address: store.user.address || "",
-        // Si es artista y quieres manejar su bio:
         bio:
           store.user.is_artist && store.user.artist_profile
             ? store.user.artist_profile.bio || ""
@@ -45,7 +39,6 @@ export const UserData = () => {
     }
   }, [store.user]);
 
-  // Actualizar campos de texto
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -53,19 +46,16 @@ export const UserData = () => {
     });
   };
 
-  // Manejar la selección del archivo de imagen
   const handleProfileImageChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const selectedFile = e.target.files[0];
       setFile(selectedFile);
 
-      // Crear una URL para previsualizar
       const url = URL.createObjectURL(selectedFile);
       setPreviewUrl(url);
     }
   };
 
-  // Subir la imagen de perfil
   const handleUploadImage = async () => {
     if (!file) {
       alert(t("Primero selecciona una imagen de perfil."));
@@ -78,7 +68,6 @@ export const UserData = () => {
       const formData = new FormData();
       formData.append("img", file);
 
-      // Endpoint que sube la imagen (ajusta la ruta si es diferente)
       const response = await fetch(`${process.env.BACKEND_URL}/api/img`, {
         method: "POST",
         headers: {
@@ -94,10 +83,8 @@ export const UserData = () => {
 
       const data = await response.json();
 
-      // Notificar al usuario
       alert(t("Imagen de perfil actualizada con éxito."));
 
-      // Actualizar user en store (para que se vea el cambio en Navbar y otros sitios)
       const updatedUser = {
         ...store.user,
         profile_photo: data.img
@@ -105,7 +92,6 @@ export const UserData = () => {
       localStorage.setItem("user", JSON.stringify(updatedUser));
       actions.setUser(updatedUser);
 
-      // Limpiar el file y preview
       setFile(null);
       setPreviewUrl("");
     } catch (error) {
@@ -115,7 +101,6 @@ export const UserData = () => {
     setUploading(false);
   };
 
-  // Guardar cambios de datos (PUT a /api/user/:id)
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -140,10 +125,8 @@ export const UserData = () => {
       const data = await response.json();
       alert(t("Perfil actualizado correctamente"));
 
-      // Actualizar store.user
       actions.setUser(data.user);
 
-      // Redirigir según sea artista o no
       if (store.user.is_artist) {
         navigate(`/artist/${store.user.id}`);
       } else {
@@ -161,13 +144,12 @@ export const UserData = () => {
       <div className="container mt-4">
         <h1 className="text-center mb-4 text-white">{t("Editar Datos del Usuario")}</h1>
 
-        {/* Contenedor con foto de perfil y botón para elegir archivo */}
         <div className="d-flex align-items-center mb-4">
           <div style={{ width: "120px", height: "120px", overflow: "hidden", borderRadius: "50%", marginRight: "20px" }}>
             <img
               src={
                 previewUrl
-                  ? previewUrl // si hay preview local, usarla
+                  ? previewUrl
                   : store.user?.profile_photo || "https://placehold.co/120"
               }
               alt="Foto de perfil"
@@ -209,7 +191,6 @@ export const UserData = () => {
           </div>
         </div>
 
-        {/* Formulario para los datos de usuario */}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label>{t("Nombre completo")}</label>

@@ -1,4 +1,3 @@
-// src/front/js/pages/login.js
 import React, { useContext, useState, useEffect } from "react";
 import "../../styles/login.css";
 import microphone from "../../img/microphone.jpg";
@@ -29,7 +28,6 @@ export const Login = () => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-  // Estado para registro
   const [formulario, setFormulario] = useState({
     fullName: "",
     username: "",
@@ -43,7 +41,6 @@ export const Login = () => {
     genres: []
   });
 
-  // Estado para login
   const [loginData, setLoginData] = useState({
     username: "",
     password: ""
@@ -71,7 +68,7 @@ export const Login = () => {
   const handleImgChange = (e) => {
     if (e.target.files && e.target.files.length) {
       const file = e.target.files[0];
-      console.log(file); // Optional: Check if file is selected correctly
+      console.log(file);
       setFile(file);
       sendFile(file);
     }
@@ -85,7 +82,7 @@ export const Login = () => {
     }
 
     setUploading(true);
-    setUploadSuccess(false); // Reset success message on new upload attempt
+    setUploadSuccess(false);
 
     try {
       const formData = new FormData();
@@ -107,11 +104,11 @@ export const Login = () => {
         profile_photo: data.img
       }));
 
-      setUploadSuccess(true); // Set success message after upload
+      setUploadSuccess(true);
 
     } catch (error) {
       console.error(t("Error al subir la imagen:"), error);
-      setUploadSuccess(false); // If there's an error, reset success message
+      setUploadSuccess(false);
 
     }
 

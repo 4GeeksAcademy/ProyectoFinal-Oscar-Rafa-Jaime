@@ -42,7 +42,7 @@ export const Navbar = () => {
           setResults(data);
           console.log(data)
         } catch (error) {
-          console.error("Error en la búsqueda:", error);
+          console.error(t("Error en la búsqueda:"), error);
         }
       } else {
         setResults([]);
@@ -58,7 +58,7 @@ export const Navbar = () => {
         <div className="search-bar">
           <input
             type="text"
-            placeholder="Buscar artistas..."
+            placeholder={t("Buscar artistas...")}
             value={query}
             onChange={handleSearch}
           />
@@ -79,7 +79,7 @@ export const Navbar = () => {
           )}
         </div>
         <div className="navbar-right">
-          <LanguageSwitcher /> {/* Display the LanguageSwitcher component here */}
+          <LanguageSwitcher />
 
           <div className="user-menu">
             <div className="user-icon" onClick={toggleMenu}>
@@ -95,7 +95,6 @@ export const Navbar = () => {
             <div className={`dropdown-menu ${menuOpen ? "show" : ""}`}>
               {store.user && store.user.is_artist ? (
                 <>
-                  {/* Link para ir al perfil artista */}
                   <Link
                     to={`/artist/${store.user.id}`}
                     className="dropdown-item"
@@ -106,7 +105,6 @@ export const Navbar = () => {
                 </>
               ) : (
                 <>
-                  {/* Link para ir al perfil usuario */}
                   <Link
                     to={`/userProfile/${store.user?.id}`}
                     className="dropdown-item"
@@ -116,7 +114,6 @@ export const Navbar = () => {
                   </Link>
                 </>
               )}
-              {/* Opción DATOS (para ambos) */}
               <Link
                 to="/userdata"
                 className="dropdown-item"

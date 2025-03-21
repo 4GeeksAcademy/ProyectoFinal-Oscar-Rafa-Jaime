@@ -1,7 +1,5 @@
-/* music.css */
-
 .music-container {
-    background-color: var(--background-color);
+    background-color: linear-gradient(135deg, #ffffff 0%, #5a5959 100%) !important;
     padding: 20px;
     color: var(--text-color);
     border-radius: 8px;
@@ -25,32 +23,100 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    
 }
 
 .audio-player {
-    width: 250px;
+    width: 350px;
     height: 35px;
 }
 
 .song-title {
     font-weight: bold;
+    color: #000;
 }
 
-/* Estilos para los botones */
 .like-button,
-.delete-button {
-    background-color: var(--primary-color);
+.eliminar-button {
     border: none;
-    color: rgb(238, 11, 11);
     padding: 5px 10px;
     cursor: pointer;
     border-radius: 4px;
     transition: background-color 0.2s ease;
     margin-left: 1rem;
-    /* Espacio para separarlos un poco */
+    font-size: 0.9rem;
 }
 
-.like-button:hover,
-.delete-button:hover {
-    background-color: var(--secondary-color);
+.like-button {
+    background-color: var(--color-green);
+    color: #fff;
 }
+
+.like-button:hover {
+    background-color: #05ee3f;
+}
+
+.like-button.liked {
+    background-color: var(--color-red);
+}
+
+.like-button.liked:hover {
+    background-color: #f30808;
+}
+
+.eliminar-button {
+    background-color: var(--color-red);
+    color: #fff;
+}
+
+.eliminar-button:hover {
+    background-color: #f30808;
+}
+
+.upload-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1em;
+    flex-wrap: wrap;
+}
+
+.upload-input {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 400px;
+}
+
+.upload-button {
+    background-color: var(--color-green);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.upload-button:hover {
+    background-color: #05ee3f;
+}
+
+.upload-label {
+    background-color: #83808085;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+    margin-right: 1rem;
+  }
+  
+  .upload-label:hover {
+    background-color: #2a4130;
+  }
+  

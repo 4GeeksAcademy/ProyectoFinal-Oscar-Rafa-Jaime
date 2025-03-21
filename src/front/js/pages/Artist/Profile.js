@@ -38,13 +38,11 @@ const Profile = () => {
   useEffect(() => {
     fetchArtistData();
     checkIfFollowing();
-    // eslint-disable-next-line
   }, [artistId]);
 
   const checkIfFollowing = async () => {
     try {
       const token = localStorage.getItem("Token");
-      // 1) Trae la lista de artistas que sigue
       const resp = await fetch(`${process.env.BACKEND_URL}/api/profile/followed/artist`, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -52,9 +50,6 @@ const Profile = () => {
       });
       if (!resp.ok) throw new Error("Error consultando si sigue al artista");
       const data = await resp.json();
-
-      // data.followed_artists => un array con "artist_profile_id" por ejemplo
-      // Compruebas si el "artistId" actual está en la lista
       const found = data.followed_artists?.some(
         (a) => Number(a.artist_profile_id) === Number(artistId)
       );
@@ -134,7 +129,7 @@ const Profile = () => {
       setUploading(true);
 
       handleUploadFile(selectedFile).finally(() => {
-        setUploading(false); // Set uploading to false after the upload is complete (either success or failure)
+        setUploading(false);
       });
     }
   };
@@ -143,7 +138,6 @@ const Profile = () => {
   if (error) return <p>{error}</p>;
   if (!artistData) return <p>{t("No se encontraron datos del artista.")}</p>;
 
-  // Send file to the server
   const handleUploadFile = async (file) => {
     if (!file) {
       alert(t("Selecciona una imagen."));
@@ -185,7 +179,6 @@ const Profile = () => {
   };
 
 
-      // Toggle Follow
   const handleToggleFollow = async () => {
     try {
       const token = localStorage.getItem("Token");
@@ -204,7 +197,6 @@ const Profile = () => {
         alert(t("Has dejado de seguir al artista"));
         setIsFollowing(false);
       } else {
-        // Follow
         const resp = await fetch(
           `${process.env.BACKEND_URL}/api/profile/followed/artist/${artistId}`,
           {

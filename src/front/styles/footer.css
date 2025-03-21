@@ -6,7 +6,6 @@
     display: grid;
     place-items: center;
     height: 6%;
-    /* Gradiente de rojos/naranjas */
     background: linear-gradient(90deg,
             var(--color-red) 0%,
             var(--color-giants-orange) 50%,
